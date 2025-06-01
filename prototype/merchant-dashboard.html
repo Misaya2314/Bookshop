@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商家后台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部商家信息 -->
+    <div class="bg-gradient-to-r from-green-500 to-blue-600 pt-12 pb-6">
+        <div class="px-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                    <span class="text-2xl">🏪</span>
+                </div>
+                <div class="flex-1 text-white">
+                    <h2 class="text-xl font-semibold mb-1">李同学的书店</h2>
+                    <p class="text-green-100 text-sm">计算机学院 · 商家认证</p>
+                    <div class="flex items-center space-x-4 text-xs text-green-100 mt-1">
+                        <span>⭐ 4.9分</span>
+                        <span>已售156本</span>
+                        <span>好评率98%</span>
+                    </div>
+                </div>
+                <button class="text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 数据概览 -->
+    <div class="bg-white mx-4 -mt-4 rounded-lg shadow-sm p-4 mb-4">
+        <div class="grid grid-cols-3 gap-4">
+            <div class="text-center">
+                <div class="text-2xl font-bold text-gray-800 mb-1">12</div>
+                <div class="text-xs text-gray-500">在售商品</div>
+            </div>
+            <div class="text-center border-l border-r border-gray-200">
+                <div class="text-2xl font-bold text-orange-500 mb-1">5</div>
+                <div class="text-xs text-gray-500">待处理订单</div>
+            </div>
+            <div class="text-center">
+                <div class="text-2xl font-bold text-green-500 mb-1">¥1,240</div>
+                <div class="text-xs text-gray-500">本月收入</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快捷操作 -->
+    <div class="bg-white mx-4 mb-4 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800">快捷操作</h3>
+        </div>
+        <div class="p-4">
+            <div class="grid grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-600">上架商品</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-600">处理订单</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-600">数据统计</span>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <span class="text-xs text-gray-600">店铺设置</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的商品 -->
+    <div class="bg-white mx-4 mb-4 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-semibold text-gray-800">我的商品</h3>
+            <button class="text-sm text-blue-600">管理全部</button>
+        </div>
+        <div class="p-4 space-y-3">
+            <!-- 商品项 -->
+            <div class="flex items-center space-x-3 p-3 border border-gray-100 rounded-lg">
+                <div class="w-16 h-20 bg-gray-200 rounded flex items-center justify-center">
+                    <span class="text-xl">📖</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-medium text-gray-800 mb-1">Java核心技术 卷I</h4>
+                    <p class="text-xs text-gray-500 mb-2">价格: ¥45 | 库存: 1本</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">在售</span>
+                        <span class="text-xs text-gray-500">已售3本</span>
+                    </div>
+                </div>
+                <button class="text-blue-600 text-sm">编辑</button>
+            </div>
+
+            <div class="flex items-center space-x-3 p-3 border border-gray-100 rounded-lg">
+                <div class="w-16 h-20 bg-gray-200 rounded flex items-center justify-center">
+                    <span class="text-xl">📘</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-medium text-gray-800 mb-1">算法导论</h4>
+                    <p class="text-xs text-gray-500 mb-2">价格: ¥68 | 库存: 2本</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="px-2 py-1 bg-green-100 text-green-600 text-xs rounded">在售</span>
+                        <span class="text-xs text-gray-500">已售1本</span>
+                    </div>
+                </div>
+                <button class="text-blue-600 text-sm">编辑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 待处理订单 -->
+    <div class="bg-white mx-4 mb-4 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="font-semibold text-gray-800">待处理订单</h3>
+            <button class="text-sm text-blue-600">查看全部</button>
+        </div>
+        <div class="p-4 space-y-3">
+            <!-- 订单项 -->
+            <div class="border border-gray-100 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-800">订单 #202401150001</span>
+                    <span class="px-2 py-1 bg-orange-100 text-orange-600 text-xs rounded">待发货</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-15 bg-gray-200 rounded flex items-center justify-center">
+                        <span class="text-lg">📖</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm text-gray-800">Java核心技术 卷I</h4>
+                        <p class="text-xs text-gray-500">买家: 张同学 | 数量: 1本</p>
+                        <p class="text-xs text-gray-500">配送地址: A校区一号宿舍楼下</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-bold text-gray-800">¥45</div>
+                        <button class="mt-1 px-3 py-1 bg-blue-500 text-white text-xs rounded">去发货</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border border-gray-100 rounded-lg p-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-medium text-gray-800">订单 #202401140002</span>
+                    <span class="px-2 py-1 bg-blue-100 text-blue-600 text-xs rounded">待发货</span>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-15 bg-gray-200 rounded flex items-center justify-center">
+                        <span class="text-lg">📘</span>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm text-gray-800">算法导论</h4>
+                        <p class="text-xs text-gray-500">买家: 王同学 | 数量: 1本</p>
+                        <p class="text-xs text-gray-500">配送地址: B校区图书馆门口</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-sm font-bold text-gray-800">¥68</div>
+                        <button class="mt-1 px-3 py-1 bg-blue-500 text-white text-xs rounded">去发货</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 经营数据 -->
+    <div class="bg-white mx-4 mb-20 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800">经营数据</h3>
+        </div>
+        <div class="p-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="border border-gray-100 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-gray-800 mb-1">156</div>
+                    <div class="text-xs text-gray-500">累计销量</div>
+                </div>
+                <div class="border border-gray-100 rounded-lg p-3 text-center">
+                    <div class="text-lg font-bold text-green-500 mb-1">¥4,580</div>
+                    <div class="text-xs text-gray-500">累计收入</div>
+                </div>
+            </div>
+            
+            <div class="space-y-2">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">店铺评分</span>
+                    <div class="flex items-center space-x-1">
+                        <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                        <span class="text-gray-800">4.9</span>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">好评率</span>
+                    <span class="text-green-600 font-medium">98%</span>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">回头客率</span>
+                    <span class="text-blue-600 font-medium">25%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-4 py-2">
+            <div class="text-center py-2">
+                <div class="text-blue-500 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-blue-500 font-medium">后台首页</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">商品管理</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 4V2C7 1.45 7.45 1 8 1S9 1.45 9 2V4H15V2C15 1.45 15.45 1 16 1S17 1.45 17 2V4H20C21.1 4 22 4.9 22 6V20C22 21.1 21.1 22 20 22H4C2.9 22 2 21.1 2 20V6C2 4.9 2.9 4 4 4H7Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">订单管理</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H9L3 7V9H21ZM3 19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11H3V19Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

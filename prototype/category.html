@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分类</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部标题栏 -->
+    <div class="bg-white px-4 py-3 shadow-sm">
+        <div class="flex items-center">
+            <h1 class="text-lg font-semibold text-gray-800">图书分类</h1>
+        </div>
+    </div>
+
+    <div class="flex h-screen">
+        <!-- 左侧一级分类 -->
+        <div class="w-24 bg-white border-r border-gray-200">
+            <div class="py-2">
+                <div class="px-2 py-3 bg-blue-50 border-r-2 border-blue-500">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">💻</div>
+                        <span class="text-xs text-blue-600 font-medium">计算机</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">⚕️</div>
+                        <span class="text-xs text-gray-600">医学</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">💼</div>
+                        <span class="text-xs text-gray-600">管理学</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">🇬🇧</div>
+                        <span class="text-xs text-gray-600">英语</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">🏛️</div>
+                        <span class="text-xs text-gray-600">法律</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">🔬</div>
+                        <span class="text-xs text-gray-600">理工</span>
+                    </div>
+                </div>
+                <div class="px-2 py-3">
+                    <div class="text-center">
+                        <div class="text-2xl mb-1">🎨</div>
+                        <span class="text-xs text-gray-600">艺术</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧二级分类和商品 -->
+        <div class="flex-1 bg-gray-50">
+            <!-- 二级分类标签 -->
+            <div class="bg-white px-4 py-3 border-b border-gray-200">
+                <div class="flex space-x-4">
+                    <span class="px-3 py-1 bg-blue-100 text-blue-600 rounded-full text-sm font-medium">全部</span>
+                    <span class="px-3 py-1 text-gray-600 rounded-full text-sm">教材</span>
+                    <span class="px-3 py-1 text-gray-600 rounded-full text-sm">参考书</span>
+                    <span class="px-3 py-1 text-gray-600 rounded-full text-sm">考研资料</span>
+                </div>
+            </div>
+
+            <!-- 商品列表 -->
+            <div class="p-4 pb-20">
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- 商品项 -->
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📖</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">Java核心技术</h4>
+                        <p class="text-xs text-gray-500 mb-2">凯·S·霍斯特曼</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥45</span>
+                            <span class="text-xs text-gray-400">已售156</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📘</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">算法导论</h4>
+                        <p class="text-xs text-gray-500 mb-2">Thomas H.Cormen</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥68</span>
+                            <span class="text-xs text-gray-400">已售89</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📗</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">深入理解计算机系统</h4>
+                        <p class="text-xs text-gray-500 mb-2">Randal E.Bryant</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥52</span>
+                            <span class="text-xs text-gray-400">已售76</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📙</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">数据结构与算法分析</h4>
+                        <p class="text-xs text-gray-500 mb-2">Mark Allen Weiss</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥42</span>
+                            <span class="text-xs text-gray-400">已售124</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📚</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">设计模式</h4>
+                        <p class="text-xs text-gray-500 mb-2">Gang of Four</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥38</span>
+                            <span class="text-xs text-gray-400">已售95</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg p-3 shadow-sm">
+                        <div class="w-full h-32 bg-gray-200 rounded mb-3 flex items-center justify-center">
+                            <span class="text-2xl">📕</span>
+                        </div>
+                        <h4 class="text-sm font-medium text-gray-800 mb-1">计算机网络</h4>
+                        <p class="text-xs text-gray-500 mb-2">谢希仁</p>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm font-bold text-red-500">¥35</span>
+                            <span class="text-xs text-gray-400">已售156</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-4 py-2">
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">首页</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-blue-500 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-blue-500 font-medium">分类</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 4V2C7 1.45 7.45 1 8 1S9 1.45 9 2V4H15V2C15 1.45 15.45 1 16 1S17 1.45 17 2V4H20C21.1 4 22 4.9 22 6V20C22 21.1 21.1 22 20 22H4C2.9 22 2 21.1 2 20V6C2 4.9 2.9 4 4 4H7Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">购物车</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H9L3 7V9H21ZM3 19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11H3V19Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

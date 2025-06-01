@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 用户信息卡片 -->
+    <div class="bg-gradient-to-r from-blue-500 to-purple-600 pt-12 pb-6">
+        <div class="px-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                    <span class="text-2xl">👤</span>
+                </div>
+                <div class="flex-1 text-white">
+                    <h2 class="text-xl font-semibold mb-1">张同学</h2>
+                    <p class="text-blue-100 text-sm">计算机学院 · 大三</p>
+                    <p class="text-blue-100 text-xs">手机号：138****5678</p>
+                </div>
+                <button class="text-white">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 订单统计 -->
+    <div class="bg-white mx-4 -mt-4 rounded-lg shadow-sm p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+            <h3 class="font-semibold text-gray-800">我的订单</h3>
+            <span class="text-sm text-blue-600">查看全部 ></span>
+        </div>
+        <div class="grid grid-cols-5 gap-4">
+            <div class="text-center">
+                <div class="relative mb-2">
+                    <div class="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center mx-auto">
+                        <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+                        </svg>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                        <span class="text-xs text-white">1</span>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-600">待支付</span>
+            </div>
+            <div class="text-center">
+                <div class="relative mb-2">
+                    <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto">
+                        <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 3V1H7v2H6c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2v2H9z"/>
+                        </svg>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                        <span class="text-xs text-white">2</span>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-600">待发货</span>
+            </div>
+            <div class="text-center">
+                <div class="relative mb-2">
+                    <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mx-auto">
+                        <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M20 8l-8 5-8-5V6l8 5 8-5v2z"/>
+                        </svg>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                        <span class="text-xs text-white">1</span>
+                    </div>
+                </div>
+                <span class="text-xs text-gray-600">待收货</span>
+            </div>
+            <div class="text-center">
+                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-600">已完成</span>
+            </div>
+            <div class="text-center">
+                <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                    <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-600">待评价</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 功能菜单 -->
+    <div class="space-y-2">
+        <!-- 交易相关 -->
+        <div class="bg-white mx-4 rounded-lg shadow-sm">
+            <div class="px-4 py-3 border-b border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-800">交易服务</h3>
+            </div>
+            <div class="p-4">
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <span class="text-lg">💖</span>
+                        </div>
+                        <span class="text-xs text-gray-600">我的收藏</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <span class="text-lg">👀</span>
+                        </div>
+                        <span class="text-xs text-gray-600">浏览历史</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <span class="text-lg">💬</span>
+                        </div>
+                        <span class="text-xs text-gray-600">客服中心</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2">
+                            <span class="text-lg">📍</span>
+                        </div>
+                        <span class="text-xs text-gray-600">收货地址</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商家入驻 -->
+        <div class="bg-white mx-4 rounded-lg shadow-sm">
+            <div class="p-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
+                        <span class="text-white text-xl">🏪</span>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-semibold text-gray-800 mb-1">申请成为商家</h3>
+                        <p class="text-xs text-gray-500">出售闲置书籍，赚取零花钱</p>
+                    </div>
+                    <button class="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm rounded-lg font-medium">
+                        立即申请
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 个人设置 -->
+        <div class="bg-white mx-4 rounded-lg shadow-sm">
+            <div class="px-4 py-3 border-b border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-800">个人设置</h3>
+            </div>
+            <div class="space-y-0">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H9L3 7V9H21ZM3 19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11H3V19Z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">个人信息</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">我的评价</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <div class="flex items-center justify-between px-4 py-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-purple-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 1l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">设置</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 帮助与反馈 -->
+        <div class="bg-white mx-4 rounded-lg shadow-sm mb-20">
+            <div class="px-4 py-3 border-b border-gray-100">
+                <h3 class="text-sm font-semibold text-gray-800">帮助与反馈</h3>
+            </div>
+            <div class="space-y-0">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">常见问题</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <div class="flex items-center justify-between px-4 py-3 border-b border-gray-50">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">意见反馈</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+                <div class="flex items-center justify-between px-4 py-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                            <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                            </svg>
+                        </div>
+                        <span class="text-sm text-gray-700">关于我们</span>
+                    </div>
+                    <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200">
+        <div class="grid grid-cols-4 py-2">
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">首页</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">分类</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-gray-400 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M7 4V2C7 1.45 7.45 1 8 1S9 1.45 9 2V4H15V2C15 1.45 15.45 1 16 1S17 1.45 17 2V4H20C21.1 4 22 4.9 22 6V20C22 21.1 21.1 22 20 22H4C2.9 22 2 21.1 2 20V6C2 4.9 2.9 4 4 4H7Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-gray-400">购物车</span>
+            </div>
+            <div class="text-center py-2">
+                <div class="text-blue-500 mb-1">
+                    <svg class="w-5 h-5 mx-auto" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H9L3 7V9H21ZM3 19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V11H3V19Z"/>
+                    </svg>
+                </div>
+                <span class="text-xs text-blue-500 font-medium">我的</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

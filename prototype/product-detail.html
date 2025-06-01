@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品详情</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <div class="bg-white px-4 py-3 shadow-sm flex items-center">
+        <button class="mr-3">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        <h1 class="text-lg font-semibold text-gray-800">商品详情</h1>
+        <div class="ml-auto flex space-x-3">
+            <button>
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                </svg>
+            </button>
+            <button>
+                <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- 滚动内容区域 -->
+    <div class="pb-24">
+        <!-- 商品图片轮播 -->
+        <div class="bg-white">
+            <div class="h-80 bg-gray-100 flex items-center justify-center">
+                <div class="text-center">
+                    <div class="text-8xl mb-4">📖</div>
+                    <div class="text-sm text-gray-500">Java核心技术 卷I</div>
+                </div>
+            </div>
+            <div class="flex justify-center py-2">
+                <div class="flex space-x-2">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                    <div class="w-2 h-2 bg-gray-300 rounded-full"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品基本信息 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <div class="mb-3">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-2xl font-bold text-red-500">¥45</span>
+                    <div class="text-right text-sm text-gray-500">
+                        <div>原价: <span class="line-through">¥89</span></div>
+                        <div class="text-orange-500">5折优惠</div>
+                    </div>
+                </div>
+                <h1 class="text-lg font-semibold text-gray-800 mb-2">Java核心技术 卷I：基础知识（原书第11版）</h1>
+                <p class="text-sm text-gray-600">凯·S·霍斯特曼 (Cay S. Horstmann) 著，周立新 译</p>
+            </div>
+            
+            <div class="flex items-center space-x-4 text-sm text-gray-500">
+                <div class="flex items-center">
+                    <span class="text-yellow-400 mr-1">⭐</span>
+                    <span>4.8分</span>
+                </div>
+                <div>已售156本</div>
+                <div>库存: 8本</div>
+            </div>
+        </div>
+
+        <!-- 商品参数 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <h3 class="font-semibold text-gray-800 mb-3">商品信息</h3>
+            <div class="space-y-3 text-sm">
+                <div class="flex">
+                    <span class="text-gray-500 w-20">ISBN:</span>
+                    <span class="text-gray-800">9787111544219</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-500 w-20">出版社:</span>
+                    <span class="text-gray-800">机械工业出版社</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-500 w-20">版次:</span>
+                    <span class="text-gray-800">第11版</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-500 w-20">成色:</span>
+                    <span class="text-green-600">9成新</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-500 w-20">页数:</span>
+                    <span class="text-gray-800">812页</span>
+                </div>
+                <div class="flex">
+                    <span class="text-gray-500 w-20">重量:</span>
+                    <span class="text-gray-800">约1.2kg</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 卖家信息 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <h3 class="font-semibold text-gray-800 mb-3">卖家信息</h3>
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span class="text-blue-600 font-semibold">李</span>
+                </div>
+                <div class="flex-1">
+                    <div class="font-medium text-gray-800">李同学</div>
+                    <div class="text-sm text-gray-500">计算机学院 · 大四</div>
+                </div>
+                <div class="text-right text-sm">
+                    <div class="text-orange-500 font-medium">4.9分</div>
+                    <div class="text-gray-500">已售45本</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 配送信息 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <h3 class="font-semibold text-gray-800 mb-3">配送信息</h3>
+            <div class="space-y-2 text-sm">
+                <div class="flex items-center">
+                    <span class="text-gray-500 w-16">配送:</span>
+                    <span class="text-gray-800">校内配送，预计1-2天送达</span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-500 w-16">地址:</span>
+                    <span class="text-blue-600">A校区一号宿舍楼下 ></span>
+                </div>
+                <div class="flex items-center">
+                    <span class="text-gray-500 w-16">运费:</span>
+                    <span class="text-green-600">免运费</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 商品详情 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <h3 class="font-semibold text-gray-800 mb-3">商品详情</h3>
+            <div class="text-sm text-gray-700 leading-relaxed">
+                <p class="mb-3">《Java核心技术》是一本经典的Java编程教材，全面介绍了Java语言的核心概念和技术。本书适合有一定编程基础的读者学习Java语言。</p>
+                <p class="mb-3">这本书是计算机专业的经典教材，内容全面，讲解详细，代码示例丰富。书本保存良好，无破损，是学习Java的优秀参考资料。</p>
+                <p>买家备注：书本九成新，仅个别页面有少量笔记，不影响阅读。欢迎同学咨询购买！</p>
+            </div>
+        </div>
+
+        <!-- 评价区域 -->
+        <div class="bg-white mt-2 px-4 py-4">
+            <div class="flex items-center justify-between mb-3">
+                <h3 class="font-semibold text-gray-800">买家评价</h3>
+                <span class="text-sm text-blue-600">查看全部 ></span>
+            </div>
+            <div class="space-y-3">
+                <div class="border-b border-gray-100 pb-3">
+                    <div class="flex items-center mb-2">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mr-3">
+                            <span class="text-xs">张</span>
+                        </div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium">张同学</div>
+                            <div class="text-xs text-gray-500">2天前</div>
+                        </div>
+                        <div class="text-yellow-400">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <p class="text-sm text-gray-700">书的质量很好，配送也很快，卖家人很nice！</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部操作栏 -->
+    <div class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3">
+        <div class="flex items-center space-x-3">
+            <!-- 收藏和客服 -->
+            <div class="flex space-x-4">
+                <button class="flex flex-col items-center">
+                    <svg class="w-5 h-5 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+                    </svg>
+                    <span class="text-xs text-gray-500">收藏</span>
+                </button>
+                <button class="flex flex-col items-center">
+                    <svg class="w-5 h-5 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                    </svg>
+                    <span class="text-xs text-gray-500">客服</span>
+                </button>
+            </div>
+            
+            <!-- 购买按钮 -->
+            <div class="flex-1 flex space-x-3">
+                <button class="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 rounded-lg transition-colors">
+                    加入购物车
+                </button>
+                <button class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium py-3 rounded-lg transition-colors">
+                    立即购买
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

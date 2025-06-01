@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学长二手书微信小程序 - 原型展示</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* iPhone 15 Pro 尺寸: 393 x 852 */
+        .phone-container {
+            width: 393px;
+            height: 852px;
+            border-radius: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            background: #000;
+            padding: 8px;
+            margin: 20px;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            border-radius: 32px;
+            overflow: hidden;
+            background: white;
+        }
+        
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .prototype-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(413px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            justify-items: center;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="text-center py-8">
+        <h1 class="text-4xl font-bold text-gray-800 mb-2">学长二手书微信小程序</h1>
+        <p class="text-xl text-gray-600">原型界面展示</p>
+    </div>
+    
+    <div class="prototype-grid">
+        <!-- 登录页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="login.html" title="登录页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">登录/授权页</p>
+        </div>
+        
+        <!-- 首页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="home.html" title="首页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">首页</p>
+        </div>
+        
+        <!-- 分类页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="category.html" title="分类页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">分类页</p>
+        </div>
+        
+        <!-- 商品详情页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="product-detail.html" title="商品详情页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">商品详情页</p>
+        </div>
+        
+        <!-- 购物车页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="cart.html" title="购物车页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">购物车页</p>
+        </div>
+        
+        <!-- 订单页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="orders.html" title="订单页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">订单页</p>
+        </div>
+        
+        <!-- 我的页面 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="profile.html" title="我的页面"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">我的页面</p>
+        </div>
+        
+        <!-- 入驻申请页 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="merchant-apply.html" title="入驻申请页"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">入驻申请页</p>
+        </div>
+        
+        <!-- 商家后台 -->
+        <div class="phone-container">
+            <div class="phone-screen">
+                <iframe src="merchant-dashboard.html" title="商家后台"></iframe>
+            </div>
+            <p class="text-center mt-4 text-gray-700 font-medium">商家后台</p>
+        </div>
+    </div>
+</body>
+</html>

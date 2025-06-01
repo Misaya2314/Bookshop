@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录授权</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .floating-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body class="h-full gradient-bg">
+    <div class="flex flex-col justify-between items-center h-screen px-6 py-16">
+        <!-- 顶部Logo区域 -->
+        <div class="text-center pt-16">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 floating-animation">
+                <div class="text-4xl">📚</div>
+            </div>
+            <h1 class="text-3xl font-bold text-white mb-2">学长二手书</h1>
+            <p class="text-white opacity-80 text-lg">校园专业图书交易平台</p>
+        </div>
+
+        <!-- 中间欢迎区域 -->
+        <div class="text-center space-y-4">
+            <h2 class="text-xl text-white font-medium">欢迎来到学长二手书</h2>
+            <p class="text-white opacity-80 text-sm leading-relaxed">
+                连接校园买家与卖家<br>
+                让专业书籍流转更高效
+            </p>
+        </div>
+
+        <!-- 底部登录区域 -->
+        <div class="w-full space-y-4">
+            <!-- 微信授权登录按钮 -->
+            <button class="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-4 px-6 rounded-lg flex items-center justify-center space-x-3 transition-colors shadow-lg">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8.5 8.64c.31 0 .56-.25.56-.56s-.25-.56-.56-.56-.56.25-.56.56.25.56.56.56zm2.88 0c.31 0 .56-.25.56-.56s-.25-.56-.56-.56-.56.25-.56.56.25.56.56.56z"/>
+                    <path d="M15.5 12.5c-.31 0-.56.25-.56.56s.25.56.56.56.56-.25.56-.56-.25-.56-.56-.56zm2.89 0c-.31 0-.56.25-.56.56s.25.56.56.56.56-.25.56-.56-.25-.56-.56-.56z"/>
+                </svg>
+                <span>微信授权登录</span>
+            </button>
+
+            <!-- 隐私协议 -->
+            <div class="text-center">
+                <p class="text-white opacity-60 text-xs leading-relaxed">
+                    登录即表示同意
+                    <span class="text-white underline">《用户协议》</span>
+                    和
+                    <span class="text-white underline">《隐私政策》</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

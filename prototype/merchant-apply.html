@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>申请成为商家</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://tdesign.tencent.com/miniprogram/css/tdesign.min.css">
+</head>
+<body class="bg-gray-50">
+    <!-- 顶部导航栏 -->
+    <div class="bg-white px-4 py-3 shadow-sm flex items-center">
+        <button class="mr-3">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
+        <h1 class="text-lg font-semibold text-gray-800">申请成为商家</h1>
+    </div>
+
+    <!-- 申请说明 -->
+    <div class="bg-gradient-to-r from-orange-400 to-red-500 mx-4 mt-4 rounded-lg p-6 text-white">
+        <div class="text-center mb-4">
+            <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span class="text-3xl">🏪</span>
+            </div>
+            <h2 class="text-xl font-bold mb-2">成为商家，开启赚钱之旅</h2>
+            <p class="text-orange-100 text-sm">出售闲置书籍，帮助学弟学妹，赚取零花钱</p>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+                <div class="text-2xl mb-1">📚</div>
+                <div class="text-xs">零门槛开店</div>
+            </div>
+            <div>
+                <div class="text-2xl mb-1">💰</div>
+                <div class="text-xs">快速变现</div>
+            </div>
+            <div>
+                <div class="text-2xl mb-1">🤝</div>
+                <div class="text-xs">帮助他人</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 申请表单 -->
+    <div class="bg-white mx-4 mt-4 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800">申请信息</h3>
+            <p class="text-xs text-gray-500 mt-1">请如实填写以下信息，我们将在1-3个工作日内审核</p>
+        </div>
+        
+        <div class="p-4 space-y-4">
+            <!-- 基本信息 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">真实姓名</label>
+                <input type="text" placeholder="请输入真实姓名" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">手机号码</label>
+                <input type="tel" placeholder="请输入手机号码" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">所在学院</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        <option>请选择学院</option>
+                        <option>计算机学院</option>
+                        <option>医学院</option>
+                        <option>管理学院</option>
+                        <option>外国语学院</option>
+                        <option>法学院</option>
+                        <option>理学院</option>
+                        <option>工学院</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">专业</label>
+                    <input type="text" placeholder="请输入专业" 
+                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">学号</label>
+                <input type="text" placeholder="请输入学号" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">微信号</label>
+                <input type="text" placeholder="请输入微信号，方便联系" 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+            </div>
+
+            <!-- 申请理由 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">申请理由</label>
+                <textarea placeholder="请简要说明申请理由，如：即将毕业，希望出售闲置教材等" 
+                          rows="3"
+                          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm resize-none"></textarea>
+            </div>
+
+            <!-- 身份证明 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">身份证明</label>
+                <p class="text-xs text-gray-500 mb-3">请上传学生证或毕业证照片</p>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                        <div class="text-gray-400 mb-2">
+                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xs text-gray-500">学生证照片</div>
+                    </div>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-blue-400 transition-colors cursor-pointer">
+                        <div class="text-gray-400 mb-2">
+                            <svg class="w-8 h-8 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xs text-gray-500">毕业证照片</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 审核流程 -->
+    <div class="bg-white mx-4 mt-4 rounded-lg shadow-sm">
+        <div class="px-4 py-3 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800">审核流程</h3>
+        </div>
+        <div class="p-4">
+            <div class="space-y-3">
+                <div class="flex items-center space-x-3">
+                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                        <span class="text-white text-xs">1</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-800">提交申请</div>
+                        <div class="text-xs text-gray-500">填写完整信息并提交</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                        <span class="text-white text-xs">2</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-600">资料审核</div>
+                        <div class="text-xs text-gray-500">1-3个工作日内完成审核</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <div class="w-6 h-6 bg-gray-300 rounded-full flex items-center justify-center">
+                        <span class="text-white text-xs">3</span>
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-medium text-gray-600">开通商家权限</div>
+                        <div class="text-xs text-gray-500">审核通过后即可上架商品</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 服务条款 -->
+    <div class="mx-4 my-4">
+        <div class="flex items-start space-x-2">
+            <input type="checkbox" class="mt-1 w-4 h-4 text-blue-600 rounded">
+            <div class="text-xs text-gray-600 leading-relaxed">
+                我已阅读并同意
+                <span class="text-blue-600 underline">《商家入驻协议》</span>
+                和
+                <span class="text-blue-600 underline">《平台服务条款》</span>，
+                承诺提供的信息真实有效，遵守平台交易规则。
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <div class="px-4 pb-6">
+        <button class="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-medium py-4 rounded-lg transition-all duration-200 shadow-lg">
+            提交申请
+        </button>
+    </div>
+</body>
+</html> 
