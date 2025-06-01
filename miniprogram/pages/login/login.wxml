@@ -1,0 +1,35 @@
+<view class="login-container">
+  <!-- 顶部Logo区域 -->
+  <view class="logo-section">
+    <view class="logo-icon">📚</view>
+    <text class="app-title">学长二手书</text>
+    <text class="app-subtitle">校园专业图书交易平台</text>
+  </view>
+
+  <!-- 中间欢迎区域 -->
+  <view class="welcome-section">
+    <text class="welcome-title">欢迎来到学长二手书</text>
+    <text class="welcome-desc">连接校园买家与卖家\n让专业书籍流转更高效</text>
+  </view>
+
+  <!-- 底部登录区域 -->
+  <view class="login-section">
+    <t-button 
+      theme="primary" 
+      size="large" 
+      block
+      bind:tap="wxLogin"
+      loading="{{isLoading}}"
+    >
+      <t-icon name="wechat" size="40rpx" style="margin-right: 16rpx;" />
+      微信授权登录
+    </t-button>
+    
+    <view class="privacy-info">
+      <text>登录即表示同意</text>
+      <text class="link" bindtap="viewAgreement">《用户协议》</text>
+      <text>和</text>
+      <text class="link" bindtap="viewPrivacy">《隐私政策》</text>
+    </view>
+  </view>
+</view> 

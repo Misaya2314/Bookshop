@@ -1,0 +1,13 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-upload": "tdesign-miniprogram/upload/upload",
+    "t-textarea": "tdesign-miniprogram/textarea/textarea"
+  },
+  "navigationStyle": "custom",
+  "backgroundColor": "#f5f5f5"
+} 

@@ -1,0 +1,116 @@
+<!-- 用户信息卡片 -->
+<view class="profile-header">
+  <view class="user-info">
+    <t-avatar size="large" class="user-avatar">
+      <text slot="content">👤</text>
+    </t-avatar>
+    <view class="user-details">
+      <text class="user-name">{{userInfo.name || '张同学'}}</text>
+      <text class="user-school">{{userInfo.college || '计算机学院'}} · {{userInfo.grade || '大三'}}</text>
+      <text class="user-phone">手机号：{{userInfo.phone || '138****5678'}}</text>
+    </view>
+    <t-icon name="chevron-right" size="40rpx" color="#ffffff" />
+  </view>
+</view>
+
+<!-- 订单统计 -->
+<view class="order-stats">
+  <view class="stats-header">
+    <text class="stats-title">我的订单</text>
+    <view class="view-all" bindtap="goToOrders">
+      <text>查看全部</text>
+      <t-icon name="chevron-right" size="32rpx" />
+    </view>
+  </view>
+  <view class="stats-grid">
+    <view 
+      class="stat-item" 
+      wx:for="{{orderStats}}" 
+      wx:key="type"
+      bindtap="goToOrders"
+      data-type="{{item.type}}"
+    >
+      <view class="stat-icon">
+        <t-icon name="{{item.icon}}" size="32rpx" color="{{item.color}}" />
+        <view class="stat-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
+      </view>
+      <text class="stat-label">{{item.label}}</text>
+    </view>
+  </view>
+</view>
+
+<!-- 功能菜单 -->
+<view class="menu-sections">
+  <!-- 交易服务 -->
+  <view class="menu-section">
+    <view class="section-title">交易服务</view>
+    <t-cell-group>
+      <t-cell 
+        wx:for="{{tradeMenus}}" 
+        wx:key="id"
+        title="{{item.title}}" 
+        leftIcon="{{item.icon}}"
+        arrow
+        bind:click="onMenuClick"
+        data-action="{{item.action}}"
+      />
+    </t-cell-group>
+  </view>
+
+  <!-- 商家入驻 -->
+  <view class="merchant-apply-section" wx:if="{{!userInfo.isMerchant}}">
+    <view class="apply-card" bindtap="goToMerchantApply">
+      <view class="apply-icon">🏪</view>
+      <view class="apply-content">
+        <text class="apply-title">申请成为商家</text>
+        <text class="apply-desc">出售闲置书籍，赚取零花钱</text>
+      </view>
+      <t-button size="small" theme="primary">立即申请</t-button>
+    </view>
+  </view>
+
+  <!-- 商家入口 -->
+  <view class="merchant-entrance" wx:if="{{userInfo.isMerchant}}">
+    <t-cell-group>
+      <t-cell 
+        title="商家后台" 
+        note="管理您的店铺"
+        leftIcon="shop" 
+        arrow
+        bind:click="goToMerchantDashboard"
+      />
+    </t-cell-group>
+  </view>
+
+  <!-- 个人设置 -->
+  <view class="menu-section">
+    <view class="section-title">个人设置</view>
+    <t-cell-group>
+      <t-cell 
+        wx:for="{{settingMenus}}" 
+        wx:key="id"
+        title="{{item.title}}" 
+        leftIcon="{{item.icon}}"
+        arrow
+        bind:click="onMenuClick"
+        data-action="{{item.action}}"
+      />
+    </t-cell-group>
+  </view>
+
+  <!-- 帮助与反馈 -->
+  <view class="menu-section">
+    <view class="section-title">帮助与反馈</view>
+    <t-cell-group>
+      <t-cell 
+        wx:for="{{helpMenus}}" 
+        wx:key="id"
+        title="{{item.title}}" 
+        leftIcon="{{item.icon}}"
+        arrow
+        bind:click="onMenuClick"
+        data-action="{{item.action}}"
+      />
+    </t-cell-group>
+  </view>
+</view> 

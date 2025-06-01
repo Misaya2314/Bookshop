@@ -1,0 +1,174 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="我的订单" />
+
+<!-- 订单状态标签 -->
+<view class="order-tabs">
+  <t-tabs value="{{currentTab}}" bind:change="onTabChange">
+    <t-tab-panel 
+      wx:for="{{tabs}}" 
+      wx:key="value"
+      label="{{item.label}}" 
+      value="{{item.value}}"
+    />
+  </t-tabs>
+</view>
+
+<!-- 订单列表 -->
+<scroll-view scroll-y class="orders-container" refresher-enabled="{{true}}" bind:refresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+  <view class="order-list">
+    <!-- 订单项 -->
+    <view 
+      class="order-item" 
+      wx:for="{{orders}}" 
+      wx:key="id"
+      bindtap="goToOrderDetail"
+      data-id="{{item.id}}"
+    >
+      <!-- 订单头部 -->
+      <view class="order-header">
+        <view class="merchant-info">
+          <t-icon name="shop" size="32rpx" color="#3b82f6" />
+          <text class="merchant-name">{{item.merchantName}}</text>
+        </view>
+        <view class="order-status {{item.statusClass}}">
+          {{item.statusText}}
+        </view>
+      </view>
+
+      <!-- 商品列表 -->
+      <view class="order-products">
+        <view 
+          class="product-item" 
+          wx:for="{{item.products}}" 
+          wx:key="id"
+          wx:for-item="product"
+        >
+          <view class="product-image">
+            <text class="book-emoji">{{product.icon}}</text>
+          </view>
+          <view class="product-info">
+            <text class="product-title">{{product.title}}</text>
+            <text class="product-desc">{{product.description}}</text>
+            <view class="product-footer">
+              <text class="product-price">¥{{product.price}}</text>
+              <text class="product-quantity">x{{product.quantity}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <!-- 订单底部信息 -->
+      <view class="order-footer">
+        <view class="order-info">
+          <text class="order-time">{{item.createTime}}</text>
+          <text class="order-total">共{{item.totalQuantity}}件商品 合计: ¥{{item.totalPrice}}</text>
+        </view>
+        <view class="order-actions">
+          <!-- 根据订单状态显示不同操作按钮 -->
+          <t-button 
+            wx:if="{{item.status === 'pending'}}"
+            size="small" 
+            theme="primary" 
+            bind:tap="payOrder"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            立即支付
+          </t-button>
+          <t-button 
+            wx:if="{{item.status === 'pending'}}"
+            size="small" 
+            variant="outline" 
+            bind:tap="cancelOrder"
+            data-id="{{item.id}}"
+            catch:tap="true"
+            style="margin-left: 16rpx;"
+          >
+            取消订单
+          </t-button>
+          
+          <t-button 
+            wx:if="{{item.status === 'shipping'}}"
+            size="small" 
+            variant="outline" 
+            bind:tap="contactSeller"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            联系卖家
+          </t-button>
+          
+          <t-button 
+            wx:if="{{item.status === 'receiving'}}"
+            size="small" 
+            theme="primary" 
+            bind:tap="confirmReceive"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            确认收货
+          </t-button>
+          <t-button 
+            wx:if="{{item.status === 'receiving'}}"
+            size="small" 
+            variant="outline" 
+            bind:tap="viewLogistics"
+            data-id="{{item.id}}"
+            catch:tap="true"
+            style="margin-left: 16rpx;"
+          >
+            查看物流
+          </t-button>
+          
+          <t-button 
+            wx:if="{{item.status === 'completed'}}"
+            size="small" 
+            theme="primary" 
+            bind:tap="writeReview"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            评价
+          </t-button>
+          <t-button 
+            wx:if="{{item.status === 'completed'}}"
+            size="small" 
+            variant="outline" 
+            bind:tap="buyAgain"
+            data-id="{{item.id}}"
+            catch:tap="true"
+            style="margin-left: 16rpx;"
+          >
+            再次购买
+          </t-button>
+          
+          <t-button 
+            wx:if="{{item.status === 'review'}}"
+            size="small" 
+            theme="primary" 
+            bind:tap="writeReview"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            写评价
+          </t-button>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-orders" wx:if="{{orders.length === 0}}">
+    <view class="empty-icon">📋</view>
+    <text class="empty-text">暂无{{currentTabLabel}}订单</text>
+    <text class="empty-desc">去看看有什么好书吧</text>
+    <t-button 
+      theme="primary" 
+      size="large" 
+      bind:tap="goShopping"
+      style="margin-top: 40rpx; width: 400rpx;"
+    >
+      去逛逛
+    </t-button>
+  </view>
+</scroll-view> 

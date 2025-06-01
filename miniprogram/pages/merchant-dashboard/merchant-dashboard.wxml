@@ -1,0 +1,183 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="商家后台">
+  <view slot="right" class="nav-actions">
+    <t-icon name="setting" size="40rpx" bind:tap="goToSettings" />
+  </view>
+</t-navbar>
+
+<scroll-view scroll-y class="dashboard-container">
+  <!-- 店铺概览 -->
+  <view class="shop-overview">
+    <view class="shop-header">
+      <t-avatar size="large" class="shop-avatar">
+        <text slot="content">{{shopInfo.name.charAt(0)}}</text>
+      </t-avatar>
+      <view class="shop-details">
+        <text class="shop-name">{{shopInfo.name}}</text>
+        <text class="shop-desc">{{shopInfo.description}}</text>
+        <view class="shop-status">
+          <t-tag theme="{{shopInfo.status === 'active' ? 'success' : 'warning'}}" size="small">
+            {{shopInfo.statusText}}
+          </t-tag>
+        </view>
+      </view>
+      <t-icon name="chevron-right" size="32rpx" color="#999" bind:tap="editShopInfo" />
+    </view>
+  </view>
+
+  <!-- 数据统计 -->
+  <view class="stats-section">
+    <view class="section-title">经营数据</view>
+    <view class="stats-grid">
+      <view class="stat-item" wx:for="{{stats}}" wx:key="type" bindtap="viewStatDetail" data-type="{{item.type}}">
+        <text class="stat-value">{{item.value}}</text>
+        <text class="stat-label">{{item.label}}</text>
+        <view class="stat-trend {{item.trend > 0 ? 'up' : 'down'}}" wx:if="{{item.trend}}">
+          <t-icon name="{{item.trend > 0 ? 'arrow-up' : 'arrow-down'}}" size="20rpx" />
+          <text>{{Math.abs(item.trend)}}%</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷操作 -->
+  <view class="quick-actions">
+    <view class="section-title">快捷操作</view>
+    <t-grid column="{{3}}" border="{{false}}">
+      <t-grid-item 
+        wx:for="{{quickActions}}" 
+        wx:key="id"
+        text="{{item.name}}"
+        bind:click="handleQuickAction"
+        data-action="{{item.action}}"
+      >
+        <view slot="icon" class="action-icon" style="background-color: {{item.bgColor}}">
+          <t-icon name="{{item.icon}}" size="48rpx" color="white" />
+        </view>
+      </t-grid-item>
+    </t-grid>
+  </view>
+
+  <!-- 待处理事项 -->
+  <view class="pending-tasks">
+    <view class="section-title">待处理事项</view>
+    <t-cell-group>
+      <t-cell 
+        wx:for="{{pendingTasks}}" 
+        wx:key="id"
+        title="{{item.title}}" 
+        note="{{item.desc}}"
+        leftIcon="{{item.icon}}"
+        arrow
+        bind:click="handleTask"
+        data-action="{{item.action}}"
+      >
+        <t-tag slot="note" theme="{{item.urgent ? 'danger' : 'primary'}}" size="small" wx:if="{{item.count > 0}}">
+          {{item.count}}
+        </t-tag>
+      </t-cell>
+    </t-cell-group>
+  </view>
+
+  <!-- 商品管理 -->
+  <view class="product-management">
+    <view class="section-header">
+      <text class="section-title">商品管理</text>
+      <view class="section-actions">
+        <t-button size="small" theme="primary" bind:tap="addProduct">
+          <t-icon name="add" size="28rpx" style="margin-right: 8rpx;" />
+          添加商品
+        </t-button>
+      </view>
+    </view>
+    
+    <view class="product-tabs">
+      <view 
+        class="tab-item {{currentTab === item.value ? 'active' : ''}}" 
+        wx:for="{{productTabs}}" 
+        wx:key="value"
+        bindtap="switchTab"
+        data-tab="{{item.value}}"
+      >
+        <text>{{item.label}}</text>
+        <view class="tab-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
+      </view>
+    </view>
+
+    <view class="product-list">
+      <view 
+        class="product-item" 
+        wx:for="{{products}}" 
+        wx:key="id"
+        bindtap="editProduct"
+        data-id="{{item.id}}"
+      >
+        <view class="product-image">
+          <text class="product-emoji">{{item.icon}}</text>
+        </view>
+        <view class="product-info">
+          <text class="product-title">{{item.title}}</text>
+          <text class="product-price">¥{{item.price}}</text>
+          <view class="product-stats">
+            <text class="product-sales">销量: {{item.sales}}</text>
+            <text class="product-stock">库存: {{item.stock}}</text>
+          </view>
+        </view>
+        <view class="product-actions">
+          <t-button 
+            size="small" 
+            variant="outline"
+            bind:tap="toggleProductStatus"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            {{item.status === 'active' ? '下架' : '上架'}}
+          </t-button>
+        </view>
+      </view>
+    </view>
+
+    <!-- 空状态 -->
+    <view class="empty-products" wx:if="{{products.length === 0}}">
+      <view class="empty-icon">📚</view>
+      <text class="empty-text">暂无商品</text>
+      <text class="empty-desc">快去添加您的第一本书吧</text>
+      <t-button theme="primary" size="large" bind:tap="addProduct" style="margin-top: 40rpx; width: 300rpx;">
+        添加商品
+      </t-button>
+    </view>
+  </view>
+
+  <!-- 最近订单 -->
+  <view class="recent-orders">
+    <view class="section-header">
+      <text class="section-title">最近订单</text>
+      <view class="view-all" bindtap="goToOrderManagement">
+        <text>查看全部</text>
+        <t-icon name="chevron-right" size="28rpx" />
+      </view>
+    </view>
+    
+    <view class="order-list">
+      <view 
+        class="order-item" 
+        wx:for="{{recentOrders}}" 
+        wx:key="id"
+        bindtap="viewOrderDetail"
+        data-id="{{item.id}}"
+      >
+        <view class="order-info">
+          <text class="order-number">订单号: {{item.orderNumber}}</text>
+          <text class="order-time">{{item.createTime}}</text>
+        </view>
+        <view class="order-products">
+          <text class="product-names">{{item.productNames}}</text>
+          <text class="order-amount">¥{{item.totalAmount}}</text>
+        </view>
+        <view class="order-status {{item.statusClass}}">
+          {{item.statusText}}
+        </view>
+      </view>
+    </view>
+  </view>
+</scroll-view> 

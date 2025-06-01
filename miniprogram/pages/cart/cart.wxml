@@ -1,0 +1,151 @@
+<!-- 顶部标题栏 -->
+<t-navbar title="购物车">
+  <view slot="right" class="edit-btn" bindtap="toggleEdit">
+    <text>{{isEditing ? '完成' : '编辑'}}</text>
+  </view>
+</t-navbar>
+
+<view class="cart-container">
+  <!-- 购物车商品列表 -->
+  <scroll-view scroll-y class="cart-content" wx:if="{{cartItems.length > 0}}">
+    <!-- 商家分组 -->
+    <view 
+      class="merchant-group" 
+      wx:for="{{merchants}}" 
+      wx:key="id"
+      wx:for-item="merchant"
+    >
+      <!-- 商家头部 -->
+      <view class="merchant-header">
+        <t-checkbox 
+          value="{{merchant.checked}}" 
+          bind:change="onMerchantCheck"
+          data-id="{{merchant.id}}"
+        />
+        <t-avatar size="small" style="margin: 0 24rpx;">
+          <text slot="content">{{merchant.name.charAt(0)}}</text>
+        </t-avatar>
+        <text class="merchant-name">{{merchant.name}}</text>
+      </view>
+
+      <!-- 商品列表 -->
+      <view class="cart-items">
+        <view 
+          class="cart-item" 
+          wx:for="{{merchant.items}}" 
+          wx:key="id"
+          wx:for-item="item"
+        >
+          <t-checkbox 
+            value="{{item.checked}}" 
+            bind:change="onItemCheck"
+            data-merchant-id="{{merchant.id}}"
+            data-item-id="{{item.id}}"
+          />
+          <view class="item-image">
+            <text class="book-emoji">{{item.icon}}</text>
+          </view>
+          <view class="item-info">
+            <text class="item-title">{{item.title}}</text>
+            <text class="item-desc">{{item.description}}</text>
+            <view class="item-footer">
+              <text class="item-price">¥{{item.price}}</text>
+              <t-stepper 
+                value="{{item.quantity}}" 
+                bind:change="onQuantityChange"
+                data-merchant-id="{{merchant.id}}"
+                data-item-id="{{item.id}}"
+                min="{{1}}"
+                max="{{item.stock}}"
+                size="small"
+              />
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 推荐商品 -->
+    <view class="recommend-section">
+      <view class="section-header">
+        <text class="section-title">为你推荐</text>
+      </view>
+      <view class="recommend-grid">
+        <view 
+          class="recommend-item" 
+          wx:for="{{recommendItems}}" 
+          wx:key="id"
+          bindtap="goToDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="recommend-image">
+            <text class="book-emoji">{{item.icon}}</text>
+          </view>
+          <text class="recommend-title">{{item.title}}</text>
+          <text class="recommend-price">¥{{item.price}}</text>
+          <t-button 
+            size="small" 
+            variant="outline" 
+            bind:tap="addToCart"
+            data-id="{{item.id}}"
+            catch:tap="true"
+          >
+            加入购物车
+          </t-button>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <!-- 空购物车状态 -->
+  <view class="empty-cart" wx:else>
+    <view class="empty-icon">🛒</view>
+    <text class="empty-text">购物车是空的</text>
+    <text class="empty-desc">快去挑选心仪的书籍吧</text>
+    <t-button 
+      theme="primary" 
+      size="large" 
+      bind:tap="goShopping"
+      style="margin-top: 40rpx; width: 400rpx;"
+    >
+      去逛逛
+    </t-button>
+  </view>
+</view>
+
+<!-- 底部结算栏 -->
+<view class="cart-footer" wx:if="{{cartItems.length > 0}}">
+  <view class="footer-content">
+    <view class="footer-left">
+      <t-checkbox 
+        value="{{allChecked}}" 
+        bind:change="onSelectAll"
+      />
+      <text class="select-all-text">全选</text>
+    </view>
+    <view class="footer-right">
+      <view class="total-info">
+        <text class="total-label">合计:</text>
+        <text class="total-price">¥{{totalPrice}}</text>
+      </view>
+    </view>
+  </view>
+  <view class="footer-actions">
+    <t-button 
+      wx:if="{{isEditing}}"
+      variant="outline"
+      bind:tap="moveToFavorites"
+      disabled="{{checkedCount === 0}}"
+    >
+      移入收藏 ({{checkedCount}})
+    </t-button>
+    <t-button 
+      theme="primary" 
+      bind:tap="{{isEditing ? 'deleteSelected' : 'checkout'}}"
+      disabled="{{checkedCount === 0}}"
+      style="flex: 1; margin-left: {{isEditing ? '24rpx' : '0'}};"
+    >
+      {{isEditing ? '删除' : '结算'}} ({{checkedCount}})
+    </t-button>
+  </view>
+</view> 

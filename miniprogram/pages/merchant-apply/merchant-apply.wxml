@@ -1,0 +1,153 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="申请成为商家" />
+
+<scroll-view scroll-y class="apply-container">
+  <!-- 申请说明 -->
+  <view class="apply-intro">
+    <view class="intro-icon">🏪</view>
+    <text class="intro-title">成为校园图书商家</text>
+    <text class="intro-desc">出售闲置书籍，获得收益，帮助更多同学</text>
+    
+    <view class="benefits-list">
+      <view class="benefit-item">
+        <t-icon name="check-circle-filled" size="32rpx" color="#10b981" />
+        <text>零成本开店，快速上架</text>
+      </view>
+      <view class="benefit-item">
+        <t-icon name="check-circle-filled" size="32rpx" color="#10b981" />
+        <text>专业运营指导</text>
+      </view>
+      <view class="benefit-item">
+        <t-icon name="check-circle-filled" size="32rpx" color="#10b981" />
+        <text>校内配送支持</text>
+      </view>
+      <view class="benefit-item">
+        <t-icon name="check-circle-filled" size="32rpx" color="#10b981" />
+        <text>收益即时到账</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 申请表单 -->
+  <view class="apply-form">
+    <view class="form-section">
+      <view class="section-title">个人信息</view>
+      
+      <t-cell-group>
+        <t-cell title="真实姓名" note="请填写真实姓名" required arrow bind:click="inputName">
+          <view class="cell-value">{{formData.realName || '请输入'}}</view>
+        </t-cell>
+        <t-cell title="学号" note="用于身份验证" required arrow bind:click="inputStudentId">
+          <view class="cell-value">{{formData.studentId || '请输入'}}</view>
+        </t-cell>
+        <t-cell title="所属学院" required arrow bind:click="selectCollege">
+          <view class="cell-value">{{formData.college || '请选择'}}</view>
+        </t-cell>
+        <t-cell title="年级专业" required arrow bind:click="selectMajor">
+          <view class="cell-value">{{formData.major || '请选择'}}</view>
+        </t-cell>
+        <t-cell title="联系手机" required arrow bind:click="inputPhone">
+          <view class="cell-value">{{formData.phone || '请输入'}}</view>
+        </t-cell>
+      </t-cell-group>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">店铺信息</view>
+      
+      <t-cell-group>
+        <t-cell title="店铺名称" note="2-20个字符" required arrow bind:click="inputShopName">
+          <view class="cell-value">{{formData.shopName || '请输入'}}</view>
+        </t-cell>
+        <t-cell title="经营类别" required arrow bind:click="selectCategory">
+          <view class="cell-value">{{formData.category || '请选择'}}</view>
+        </t-cell>
+        <t-cell title="预计上架书籍数量" arrow bind:click="inputBookCount">
+          <view class="cell-value">{{formData.bookCount || '请输入'}}</view>
+        </t-cell>
+      </t-cell-group>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">身份认证</view>
+      
+      <view class="upload-section">
+        <view class="upload-item">
+          <text class="upload-title">学生证照片 *</text>
+          <view class="upload-area" bindtap="uploadStudentCard">
+            <view class="upload-placeholder" wx:if="{{!formData.studentCardImage}}">
+              <t-icon name="add" size="64rpx" color="#999" />
+              <text>点击上传学生证</text>
+            </view>
+            <image wx:else src="{{formData.studentCardImage}}" class="upload-image" />
+          </view>
+        </view>
+        
+        <view class="upload-item">
+          <text class="upload-title">身份证照片 *</text>
+          <view class="upload-area" bindtap="uploadIdCard">
+            <view class="upload-placeholder" wx:if="{{!formData.idCardImage}}">
+              <t-icon name="add" size="64rpx" color="#999" />
+              <text>点击上传身份证</text>
+            </view>
+            <image wx:else src="{{formData.idCardImage}}" class="upload-image" />
+          </view>
+        </view>
+      </view>
+      
+      <view class="tips">
+        <t-icon name="info-circle" size="28rpx" color="#f59e0b" />
+        <text>请确保照片清晰，信息完整可见</text>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">申请说明</view>
+      
+      <view class="textarea-wrapper">
+        <textarea 
+          class="apply-desc" 
+          placeholder="请简单介绍一下您的情况，比如为什么想成为商家、有哪些书籍资源等（选填）"
+          value="{{formData.description}}"
+          bind:input="onDescInput"
+          maxlength="200"
+        />
+        <view class="char-count">{{formData.description.length || 0}}/200</view>
+      </view>
+    </view>
+
+    <!-- 协议同意 -->
+    <view class="agreement-section">
+      <view class="agreement-item" bindtap="toggleAgreement">
+        <t-icon 
+          name="{{agreedToTerms ? 'check-rectangle-filled' : 'check-rectangle'}}" 
+          size="40rpx" 
+          color="{{agreedToTerms ? '#3b82f6' : '#d1d5db'}}"
+        />
+        <text class="agreement-text">
+          我已阅读并同意
+          <text class="link" bindtap="viewMerchantAgreement" catch:tap="true">《商家入驻协议》</text>
+          和
+          <text class="link" bindtap="viewPrivacyPolicy" catch:tap="true">《隐私政策》</text>
+        </text>
+      </view>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 底部提交按钮 -->
+<view class="submit-footer">
+  <t-button 
+    theme="primary" 
+    size="large" 
+    block
+    bind:tap="submitApplication"
+    loading="{{submitting}}"
+    disabled="{{!canSubmit}}"
+  >
+    {{submitting ? '提交中...' : '提交申请'}}
+  </t-button>
+  <view class="submit-tips">
+    <text>提交后1-3个工作日内会有审核结果通知</text>
+  </view>
+</view> 

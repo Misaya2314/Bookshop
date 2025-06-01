@@ -1,0 +1,99 @@
+<!-- 顶部搜索栏 -->
+<view class="home-header">
+  <t-search 
+    model:value="{{searchValue}}" 
+    placeholder="搜索书名、作者..." 
+    bind:submit="onSearch"
+    bind:focus="onSearchFocus"
+  />
+</view>
+
+<!-- 轮播图区域 -->
+<view class="banner-section">
+  <t-swiper 
+    height="320"
+    autoplay="{{true}}"
+    interval="{{3000}}"
+    indicator-dots="{{true}}"
+  >
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <view class="banner-item" style="background: {{item.bgColor}}">
+        <view class="banner-content">
+          <text class="banner-title">{{item.title}}</text>
+          <text class="banner-subtitle">{{item.subtitle}}</text>
+        </view>
+      </view>
+    </swiper-item>
+  </t-swiper>
+</view>
+
+<!-- 快捷入口 -->
+<view class="quick-menu">
+  <t-grid column="{{4}}" border="{{false}}">
+    <t-grid-item 
+      wx:for="{{categories}}" 
+      wx:key="id"
+      text="{{item.name}}"
+      bind:click="goToCategory"
+      data-id="{{item.id}}"
+    >
+      <view slot="icon" class="category-icon" style="background-color: {{item.bgColor}}">
+        <text class="category-emoji">{{item.icon}}</text>
+      </view>
+    </t-grid-item>
+  </t-grid>
+</view>
+
+<!-- 热门推荐 -->
+<view class="recommend-section">
+  <view class="section-header">
+    <text class="section-title">热门推荐</text>
+  </view>
+  <view class="book-list">
+    <view 
+      class="book-item" 
+      wx:for="{{hotBooks}}" 
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="book-cover">
+        <text class="book-emoji">{{item.icon}}</text>
+      </view>
+      <view class="book-info">
+        <text class="book-title">{{item.title}}</text>
+        <text class="book-author">{{item.author}}</text>
+        <view class="book-footer">
+          <text class="book-price">¥{{item.price}}</text>
+          <view class="book-stats">
+            <text class="book-rating">⭐ {{item.rating}}</text>
+            <text class="book-sales">已售{{item.sales}}本</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 为你推荐 -->
+<view class="recommend-grid-section">
+  <view class="section-header">
+    <text class="section-title">为你推荐</text>
+  </view>
+  <view class="grid-books">
+    <view 
+      class="grid-book-item" 
+      wx:for="{{recommendBooks}}" 
+      wx:key="id"
+      bindtap="goToDetail"
+      data-id="{{item.id}}"
+    >
+      <view class="grid-book-cover">
+        <text class="book-emoji">{{item.icon}}</text>
+      </view>
+      <text class="grid-book-title">{{item.title}}</text>
+      <text class="grid-book-author">{{item.author}}</text>
+      <text class="grid-book-price">¥{{item.price}}</text>
+    </view>
+  </view>
+</view> 

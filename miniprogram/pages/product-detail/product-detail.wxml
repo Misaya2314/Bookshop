@@ -1,0 +1,159 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="商品详情">
+  <view slot="right" class="nav-actions">
+    <t-icon name="share" size="40rpx" bind:tap="onShare" />
+    <t-icon name="more" size="40rpx" bind:tap="showMore" style="margin-left: 24rpx;" />
+  </view>
+</t-navbar>
+
+<scroll-view scroll-y class="detail-container">
+  <!-- 商品图片轮播 -->
+  <view class="product-images">
+    <t-swiper 
+      height="640"
+      autoplay="{{false}}"
+      indicator-dots="{{true}}"
+      current="{{currentImageIndex}}"
+      bind:change="onImageChange"
+    >
+      <swiper-item wx:for="{{product.images}}" wx:key="*this">
+        <view class="image-item">
+          <text class="product-emoji">{{item}}</text>
+        </view>
+      </swiper-item>
+    </t-swiper>
+    <view class="image-indicator">{{currentImageIndex + 1}}/{{product.images.length}}</view>
+  </view>
+
+  <!-- 商品基本信息 -->
+  <view class="product-info">
+    <view class="price-section">
+      <text class="current-price">¥{{product.price}}</text>
+      <view class="original-price" wx:if="{{product.originalPrice}}">
+        <text class="original-text">原价: ¥{{product.originalPrice}}</text>
+        <t-tag theme="danger" size="small">{{product.discount}}折</t-tag>
+      </view>
+    </view>
+    <text class="product-title">{{product.title}}</text>
+    <text class="product-subtitle">{{product.subtitle}}</text>
+    <view class="product-stats">
+      <view class="stat-item">
+        <t-icon name="star-filled" size="28rpx" color="#fbbf24" />
+        <text>{{product.rating}}分</text>
+      </view>
+      <view class="stat-item">
+        <text>已售{{product.sales}}本</text>
+      </view>
+      <view class="stat-item">
+        <text>库存: {{product.stock}}本</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 商品参数 -->
+  <view class="product-params">
+    <view class="section-title">商品信息</view>
+    <t-cell-group>
+      <t-cell 
+        wx:for="{{product.params}}" 
+        wx:key="label"
+        title="{{item.label}}" 
+        note="{{item.value}}"
+        border="{{false}}"
+      />
+    </t-cell-group>
+  </view>
+
+  <!-- 卖家信息 -->
+  <view class="seller-info">
+    <view class="section-title">卖家信息</view>
+    <view class="seller-card" bindtap="goToSellerProfile">
+      <t-avatar size="large">
+        <text slot="content">{{product.seller.name.charAt(0)}}</text>
+      </t-avatar>
+      <view class="seller-details">
+        <text class="seller-name">{{product.seller.name}}</text>
+        <text class="seller-desc">{{product.seller.college}} · {{product.seller.grade}}</text>
+        <view class="seller-stats">
+          <text class="seller-rating">⭐ {{product.seller.rating}}分</text>
+          <text class="seller-sales">已售{{product.seller.totalSales}}本</text>
+        </view>
+      </view>
+      <t-icon name="chevron-right" size="32rpx" color="#999" />
+    </view>
+  </view>
+
+  <!-- 配送信息 -->
+  <view class="delivery-info">
+    <view class="section-title">配送信息</view>
+    <t-cell-group>
+      <t-cell title="配送方式" note="校内配送，预计1-2天送达" leftIcon="delivery" />
+      <t-cell title="配送地址" note="{{selectedAddress || '点击选择配送地址'}}" leftIcon="location" arrow bind:click="selectAddress" />
+      <t-cell title="运费" note="免运费" leftIcon="discount" />
+    </t-cell-group>
+  </view>
+
+  <!-- 商品详情 -->
+  <view class="product-description">
+    <view class="section-title">商品详情</view>
+    <view class="description-content">
+      <text class="description-text">{{product.description}}</text>
+    </view>
+  </view>
+
+  <!-- 评价区域 -->
+  <view class="reviews-section">
+    <view class="section-header">
+      <text class="section-title">买家评价</text>
+      <view class="view-all" bindtap="goToAllReviews">
+        <text>查看全部</text>
+        <t-icon name="chevron-right" size="28rpx" />
+      </view>
+    </view>
+    <view class="review-item" wx:for="{{product.reviews}}" wx:key="id">
+      <view class="review-header">
+        <t-avatar size="small">
+          <text slot="content">{{item.userName.charAt(0)}}</text>
+        </t-avatar>
+        <view class="review-user">
+          <text class="user-name">{{item.userName}}</text>
+          <text class="review-time">{{item.time}}</text>
+        </view>
+        <view class="review-rating">
+          <block wx:for="{{5}}" wx:key="*this" wx:for-index="star">
+            <t-icon 
+              name="star-filled" 
+              size="24rpx" 
+              color="{{star < item.rating ? '#fbbf24' : '#e5e7eb'}}" 
+            />
+          </block>
+        </view>
+      </view>
+      <text class="review-content">{{item.content}}</text>
+    </view>
+  </view>
+</scroll-view>
+
+<!-- 底部操作栏 -->
+<view class="product-actions">
+  <view class="action-buttons">
+    <view class="action-icons">
+      <view class="action-icon" bindtap="toggleFavorite">
+        <t-icon name="{{product.isFavorite ? 'heart-filled' : 'heart'}}" size="48rpx" color="{{product.isFavorite ? '#ff4757' : '#999'}}" />
+        <text class="icon-label">{{product.isFavorite ? '已收藏' : '收藏'}}</text>
+      </view>
+      <view class="action-icon" bindtap="contactSeller">
+        <t-icon name="chat" size="48rpx" color="#999" />
+        <text class="icon-label">客服</text>
+      </view>
+    </view>
+    <view class="purchase-buttons">
+      <t-button theme="warning" bind:tap="addToCart" style="flex: 1; margin-right: 24rpx;">
+        加入购物车
+      </t-button>
+      <t-button theme="primary" bind:tap="buyNow" style="flex: 1;">
+        立即购买
+      </t-button>
+    </view>
+  </view>
+</view> 

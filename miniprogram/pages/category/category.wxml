@@ -1,0 +1,58 @@
+<!-- 顶部标题栏 -->
+<t-navbar title="图书分类" />
+
+<view class="category-container">
+  <!-- 左侧一级分类 -->
+  <view class="category-sidebar">
+    <scroll-view scroll-y class="sidebar-scroll">
+      <view 
+        class="category-item {{selectedCategory === item.id ? 'active' : ''}}"
+        wx:for="{{categories}}" 
+        wx:key="id"
+        bindtap="selectCategory"
+        data-id="{{item.id}}"
+      >
+        <view class="category-icon">{{item.icon}}</view>
+        <text class="category-name">{{item.name}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 右侧内容区 -->
+  <view class="content-area">
+    <!-- 二级分类标签 -->
+    <view class="sub-category-tabs">
+      <t-tabs value="{{selectedSubCategory}}" bind:change="onSubCategoryChange">
+        <t-tab-panel 
+          wx:for="{{subCategories}}" 
+          wx:key="id"
+          label="{{item.name}}" 
+          value="{{item.id}}"
+        />
+      </t-tabs>
+    </view>
+
+    <!-- 商品列表 -->
+    <scroll-view scroll-y class="product-scroll">
+      <view class="product-grid">
+        <view 
+          class="product-item" 
+          wx:for="{{books}}" 
+          wx:key="id"
+          bindtap="goToDetail"
+          data-id="{{item.id}}"
+        >
+          <view class="product-image">
+            <text class="book-emoji">{{item.icon}}</text>
+          </view>
+          <text class="product-title">{{item.title}}</text>
+          <text class="product-author">{{item.author}}</text>
+          <view class="product-footer">
+            <text class="product-price">¥{{item.price}}</text>
+            <text class="product-sales">已售{{item.sales}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+</view> 
