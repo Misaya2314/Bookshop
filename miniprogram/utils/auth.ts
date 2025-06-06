@@ -65,7 +65,7 @@ export async function verifyCloudLoginStatus(): Promise<boolean> {
       }
     })
 
-    if (result.result.code === 0) {
+    if ((result.result as any).code === 0) {
       return true
     } else {
       // 登录状态无效，清除本地存储

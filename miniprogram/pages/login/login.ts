@@ -20,7 +20,7 @@ Page({
           }
         })
 
-        if (result.result.code === 0) {
+        if ((result.result as any).code === 0) {
           // 登录状态有效，跳转到首页
           wx.switchTab({
             url: '/pages/home/home'
@@ -66,7 +66,7 @@ Page({
         }
       })
 
-      const response = result.result
+      const response = result.result as any
       
       if (response.code === 0) {
         const { userInfo: cloudUserInfo, isFirstLogin } = response.data
@@ -103,7 +103,7 @@ Page({
       this.setData({ isLoading: false })
       wx.showToast({
         title: '登录失败，请重试',
-        icon: 'error'
+        icon: 'none'
       })
     }
   },

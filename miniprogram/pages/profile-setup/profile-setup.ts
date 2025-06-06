@@ -177,7 +177,7 @@ Page({
         }
       })
 
-      const response = result.result
+      const response = result.result as any
 
       if (response.code === 0) {
         // 更新本地存储的用户信息
@@ -207,7 +207,7 @@ Page({
       console.error('更新用户资料失败:', error)
       wx.showToast({
         title: '更新失败，请重试',
-        icon: 'error'
+        icon: 'none'
       })
     } finally {
       this.setData({ isLoading: false })

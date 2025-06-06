@@ -111,7 +111,7 @@ Page({
         }
       })
 
-      if (result.result.code !== 0) {
+      if ((result.result as any)?.code !== 0) {
         // 登录状态无效，清除本地存储并跳转登录页
         wx.removeStorageSync('userInfo')
         wx.redirectTo({

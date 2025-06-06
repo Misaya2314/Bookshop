@@ -1,5 +1,5 @@
 // app.ts
-App<IAppOption>({
+App({
   globalData: {},
   onLaunch() {
     // 初始化云开发

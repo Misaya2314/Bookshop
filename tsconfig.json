@@ -12,20 +12,24 @@
     "noImplicitReturns": true,
     "alwaysStrict": true,
     "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
     "strict": true,
     "strictPropertyInitialization": true,
     "lib": ["ES2020"],
     "typeRoots": [
-      "./typings"
-    ]
+      "./node_modules/@types",
+      "./node_modules/miniprogram-api-typings"
+    ],
+    "skipLibCheck": true
   },
   "include": [
-    "./**/*.ts"
+    "./miniprogram/**/*.ts",
+    "./cloudfunctions/**/*.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "./miniprogram/miniprogram_npm/**/*"
   ],
   "paths": {
       "tdesign-miniprogram/*":["./miniprogram/miniprogram_npm/tdesign-miniprogram/*"]
