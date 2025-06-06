@@ -76,13 +76,51 @@ Page({
 
   onLoad() {
     console.log('首页加载完成')
+    this.checkLoginStatus()
   },
 
   onShow() {
+    // 每次显示页面时也检查登录状态
+    this.checkLoginStatus()
+    
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
         selected: 0
       })
+    }
+  },
+
+  // 检查登录状态
+  async checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo')
+    
+    if (!userInfo || !userInfo.openid) {
+      // 用户未登录，跳转到登录页
+      wx.redirectTo({
+        url: '/pages/login/login'
+      })
+      return
+    }
+
+    try {
+      // 验证云端登录状态
+      const result = await wx.cloud.callFunction({
+        name: 'login',
+        data: {
+          action: 'getUserInfo'
+        }
+      })
+
+      if (result.result.code !== 0) {
+        // 登录状态无效，清除本地存储并跳转登录页
+        wx.removeStorageSync('userInfo')
+        wx.redirectTo({
+          url: '/pages/login/login'
+        })
+      }
+    } catch (error) {
+      console.error('验证登录状态失败:', error)
+      // 网络错误时暂时不跳转，允许用户继续使用
     }
   },
 

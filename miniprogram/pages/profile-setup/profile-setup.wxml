@@ -1,0 +1,111 @@
+<view class="profile-setup-container">
+  <!-- 顶部标题 -->
+  <view class="setup-header">
+    <text class="setup-title">完善个人资料</text>
+    <text class="setup-subtitle">为了给您提供更好的服务体验</text>
+  </view>
+
+  <!-- 表单区域 -->
+  <view class="form-container">
+    <!-- 手机号 -->
+    <view class="form-item">
+      <text class="form-label">手机号</text>
+      <input 
+        class="form-input" 
+        type="number" 
+        placeholder="请输入11位手机号"
+        value="{{formData.phone}}"
+        bindinput="onPhoneInput"
+        maxlength="11"
+      />
+    </view>
+
+    <!-- 学院 -->
+    <view class="form-item">
+      <text class="form-label">所在学院</text>
+      <picker 
+        mode="selector" 
+        range="{{colleges}}" 
+        value="{{formData.college}}"
+        bindchange="onCollegeChange"
+      >
+        <view class="form-picker">
+          <text class="{{formData.college ? '' : 'placeholder'}}">
+            {{formData.college || '请选择所在学院'}}
+          </text>
+          <t-icon name="chevron-right" size="16" color="#c0c4cc" />
+        </view>
+      </picker>
+    </view>
+
+    <!-- 专业 -->
+    <view class="form-item">
+      <text class="form-label">专业</text>
+      <input 
+        class="form-input" 
+        type="text" 
+        placeholder="请输入您的专业"
+        value="{{formData.major}}"
+        bindinput="onMajorInput"
+      />
+    </view>
+
+    <!-- 年级 -->
+    <view class="form-item">
+      <text class="form-label">年级</text>
+      <picker 
+        mode="selector" 
+        range="{{grades}}" 
+        value="{{formData.grade}}"
+        bindchange="onGradeChange"
+      >
+        <view class="form-picker">
+          <text class="{{formData.grade ? '' : 'placeholder'}}">
+            {{formData.grade || '请选择年级'}}
+          </text>
+          <t-icon name="chevron-right" size="16" color="#c0c4cc" />
+        </view>
+      </picker>
+    </view>
+
+    <!-- 校区 -->
+    <view class="form-item">
+      <text class="form-label">校区</text>
+      <picker 
+        mode="selector" 
+        range="{{campuses}}" 
+        value="{{formData.campus}}"
+        bindchange="onCampusChange"
+      >
+        <view class="form-picker">
+          <text class="{{formData.campus ? '' : 'placeholder'}}">
+            {{formData.campus || '请选择校区'}}
+          </text>
+          <t-icon name="chevron-right" size="16" color="#c0c4cc" />
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 按钮区域 -->
+  <view class="button-container">
+    <t-button 
+      theme="primary" 
+      size="large" 
+      loading="{{isLoading}}"
+      bindtap="submitForm"
+      block
+    >
+      完成
+    </t-button>
+    
+    <view class="skip-button" bindtap="skipSetup">
+      <text>暂时跳过</text>
+    </view>
+  </view>
+
+  <!-- 提示信息 -->
+  <view class="tips">
+    <text class="tips-text">* 完善资料后可以享受更精准的推荐服务</text>
+  </view>
+</view> 

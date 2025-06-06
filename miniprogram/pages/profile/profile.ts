@@ -1,5 +1,8 @@
+import { checkLoginStatus, getCurrentUser, logout } from '../../utils/auth'
+
 Page({
   data: {
+    isLoggedIn: false,
     userInfo: {
       name: '张同学',
       college: '计算机学院',
@@ -42,15 +45,48 @@ Page({
         selected: 3
       })
     }
+    this.loadUserInfo()
     this.loadOrderStats()
   },
 
   loadUserInfo() {
-    // 这里应该从服务器或本地存储加载用户信息
-    const userInfo = wx.getStorageSync('userInfo')
-    if (userInfo) {
-      this.setData({ userInfo })
+    const isLoggedIn = checkLoginStatus()
+    this.setData({ isLoggedIn })
+    
+    if (isLoggedIn) {
+      const userInfo = getCurrentUser()
+      if (userInfo) {
+        this.setData({ 
+          userInfo: {
+            name: userInfo.nickName || userInfo.name || '未设置',
+            college: userInfo.college || '未设置',
+            grade: userInfo.grade || '未设置',
+            phone: userInfo.phone || '未设置',
+            isMerchant: userInfo.isMerchant || false
+          }
+        })
+      }
     }
+  },
+
+  // 前往登录页面
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    })
+  },
+
+  // 退出登录
+  handleLogout() {
+    wx.showModal({
+      title: '确认退出',
+      content: '确定要退出登录吗？',
+      success: (res) => {
+        if (res.confirm) {
+          logout()
+        }
+      }
+    })
   },
 
   loadOrderStats() {

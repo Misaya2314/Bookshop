@@ -1,20 +1,35 @@
 <!-- 用户信息卡片 -->
 <view class="profile-header">
-  <view class="user-info">
+  <!-- 已登录状态 -->
+  <view class="user-info" wx:if="{{isLoggedIn}}">
     <t-avatar size="large" class="user-avatar">
       <text slot="content">👤</text>
     </t-avatar>
     <view class="user-details">
-      <text class="user-name">{{userInfo.name || '张同学'}}</text>
-      <text class="user-school">{{userInfo.college || '计算机学院'}} · {{userInfo.grade || '大三'}}</text>
-      <text class="user-phone">手机号：{{userInfo.phone || '138****5678'}}</text>
+      <text class="user-name">{{userInfo.name}}</text>
+      <text class="user-school">{{userInfo.college}} · {{userInfo.grade}}</text>
+      <text class="user-phone">手机号：{{userInfo.phone}}</text>
+    </view>
+    <view class="logout-btn" bindtap="handleLogout">
+      <t-icon name="logout" size="32rpx" color="#ffffff" />
+    </view>
+  </view>
+  
+  <!-- 未登录状态 -->
+  <view class="login-prompt" wx:else bindtap="goToLogin">
+    <t-avatar size="large" class="user-avatar">
+      <text slot="content">👤</text>
+    </t-avatar>
+    <view class="login-details">
+      <text class="login-title">点击登录</text>
+      <text class="login-subtitle">登录后享受完整服务</text>
     </view>
     <t-icon name="chevron-right" size="40rpx" color="#ffffff" />
   </view>
 </view>
 
 <!-- 订单统计 -->
-<view class="order-stats">
+<view class="order-stats" wx:if="{{isLoggedIn}}">
   <view class="stats-header">
     <text class="stats-title">我的订单</text>
     <view class="view-all" bindtap="goToOrders">
@@ -36,6 +51,16 @@
       </view>
       <text class="stat-label">{{item.label}}</text>
     </view>
+  </view>
+</view>
+
+<!-- 未登录提示 -->
+<view class="login-tips" wx:else>
+  <view class="tips-content">
+    <text class="tips-title">登录后查看订单信息</text>
+    <t-button theme="primary" size="medium" bindtap="goToLogin">
+      立即登录
+    </t-button>
   </view>
 </view>
 

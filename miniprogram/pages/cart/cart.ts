@@ -68,14 +68,34 @@ Page({
   },
 
   onLoad() {
+    this.checkLoginStatus()
     this.updateCartItems()
     this.calculateTotal()
   },
 
   onShow() {
+    this.checkLoginStatus()
+    
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
         selected: 2
+      })
+    }
+  },
+
+  // 检查登录状态
+  checkLoginStatus() {
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo || !userInfo.openid) {
+      wx.showModal({
+        title: '需要登录',
+        content: '请先登录后再使用购物车功能',
+        showCancel: false,
+        success: () => {
+          wx.switchTab({
+            url: '/pages/profile/profile'
+          })
+        }
       })
     }
   },
