@@ -143,7 +143,7 @@ Page({
   contactSeller() {
     wx.showModal({
       title: '联系卖家',
-      content: '是否要联系卖家"' + this.data.product.seller.name + '"？',
+      content: '是否要联系卖家"' + this.data.product.seller.name + '"?',
       success: (res) => {
         if (res.confirm) {
           wx.showToast({

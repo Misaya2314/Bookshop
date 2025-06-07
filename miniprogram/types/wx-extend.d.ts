@@ -23,5 +23,23 @@ declare namespace WechatMiniprogram {
       fail?: () => void
       complete?: () => void
     }): void
+
+    /** 选择媒体文件 */
+    chooseMedia(option: {
+      count?: number
+      mediaType?: string[]
+      sourceType?: string[]
+      success?: (result: {
+        tempFiles: Array<{
+          tempFilePath: string
+          size: number
+          duration?: number
+          height?: number
+          width?: number
+        }>
+      }) => void
+      fail?: (error: any) => void
+      complete?: () => void
+    }): void
   }
 } 

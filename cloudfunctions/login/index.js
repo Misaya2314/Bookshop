@@ -78,17 +78,29 @@ async function handleLogin(wxContext, userInfo) {
       // 老用户，更新登录信息
       userData = userQuery.data[0]
       
-      // 更新用户头像和昵称（可能会变化）
-      await db.collection('users').doc(userData._id).update({
-        data: {
-          nickName: userInfo?.nickName || userData.nickName,
-          avatarUrl: userInfo?.avatarUrl || userData.avatarUrl,
-          updateTime: currentTime
-        }
-      })
+      // 只在昵称变化时更新，保留用户自定义头像
+      const updates = {
+        updateTime: currentTime
+      }
+      
+      // 只有当用户没有自定义头像时，才使用微信头像
+      if (userInfo?.nickName && userInfo.nickName !== userData.nickName) {
+        updates.nickName = userInfo.nickName
+        userData.nickName = userInfo.nickName
+      }
+      
+      // 只有当用户没有设置头像或头像为空时，才使用微信头像
+      if (userInfo?.avatarUrl && (!userData.avatarUrl || userData.avatarUrl === '')) {
+        updates.avatarUrl = userInfo.avatarUrl
+        userData.avatarUrl = userInfo.avatarUrl
+      }
 
-      userData.nickName = userInfo?.nickName || userData.nickName
-      userData.avatarUrl = userInfo?.avatarUrl || userData.avatarUrl
+      if (Object.keys(updates).length > 1) { // 除了updateTime还有其他更新
+        await db.collection('users').doc(userData._id).update({
+          data: updates
+        })
+      }
+      
       userData.updateTime = currentTime
     }
 
@@ -116,7 +128,7 @@ async function updateUserProfile(wxContext, profileData) {
     }
 
     // 更新允许的字段
-    const allowedFields = ['phone', 'college', 'major', 'grade', 'campus']
+    const allowedFields = ['nickName', 'phone', 'college', 'major', 'grade', 'campus', 'avatarUrl']
     allowedFields.forEach(field => {
       if (profileData[field] !== undefined) {
         updateData[field] = profileData[field]

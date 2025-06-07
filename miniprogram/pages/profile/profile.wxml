@@ -2,8 +2,8 @@
 <view class="profile-header">
   <!-- 已登录状态 -->
   <view class="user-info" wx:if="{{isLoggedIn}}">
-    <t-avatar size="large" class="user-avatar">
-      <text slot="content">👤</text>
+    <t-avatar size="large" class="user-avatar" image="{{userInfo.avatarUrl}}">
+      <text slot="content" wx:if="{{!userInfo.avatarUrl}}">👤</text>
     </t-avatar>
     <view class="user-details">
       <text class="user-name">{{userInfo.name}}</text>

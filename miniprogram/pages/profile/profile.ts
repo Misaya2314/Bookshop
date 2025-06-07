@@ -8,7 +8,8 @@ Page({
       college: '计算机学院',
       grade: '大三',
       phone: '138****5678',
-      isMerchant: false
+      isMerchant: false,
+      avatarUrl: ''
     },
     orderStats: [
       { type: 'pending', label: '待支付', icon: 'time', color: '#f59e0b', count: 1 },
@@ -55,17 +56,18 @@ Page({
     
     if (isLoggedIn) {
       const userInfo = getCurrentUser()
-      if (userInfo) {
+    if (userInfo) {
         this.setData({ 
           userInfo: {
             name: userInfo.nickName || userInfo.name || '未设置',
             college: userInfo.college || '未设置',
             grade: userInfo.grade || '未设置',
             phone: userInfo.phone || '未设置',
-            isMerchant: userInfo.isMerchant || false
+            isMerchant: userInfo.isMerchant || false,
+            avatarUrl: userInfo.avatarUrl || ''
           }
         })
-      }
+    }
     }
   },
 

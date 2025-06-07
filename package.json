@@ -10,7 +10,7 @@
     "tdesign-miniprogram": "^1.9.4"
   },
   "devDependencies": {
-    "miniprogram-api-typings": "^2.8.3-1",
+    "miniprogram-api-typings": "^4.0.7",
     "typescript": "^5.8.3"
   }
 }

@@ -22,9 +22,9 @@ Page({
 
         if ((result.result as any).code === 0) {
           // 登录状态有效，跳转到首页
-          wx.switchTab({
-            url: '/pages/home/home'
-          })
+      wx.switchTab({
+        url: '/pages/home/home'
+      })
         } else {
           // 登录状态无效，清除本地存储
           wx.removeStorageSync('userInfo')
@@ -39,10 +39,10 @@ Page({
   wxLogin() {
     this.setData({ isLoading: true })
 
-    // 获取用户信息
-    wx.getUserProfile({
-      desc: '用于完善用户资料',
-      success: (userRes) => {
+          // 获取用户信息
+          wx.getUserProfile({
+            desc: '用于完善用户资料',
+            success: (userRes) => {
         this.handleCloudLogin(userRes.userInfo)
       },
       fail: () => {
@@ -71,18 +71,18 @@ Page({
       if (response.code === 0) {
         const { userInfo: cloudUserInfo, isFirstLogin } = response.data
 
-        // 保存用户信息到本地存储
+      // 保存用户信息到本地存储
         wx.setStorageSync('userInfo', cloudUserInfo)
 
-        this.setData({ isLoading: false })
+      this.setData({ isLoading: false })
 
-        wx.showToast({
-          title: '登录成功',
+      wx.showToast({
+        title: '登录成功',
           icon: 'success'
         })
 
         // 根据是否首次登录决定跳转页面
-        setTimeout(() => {
+          setTimeout(() => {
           if (isFirstLogin || !cloudUserInfo.phone || !cloudUserInfo.college) {
             // 首次登录或资料不完整，跳转到资料完善页面
             wx.navigateTo({
@@ -94,10 +94,10 @@ Page({
               url: '/pages/home/home'
             })
           }
-        }, 1000)
+          }, 1000)
       } else {
         throw new Error(response.message || '登录失败')
-      }
+        }
     } catch (error) {
       console.error('云函数登录失败:', error)
       this.setData({ isLoading: false })
