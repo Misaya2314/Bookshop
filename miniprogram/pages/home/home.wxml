@@ -10,21 +10,49 @@
 
 <!-- 轮播图区域 -->
 <view class="banner-section">
-  <t-swiper 
-    height="320"
+  <!-- 使用原生swiper，更稳定 -->
+  <swiper 
+    class="banner-swiper"
     autoplay="{{true}}"
     interval="{{3000}}"
     indicator-dots="{{true}}"
+    indicator-color="rgba(255,255,255,0.5)"
+    indicator-active-color="#ffffff"
+    circular="{{true}}"
+    bindchange="onSwiperChange"
+    bindanimationfinish="onSwiperAnimationFinish"
+    wx:if="{{banners && banners.length > 0}}"
   >
     <swiper-item wx:for="{{banners}}" wx:key="id">
-      <view class="banner-item" style="background: {{item.bgColor}}">
+      <view class="banner-item" style="background: {{item.bgColor}}" bindtap="onBannerTap" data-link="{{item.link}}" data-index="{{index}}">
+        <!-- 如果有图片，显示图片 -->
+        <image 
+          wx:if="{{item.image}}" 
+          src="{{item.image}}" 
+          class="banner-bg-image" 
+          mode="aspectFill"
+          binderror="onBannerImageError"
+          bindload="onBannerImageLoad"
+        />
+        
+        <!-- 内容覆盖层 -->
         <view class="banner-content">
           <text class="banner-title">{{item.title}}</text>
           <text class="banner-subtitle">{{item.subtitle}}</text>
         </view>
       </view>
     </swiper-item>
-  </t-swiper>
+  </swiper>
+  
+  <!-- 备用显示：如果轮播图数据为空 -->
+  <view class="banner-placeholder" wx:else>
+    <view class="banner-item" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%)">
+      <view class="banner-content">
+        <text class="banner-title">欢迎来到学长二手书</text>
+        <text class="banner-subtitle">发现更多好书</text>
+      </view>
+    </view>
+  </view>
 </view>
 
 <!-- 快捷入口 -->
@@ -53,9 +81,9 @@
     <view 
       class="book-item" 
       wx:for="{{hotBooks}}" 
-      wx:key="id"
+      wx:key="_id"
       bindtap="goToDetail"
-      data-id="{{item.id}}"
+      data-id="{{item._id}}"
     >
       <view class="book-cover">
         <text class="book-emoji">{{item.icon}}</text>
@@ -84,9 +112,9 @@
     <view 
       class="grid-book-item" 
       wx:for="{{recommendBooks}}" 
-      wx:key="id"
+      wx:key="_id"
       bindtap="goToDetail"
-      data-id="{{item.id}}"
+      data-id="{{item._id}}"
     >
       <view class="grid-book-cover">
         <text class="book-emoji">{{item.icon}}</text>

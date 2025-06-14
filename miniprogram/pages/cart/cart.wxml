@@ -33,14 +33,14 @@
         <view 
           class="cart-item" 
           wx:for="{{merchant.items}}" 
-          wx:key="id"
+          wx:key="_id"
           wx:for-item="item"
         >
           <t-checkbox 
             value="{{item.checked}}" 
             bind:change="onItemCheck"
             data-merchant-id="{{merchant.id}}"
-            data-item-id="{{item.id}}"
+            data-item-id="{{item._id}}"
           />
           <view class="item-image">
             <text class="book-emoji">{{item.icon}}</text>
@@ -54,7 +54,7 @@
                 value="{{item.quantity}}" 
                 bind:change="onQuantityChange"
                 data-merchant-id="{{merchant.id}}"
-                data-item-id="{{item.id}}"
+                data-item-id="{{item._id}}"
                 min="{{1}}"
                 max="{{item.stock}}"
                 size="small"

@@ -2,6 +2,7 @@ Page({
   data: {
     selectedCategory: 1,
     selectedSubCategory: 'all',
+    loading: false,
     categories: [
       { id: 1, name: '计算机', icon: '💻' },
       { id: 2, name: '医学', icon: '⚕️' },
@@ -17,68 +18,9 @@ Page({
       { id: 'reference', name: '参考书' },
       { id: 'exam', name: '考研资料' }
     ],
-    books: [
-      {
-        id: 1,
-        title: 'Java核心技术',
-        author: '凯·S·霍斯特曼',
-        price: 45,
-        sales: 156,
-        icon: '📖',
-        categoryId: 1,
-        subCategoryId: 'textbook'
-      },
-      {
-        id: 2,
-        title: '算法导论',
-        author: 'Thomas H.Cormen',
-        price: 68,
-        sales: 89,
-        icon: '📘',
-        categoryId: 1,
-        subCategoryId: 'textbook'
-      },
-      {
-        id: 3,
-        title: '深入理解计算机系统',
-        author: 'Randal E.Bryant',
-        price: 52,
-        sales: 76,
-        icon: '📗',
-        categoryId: 1,
-        subCategoryId: 'reference'
-      },
-      {
-        id: 4,
-        title: '数据结构与算法分析',
-        author: 'Mark Allen Weiss',
-        price: 42,
-        sales: 124,
-        icon: '📙',
-        categoryId: 1,
-        subCategoryId: 'textbook'
-      },
-      {
-        id: 5,
-        title: '设计模式',
-        author: 'Gang of Four',
-        price: 38,
-        sales: 95,
-        icon: '📚',
-        categoryId: 1,
-        subCategoryId: 'reference'
-      },
-      {
-        id: 6,
-        title: '计算机网络',
-        author: '谢希仁',
-        price: 35,
-        sales: 156,
-        icon: '📕',
-        categoryId: 1,
-        subCategoryId: 'textbook'
-      }
-    ]
+    books: [],
+    page: 1,
+    hasMore: true
   },
 
   onLoad() {
@@ -109,19 +51,54 @@ Page({
     this.loadBooks()
   },
 
-  loadBooks() {
-    // 这里应该从服务器加载对应分类的书籍数据
-    // 目前使用模拟数据
-    const { selectedCategory, selectedSubCategory } = this.data
-    let filteredBooks = this.data.books.filter((book: any) => book.categoryId === selectedCategory)
+  async loadBooks(refresh = true) {
+    const { selectedCategory, selectedSubCategory, page, books } = this.data
     
-    if (selectedSubCategory !== 'all') {
-      filteredBooks = filteredBooks.filter((book: any) => book.subCategoryId === selectedSubCategory)
+    if (refresh) {
+      this.setData({ loading: true, page: 1, books: [], hasMore: true })
     }
 
-    this.setData({
-      books: filteredBooks
-    })
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: 'getBooksByCategory',
+          categoryId: selectedCategory,
+          subCategoryId: selectedSubCategory,
+          page: refresh ? 1 : page,
+          pageSize: 20
+        }
+      })
+
+      const response = result.result as any
+      if (response.code === 0) {
+        const newBooks = response.data.books
+        this.setData({
+          books: refresh ? newBooks : [...books, ...newBooks],
+          hasMore: response.data.hasMore,
+          page: refresh ? 2 : page + 1
+        })
+      } else {
+        wx.showToast({
+          title: response.message || '加载失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('加载图书失败:', error)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    } finally {
+      this.setData({ loading: false })
+    }
+  },
+
+  // 加载更多图书
+  async loadMoreBooks() {
+    if (!this.data.hasMore || this.data.loading) return
+    await this.loadBooks(false)
   },
 
   goToDetail(e: any) {
@@ -129,5 +106,17 @@ Page({
     wx.navigateTo({
       url: `/pages/product-detail/product-detail?id=${bookId}`
     })
+  },
+
+  // 下拉刷新
+  onPullDownRefresh() {
+    this.loadBooks().finally(() => {
+      wx.stopPullDownRefresh()
+    })
+  },
+
+  // 上拉加载更多
+  onReachBottom() {
+    this.loadMoreBooks()
   }
 }) 

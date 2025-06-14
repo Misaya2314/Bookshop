@@ -108,9 +108,9 @@
       <view 
         class="product-item" 
         wx:for="{{products}}" 
-        wx:key="id"
+        wx:key="_id"
         bindtap="editProduct"
-        data-id="{{item.id}}"
+        data-id="{{item._id}}"
       >
         <view class="product-image">
           <text class="product-emoji">{{item.icon}}</text>
@@ -128,7 +128,7 @@
             size="small" 
             variant="outline"
             bind:tap="toggleProductStatus"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             {{item.status === 'active' ? '下架' : '上架'}}
@@ -180,4 +180,116 @@
       </view>
     </view>
   </view>
-</scroll-view> 
+</scroll-view>
+
+<!-- 添加/编辑商品弹窗 -->
+<t-popup 
+  visible="{{showProductModal}}" 
+  bind:visible-change="onProductModalChange"
+  placement="bottom"
+>
+  <view class="product-modal">
+    <view class="modal-header">
+      <text class="modal-title">{{editingProduct ? '编辑商品' : '添加商品'}}</text>
+      <t-icon name="close" size="44rpx" bind:tap="closeProductModal" />
+    </view>
+    
+    <scroll-view scroll-y class="modal-content">
+      <view class="form-section">
+        <t-input 
+          label="书名" 
+          model:value="{{productForm.title}}" 
+          placeholder="请输入书名"
+          required
+        />
+        
+        <t-input 
+          label="作者" 
+          model:value="{{productForm.author}}" 
+          placeholder="请输入作者"
+          required
+        />
+        
+        <t-input 
+          label="价格" 
+          model:value="{{productForm.price}}" 
+          placeholder="请输入价格"
+          type="number"
+          required
+        />
+        
+        <t-input 
+          label="库存" 
+          model:value="{{productForm.stock}}" 
+          placeholder="请输入库存数量"
+          type="number"
+          required
+        />
+        
+        <t-input 
+          label="图标" 
+          model:value="{{productForm.icon}}" 
+          placeholder="请输入表情符号作为图标"
+        />
+        
+        <!-- 图片上传区域 -->
+        <view class="form-item">
+          <view class="form-label">商品图片</view>
+          <view class="image-upload-area">
+            <view class="uploaded-images" wx:if="{{productForm.images && productForm.images.length > 0}}">
+              <view 
+                class="image-item" 
+                wx:for="{{productForm.images}}" 
+                wx:key="*this"
+              >
+                <image 
+                  src="{{item}}" 
+                  mode="aspectFill"
+                  class="uploaded-image"
+                />
+                <view 
+                  class="delete-image" 
+                  bindtap="deleteImage"
+                  data-index="{{index}}"
+                >
+                  ×
+                </view>
+              </view>
+            </view>
+            
+            <view 
+              class="upload-btn" 
+              bindtap="uploadImage"
+              wx:if="{{!productForm.images || productForm.images.length < 3}}"
+            >
+              <text class="upload-icon">+</text>
+              <text class="upload-text">添加图片</text>
+            </view>
+          </view>
+        </view>
+        
+        <t-picker 
+          label="分类"
+          value="{{productForm.categoryId}}"
+          bind:change="onCategoryChange"
+          range="{{categoryOptions}}"
+          range-key="name"
+        />
+        
+        <t-textarea 
+          label="描述" 
+          model:value="{{productForm.description}}" 
+          placeholder="请输入商品描述"
+          maxlength="500"
+        />
+      </view>
+    </scroll-view>
+    
+    <view class="modal-footer">
+      <t-button theme="default" block bindtap="closeProductModal">取消</t-button>
+      <t-button theme="primary" block bindtap="saveProduct" loading="{{saving}}" style="margin-top: 16rpx;">
+        {{editingProduct ? '保存' : '添加'}}
+      </t-button>
+    </view>
+  </view>
+</t-popup> 

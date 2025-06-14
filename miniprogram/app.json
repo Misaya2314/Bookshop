@@ -10,7 +10,8 @@
     "pages/merchant-apply/merchant-apply",
     "pages/merchant-dashboard/merchant-dashboard",
     "pages/profile-setup/profile-setup",
-    "pages/user-info/user-info"
+    "pages/user-info/user-info",
+    "pages/search/search"
   ],
   "window": {
     "navigationBarTextStyle": "black",

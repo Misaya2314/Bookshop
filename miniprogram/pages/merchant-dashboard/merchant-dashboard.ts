@@ -56,7 +56,8 @@ Page({
       { label: '下架', value: 'inactive', count: 3 },
       { label: '售罄', value: 'sold_out', count: 1 }
     ],
-    allProducts: [
+    allProducts: [] as any[], // 将从云端加载真实数据
+    mockProducts: [
       {
         id: 1,
         title: 'Java核心技术 卷I',
@@ -104,6 +105,26 @@ Page({
       }
     ],
     products: [] as any[],
+    showProductModal: false,
+    editingProduct: null as any,
+    productForm: {
+      title: '',
+      author: '',
+      price: '',
+      stock: '',
+      categoryId: '1',
+      description: '',
+      icon: '📚',
+      images: [] as string[]
+    },
+    categoryOptions: [
+      { id: '1', name: '文学小说' },
+      { id: '2', name: '历史传记' },
+      { id: '3', name: '科学技术' },
+      { id: '4', name: '经济管理' },
+      { id: '5', name: '教育考试' }
+    ],
+    saving: false,
     recentOrders: [
       {
         id: 'order001',
@@ -136,7 +157,63 @@ Page({
   },
 
   onLoad() {
-    this.filterProducts('all')
+    this.loadMerchantBooks()
+  },
+
+  // 加载商家图书
+  async loadMerchantBooks() {
+    wx.showLoading({ title: '加载中...' })
+    
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: 'getMerchantBooks',
+          status: 'all',
+          page: 1,
+          pageSize: 100
+        }
+      })
+
+      const response = result.result as any
+      if (response.code === 0) {
+        const books = response.data.books
+        this.setData({
+          allProducts: books,
+          products: books
+        })
+        
+        // 更新标签页数量统计
+        this.updateTabCounts(books)
+      } else {
+        wx.showToast({
+          title: response.message || '加载失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('加载商品失败:', error)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 更新标签页统计
+  updateTabCounts(books: any[]) {
+    const activeCount = books.filter(book => book.status === 'active').length
+    const inactiveCount = books.filter(book => book.status === 'inactive').length
+    const soldOutCount = books.filter(book => book.status === 'sold_out').length
+    
+    this.setData({
+      'productTabs[0].count': books.length,
+      'productTabs[1].count': activeCount,
+      'productTabs[2].count': inactiveCount,
+      'productTabs[3].count': soldOutCount
+    })
   },
 
   // 切换商品标签
@@ -239,9 +316,116 @@ Page({
 
   // 添加商品
   addProduct() {
-    wx.navigateTo({
-      url: '/pages/product-add/product-add'
+    this.setData({
+      showProductModal: true,
+      editingProduct: null,
+      productForm: {
+        title: '',
+        author: '',
+        price: '',
+        stock: '',
+        categoryId: '1',
+        description: '',
+        icon: '📚',
+        images: []
+      }
     })
+  },
+
+  // 关闭商品模态框
+  closeProductModal() {
+    this.setData({
+      showProductModal: false,
+      editingProduct: null,
+      saving: false
+    })
+  },
+
+  // 模态框显示状态变化
+  onProductModalChange(e: any) {
+    if (!e.detail.visible) {
+      this.closeProductModal()
+    }
+  },
+
+  // 分类选择改变
+  onCategoryChange(e: any) {
+    const categoryOptions = this.data.categoryOptions
+    this.setData({
+      'productForm.categoryId': categoryOptions[e.detail.value].id
+    })
+  },
+
+  // 保存商品
+  async saveProduct() {
+    const { productForm, editingProduct } = this.data
+    
+    // 基本验证
+    if (!productForm.title.trim()) {
+      wx.showToast({ title: '请输入书名', icon: 'none' })
+      return
+    }
+    if (!productForm.author.trim()) {
+      wx.showToast({ title: '请输入作者', icon: 'none' })
+      return
+    }
+    if (!productForm.price || parseFloat(productForm.price) <= 0) {
+      wx.showToast({ title: '请输入正确的价格', icon: 'none' })
+      return
+    }
+    if (!productForm.stock || parseInt(productForm.stock) < 0) {
+      wx.showToast({ title: '请输入正确的库存', icon: 'none' })
+      return
+    }
+
+    this.setData({ saving: true })
+
+    try {
+      const bookData = {
+        title: productForm.title.trim(),
+        author: productForm.author.trim(),
+        price: parseFloat(productForm.price),
+        stock: parseInt(productForm.stock),
+        categoryId: productForm.categoryId,
+        description: productForm.description.trim(),
+        icon: productForm.icon,
+        images: productForm.images,
+        status: 'active'
+      }
+
+      const action = editingProduct ? 'updateBook' : 'addBook'
+      const data = editingProduct 
+        ? { ...bookData, bookId: editingProduct._id }
+        : bookData
+
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: { action, ...data }
+      })
+
+      const response = result.result as any
+      if (response.code === 0) {
+        wx.showToast({
+          title: editingProduct ? '保存成功' : '添加成功',
+          icon: 'success'
+        })
+        this.closeProductModal()
+        this.loadMerchantBooks() // 重新加载商品列表
+      } else {
+        wx.showToast({
+          title: response.message || '操作失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('保存商品失败:', error)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    } finally {
+      this.setData({ saving: false })
+    }
   },
 
   // 编辑商品
@@ -255,36 +439,115 @@ Page({
   // 切换商品状态
   toggleProductStatus(e: any) {
     const productId = e.currentTarget.dataset.id
-    const product = this.data.allProducts.find(p => p.id === productId)
+    const product = this.data.allProducts.find(p => p._id === productId || p.id === productId)
     
     if (!product) return
 
-    const newStatus = product.status === 'active' ? 'inactive' : 'active'
-    const statusText = newStatus === 'active' ? '上架' : '下架'
-
-    wx.showModal({
-      title: `确认${statusText}`,
-      content: `确定要${statusText}商品"${product.title}"吗？`,
+    wx.showActionSheet({
+      itemList: ['上架', '下架', '删除'],
       success: (res) => {
-        if (res.confirm) {
-          // 更新商品状态
-          const allProducts = this.data.allProducts.map(p => {
-            if (p.id === productId) {
-              return { ...p, status: newStatus }
-            }
-            return p
-          })
-
-          this.setData({ allProducts })
-          this.filterProducts(this.data.currentTab)
-
-          wx.showToast({
-            title: `${statusText}成功`,
-            icon: 'success'
-          })
+        if (res.tapIndex === 0) {
+          // 上架
+          this.updateProductStatus(productId, 'active')
+        } else if (res.tapIndex === 1) {
+          // 下架
+          this.updateProductStatus(productId, 'inactive')
+        } else if (res.tapIndex === 2) {
+          // 删除
+          this.showDeleteConfirm(productId)
         }
       }
     })
+  },
+
+  // 更新商品状态
+  async updateProductStatus(productId: string, status: string) {
+    wx.showLoading({ title: '处理中...' })
+    
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: 'updateBook',
+          bookId: productId,
+          status: status
+        }
+      })
+
+      const response = result.result as any
+      if (response.code === 0) {
+        wx.showToast({
+          title: '更新成功',
+          icon: 'success'
+        })
+        // 重新加载商品列表
+        this.loadMerchantBooks()
+      } else {
+        wx.showToast({
+          title: response.message || '更新失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('更新商品状态失败:', error)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 显示删除确认
+  showDeleteConfirm(productId: string) {
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后无法恢复，确定要删除这本图书吗？',
+      success: (res) => {
+        if (res.confirm) {
+          this.deleteProduct(productId)
+        }
+      }
+    })
+  },
+
+  // 删除商品
+  async deleteProduct(productId: string) {
+    wx.showLoading({ title: '删除中...' })
+    
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: 'deleteBook',
+          bookId: productId
+        }
+      })
+
+      const response = result.result as any
+      if (response.code === 0) {
+        wx.showToast({
+          title: '删除成功',
+          icon: 'success'
+        })
+        // 重新加载商品列表
+        this.loadMerchantBooks()
+      } else {
+        wx.showToast({
+          title: response.message || '删除失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('删除商品失败:', error)
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   // 订单管理
@@ -307,5 +570,62 @@ Page({
     wx.navigateTo({
       url: '/pages/merchant-settings/merchant-settings'
     })
+  },
+
+  // 上传图片
+  uploadImage() {
+    wx.chooseImage({
+      count: 3, // 最多选择3张图片
+      sizeType: ['compressed'],
+      sourceType: ['album', 'camera'],
+      success: (res) => {
+        wx.showLoading({
+          title: '上传中...'
+        });
+        
+        const uploadTasks = res.tempFilePaths.map(filePath => {
+          const cloudPath = `book-covers/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.jpg`;
+          return wx.cloud.uploadFile({
+            cloudPath,
+            filePath
+          });
+        });
+        
+        Promise.all(uploadTasks)
+          .then(results => {
+            const fileIDs = results.map(result => result.fileID);
+            const currentImages = this.data.productForm.images || [];
+            
+            this.setData({
+              'productForm.images': [...currentImages, ...fileIDs]
+            });
+            
+            wx.hideLoading();
+            wx.showToast({
+              title: '上传成功',
+              icon: 'success'
+            });
+          })
+          .catch(error => {
+            wx.hideLoading();
+            wx.showToast({
+              title: '上传失败',
+              icon: 'error'
+            });
+            console.error('图片上传失败:', error);
+          });
+      }
+    });
+  },
+
+  // 删除图片
+  deleteImage(e: any) {
+    const index = e.currentTarget.dataset.index;
+    const images = [...this.data.productForm.images];
+    images.splice(index, 1);
+    
+    this.setData({
+      'productForm.images': images
+    });
   }
 }) 

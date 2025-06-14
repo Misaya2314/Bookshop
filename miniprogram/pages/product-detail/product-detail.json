@@ -1,4 +1,8 @@
 {
+  "navigationBarTitleText": "商品详情",
+  "enablePullDownRefresh": true,
+  "backgroundTextStyle": "dark",
+  "backgroundColor": "#ffffff",
   "usingComponents": {
     "t-navbar": "tdesign-miniprogram/navbar/navbar",
     "t-swiper": "tdesign-miniprogram/swiper/swiper",
@@ -9,7 +13,5 @@
     "t-tag": "tdesign-miniprogram/tag/tag",
     "t-avatar": "tdesign-miniprogram/avatar/avatar",
     "t-rate": "tdesign-miniprogram/rate/rate"
-  },
-  "navigationStyle": "custom",
-  "backgroundColor": "#ffffff"
+  }
 } 

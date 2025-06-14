@@ -7,29 +7,54 @@
 </t-navbar>
 
 <scroll-view scroll-y class="detail-container">
-  <!-- 商品图片轮播 -->
-  <view class="product-images">
-    <t-swiper 
-      height="640"
-      autoplay="{{false}}"
-      indicator-dots="{{true}}"
-      current="{{currentImageIndex}}"
-      bind:change="onImageChange"
-    >
-      <swiper-item wx:for="{{product.images}}" wx:key="*this">
-        <view class="image-item">
-          <text class="product-emoji">{{item}}</text>
-        </view>
-      </swiper-item>
-    </t-swiper>
-    <view class="image-indicator">{{currentImageIndex + 1}}/{{product.images.length}}</view>
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <text>加载中...</text>
   </view>
+
+  <!-- 商品详情内容 -->
+  <view wx:if="{{product && !loading}}">
+    <!-- 商品图片轮播 -->
+    <view class="product-images">
+      <!-- 如果有真实图片，显示图片轮播 -->
+      <block wx:if="{{product.images && product.images.length > 0 && product.images[0] !== '📖' && product.images[0] !== '📚'}}">
+        <swiper 
+          class="image-swiper"
+          autoplay="{{false}}"
+          indicator-dots="{{true}}"
+          indicator-color="rgba(255,255,255,0.5)"
+          indicator-active-color="#fff"
+          circular="{{true}}"
+          current="{{currentImageIndex}}"
+          bindchange="onImageChange"
+        >
+          <swiper-item wx:for="{{product.images}}" wx:key="*this" wx:for-index="imgIndex">
+            <image 
+              src="{{item}}" 
+              mode="aspectFit"
+              class="product-image"
+              data-index="{{imgIndex}}"
+              bindload="onImageLoad"
+              binderror="onImageError"
+            />
+          </swiper-item>
+        </swiper>
+        <view class="image-indicator">{{currentImageIndex + 1}}/{{product.images.length}}</view>
+      </block>
+      
+      <!-- 如果没有图片或者是emoji，显示默认图标 -->
+      <block wx:else>
+        <view class="default-image">
+          <text class="product-emoji">{{product.images && product.images[0] ? product.images[0] : '📚'}}</text>
+        </view>
+      </block>
+    </view>
 
   <!-- 商品基本信息 -->
   <view class="product-info">
     <view class="price-section">
       <text class="current-price">¥{{product.price}}</text>
-      <view class="original-price" wx:if="{{product.originalPrice}}">
+      <view class="original-price" wx:if="{{product.originalPrice && product.originalPrice > product.price}}">
         <text class="original-text">原价: ¥{{product.originalPrice}}</text>
         <t-tag theme="danger" size="small">{{product.discount}}折</t-tag>
       </view>
@@ -110,7 +135,7 @@
         <t-icon name="chevron-right" size="28rpx" />
       </view>
     </view>
-    <view class="review-item" wx:for="{{product.reviews}}" wx:key="id">
+    <view class="review-item" wx:for="{{product.reviews}}" wx:key="_id">
       <view class="review-header">
         <t-avatar size="small">
           <text slot="content">{{item.userName.charAt(0)}}</text>
@@ -131,6 +156,13 @@
       </view>
       <text class="review-content">{{item.content}}</text>
     </view>
+  </view>
+  </view>
+
+  <!-- 错误状态 -->
+  <view class="error-container" wx:if="{{!loading && !product}}">
+    <text>商品信息加载失败</text>
+    <button bindtap="retry">重试</button>
   </view>
 </scroll-view>
 

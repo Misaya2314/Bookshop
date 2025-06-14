@@ -1,0 +1,100 @@
+<!-- 搜索栏 -->
+<view class="search-header">
+  <t-search 
+    model:value="{{searchValue}}" 
+    placeholder="搜索书名、作者..." 
+    bind:submit="onSearch"
+    bind:clear="onClear"
+    autofocus="{{true}}"
+  />
+</view>
+
+<!-- 搜索建议/历史 -->
+<view class="search-content" wx:if="{{!searchValue && !searched}}">
+  <!-- 搜索历史 -->
+  <view class="search-section" wx:if="{{searchHistory.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">搜索历史</text>
+      <text class="clear-btn" bindtap="clearHistory">清除</text>
+    </view>
+    <view class="tag-list">
+      <view 
+        class="tag-item" 
+        wx:for="{{searchHistory}}" 
+        wx:key="*this"
+        bindtap="searchKeyword"
+        data-keyword="{{item}}"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 热门搜索 -->
+  <view class="search-section">
+    <view class="section-header">
+      <text class="section-title">热门搜索</text>
+    </view>
+    <view class="tag-list">
+      <view 
+        class="tag-item hot-tag" 
+        wx:for="{{hotKeywords}}" 
+        wx:key="*this"
+        bindtap="searchKeyword"
+        data-keyword="{{item}}"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 搜索结果 -->
+<view class="search-results" wx:if="{{searched}}">
+  <!-- 结果统计 -->
+  <view class="result-stats">
+    找到 {{total}} 个结果
+  </view>
+
+  <!-- 加载状态 -->
+  <view class="loading" wx:if="{{loading}}">
+    <text>搜索中...</text>
+  </view>
+
+  <!-- 书籍列表 -->
+  <view class="book-list" wx:if="{{!loading}}">
+    <view 
+      class="book-item" 
+      wx:for="{{books}}" 
+      wx:key="_id"
+      bindtap="goToDetail"
+      data-id="{{item._id}}"
+    >
+      <view class="book-cover">
+        <text class="book-emoji">{{item.icon || '📖'}}</text>
+      </view>
+      <view class="book-info">
+        <text class="book-title">{{item.title}}</text>
+        <text class="book-author">{{item.author}}</text>
+        <view class="book-footer">
+          <text class="book-price">¥{{item.price}}</text>
+          <view class="book-stats">
+            <text class="book-sales">已售{{item.sales}}本</text>
+            <text class="book-stock">库存{{item.stock}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 无结果 -->
+  <view class="no-result" wx:if="{{!loading && books.length === 0}}">
+    <text class="no-result-text">未找到相关图书</text>
+    <text class="no-result-tip">试试其他关键词吧</text>
+  </view>
+
+  <!-- 加载更多 -->
+  <view class="load-more" wx:if="{{hasMore && !loading && books.length > 0}}">
+    <text bindtap="loadMore">加载更多</text>
+  </view>
+</view> 

@@ -5,8 +5,8 @@
 <view class="order-tabs">
   <t-tabs value="{{currentTab}}" bind:change="onTabChange">
     <t-tab-panel 
-      wx:for="{{tabs}}" 
-      wx:key="value"
+      wx:for="{{tabList}}" 
+      wx:key="_id"
       label="{{item.label}}" 
       value="{{item.value}}"
     />
@@ -20,9 +20,9 @@
     <view 
       class="order-item" 
       wx:for="{{orders}}" 
-      wx:key="id"
+      wx:key="_id"
       bindtap="goToOrderDetail"
-      data-id="{{item.id}}"
+      data-id="{{item._id}}"
     >
       <!-- 订单头部 -->
       <view class="order-header">
@@ -40,7 +40,7 @@
         <view 
           class="product-item" 
           wx:for="{{item.products}}" 
-          wx:key="id"
+          wx:key="_id"
           wx:for-item="product"
         >
           <view class="product-image">
@@ -70,7 +70,7 @@
             size="small" 
             theme="primary" 
             bind:tap="payOrder"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             立即支付
@@ -80,7 +80,7 @@
             size="small" 
             variant="outline" 
             bind:tap="cancelOrder"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
             style="margin-left: 16rpx;"
           >
@@ -92,7 +92,7 @@
             size="small" 
             variant="outline" 
             bind:tap="contactSeller"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             联系卖家
@@ -103,7 +103,7 @@
             size="small" 
             theme="primary" 
             bind:tap="confirmReceive"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             确认收货
@@ -113,7 +113,7 @@
             size="small" 
             variant="outline" 
             bind:tap="viewLogistics"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
             style="margin-left: 16rpx;"
           >
@@ -125,7 +125,7 @@
             size="small" 
             theme="primary" 
             bind:tap="writeReview"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             评价
@@ -135,7 +135,7 @@
             size="small" 
             variant="outline" 
             bind:tap="buyAgain"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
             style="margin-left: 16rpx;"
           >
@@ -147,7 +147,7 @@
             size="small" 
             theme="primary" 
             bind:tap="writeReview"
-            data-id="{{item.id}}"
+            data-id="{{item._id}}"
             catch:tap="true"
           >
             写评价

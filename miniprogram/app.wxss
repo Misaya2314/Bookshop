@@ -1,4 +1,33 @@
 /**app.wxss**/
+
+/* 全局字体设置 */
+page {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+  line-height: 1.6;
+}
+
+/* TDesign图标字体备用方案 */
+.t-icon {
+  font-family: "t-icon", -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
+/* 解决TDesign字体加载失败的问题 */
+@font-face {
+  font-family: "t-icon";
+  src: local("t-icon"),
+    url("https://tdesign.gtimg.com/icon/0.3.2/fonts/t.woff2") format("woff2"),
+    url("https://tdesign.gtimg.com/icon/0.3.2/fonts/t.woff") format("woff");
+  font-display: swap; /* 字体交换策略，提高性能 */
+}
+
+/* 备用图标样式 - 当字体加载失败时使用 */
+.t-icon::before {
+  font-family: "t-icon", sans-serif;
+}
+
+/* 全局容器样式 */
 .container {
   height: 100%;
   display: flex;
@@ -7,4 +36,169 @@
   justify-content: space-between;
   padding: 200rpx 0;
   box-sizing: border-box;
-} 
+}
+
+/* 通用按钮样式 */
+.btn-primary {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8rpx;
+  padding: 24rpx 48rpx;
+  font-size: 28rpx;
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1rpx solid #d1d5db;
+  border-radius: 8rpx;
+  padding: 24rpx 48rpx;
+  font-size: 28rpx;
+}
+
+/* 通用布局 */
+.flex {
+  display: flex;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 通用间距 */
+.mt-1 {
+  margin-top: 20rpx;
+}
+.mt-2 {
+  margin-top: 40rpx;
+}
+.mt-3 {
+  margin-top: 60rpx;
+}
+.mb-1 {
+  margin-bottom: 20rpx;
+}
+.mb-2 {
+  margin-bottom: 40rpx;
+}
+.mb-3 {
+  margin-bottom: 60rpx;
+}
+.ml-1 {
+  margin-left: 20rpx;
+}
+.ml-2 {
+  margin-left: 40rpx;
+}
+.mr-1 {
+  margin-right: 20rpx;
+}
+.mr-2 {
+  margin-right: 40rpx;
+}
+
+.p-1 {
+  padding: 20rpx;
+}
+.p-2 {
+  padding: 40rpx;
+}
+.p-3 {
+  padding: 60rpx;
+}
+.px-1 {
+  padding-left: 20rpx;
+  padding-right: 20rpx;
+}
+.px-2 {
+  padding-left: 40rpx;
+  padding-right: 40rpx;
+}
+.py-1 {
+  padding-top: 20rpx;
+  padding-bottom: 20rpx;
+}
+.py-2 {
+  padding-top: 40rpx;
+  padding-bottom: 40rpx;
+}
+
+/* 通用文本样式 */
+.text-center {
+  text-align: center;
+}
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+
+.text-xs {
+  font-size: 20rpx;
+}
+.text-sm {
+  font-size: 24rpx;
+}
+.text-base {
+  font-size: 28rpx;
+}
+.text-lg {
+  font-size: 32rpx;
+}
+.text-xl {
+  font-size: 36rpx;
+}
+.text-2xl {
+  font-size: 40rpx;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+.font-medium {
+  font-weight: 500;
+}
+.font-semibold {
+  font-weight: 600;
+}
+.font-bold {
+  font-weight: 700;
+}
+
+/* 通用颜色 */
+.text-primary {
+  color: #3b82f6;
+}
+.text-secondary {
+  color: #6b7280;
+}
+.text-success {
+  color: #10b981;
+}
+.text-warning {
+  color: #f59e0b;
+}
+.text-danger {
+  color: #ef4444;
+}
+.text-gray {
+  color: #9ca3af;
+}
+.text-dark {
+  color: #1f2937;
+}
+
+.container {
+  padding: 0;
+  margin: 0;
+}
