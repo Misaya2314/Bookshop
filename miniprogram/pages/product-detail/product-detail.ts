@@ -26,7 +26,6 @@ interface ProductData {
 Page({
   data: {
     currentImageIndex: 0,
-    selectedAddress: '',
     loading: true,
     product: null as ProductData | null
   },
@@ -302,24 +301,7 @@ Page({
     }
   },
 
-  selectAddress() {
-    // 保存当前页面实例到全局，用于回调
-    getApp().globalData = getApp().globalData || {}
-    getApp().globalData.productDetailPage = this
-    
-    wx.navigateTo({
-      url: '/pages/address/address?type=select'
-    })
-  },
 
-  // 添加用于接收地址选择结果的方法
-  onAddressSelected(address: string) {
-    this.setData({ selectedAddress: address })
-    wx.showToast({
-      title: '地址设置成功',
-      icon: 'success'
-    })
-  },
 
   async addToCart() {
     if (!this.data.product) {
@@ -391,10 +373,27 @@ Page({
       })
       return
     }
-    
-    if (!this.data.selectedAddress) {
+
+    // 检查登录状态
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo || !userInfo.openid) {
+      wx.showModal({
+        title: '需要登录',
+        content: '请先登录后再购买',
+        showCancel: false,
+        success: () => {
+          wx.switchTab({
+            url: '/pages/profile/profile'
+          })
+        }
+      })
+      return
+    }
+
+    // 检查库存
+    if (this.data.product.stock <= 0) {
       wx.showToast({
-        title: '请先选择收货地址',
+        title: '商品库存不足',
         icon: 'none'
       })
       return
@@ -409,8 +408,7 @@ Page({
         quantity: 1,
         seller: this.data.product.seller
       }],
-      totalPrice: this.data.product.price,
-      address: this.data.selectedAddress
+      totalPrice: this.data.product.price
     }
 
     wx.navigateTo({

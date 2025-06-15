@@ -12,14 +12,14 @@ Page({
       avatarUrl: ''
     },
     orderStats: [
-      { type: 'pending', label: '待支付', icon: 'time', color: '#f59e0b', count: 1 },
-      { type: 'shipping', label: '待发货', icon: 'order', color: '#3b82f6', count: 2 },
-      { type: 'receiving', label: '待收货', icon: 'delivery', color: '#10b981', count: 1 },
+      { type: 'pending', label: '待支付', icon: 'time', color: '#f59e0b', count: 0 },
+      { type: 'paid', label: '待发货', icon: 'shop', color: '#3b82f6', count: 0 },
+      { type: 'shipping', label: '待收货', icon: 'chevron-right', color: '#10b981', count: 0 },
       { type: 'completed', label: '已完成', icon: 'check-circle', color: '#6b7280', count: 0 }
     ],
     tradeMenus: [
       { id: 1, title: '我的收藏', icon: 'heart', action: 'favorites' },
-      { id: 2, title: '客服中心', icon: 'service', action: 'service' },
+      { id: 2, title: '客服中心', icon: 'chat', action: 'service' },
       { id: 3, title: '收货地址', icon: 'location', action: 'address' }
     ],
     settingMenus: [
@@ -83,9 +83,54 @@ Page({
     })
   },
 
-  loadOrderStats() {
-    // 这里应该从服务器加载用户的订单统计数据
-    // 目前使用模拟数据
+  async loadOrderStats() {
+    if (!checkLoginStatus()) {
+      return
+    }
+
+    try {
+      // 获取所有订单数据
+      const result = await wx.cloud.callFunction({
+        name: 'orders',
+        data: {
+          action: 'getOrders',
+          status: 'all'
+        }
+      })
+
+      const response = result.result as any
+      
+      if (response.code === 0) {
+        const orders = response.data || []
+        
+        // 统计各状态订单数量
+        const stats = {
+          pending: 0,    // 待支付
+          paid: 0,       // 待发货
+          shipping: 0,   // 待收货
+          completed: 0   // 已完成
+        }
+
+        orders.forEach((order: any) => {
+          if (stats.hasOwnProperty(order.status)) {
+            stats[order.status as keyof typeof stats]++
+          }
+        })
+
+        // 更新订单统计数据
+        const updatedOrderStats = this.data.orderStats.map(item => ({
+          ...item,
+          count: stats[item.type as keyof typeof stats] || 0
+        }))
+
+        this.setData({
+          orderStats: updatedOrderStats
+        })
+      }
+    } catch (error) {
+      console.error('加载订单统计失败:', error)
+      // 静默失败，不影响用户体验
+    }
   },
 
   goToOrders(e?: any) {

@@ -108,15 +108,7 @@
     </view>
   </view>
 
-  <!-- 配送信息 -->
-  <view class="delivery-info">
-    <view class="section-title">配送信息</view>
-    <t-cell-group>
-      <t-cell title="配送方式" note="校内配送，预计1-2天送达" leftIcon="delivery" />
-      <t-cell title="配送地址" note="{{selectedAddress || '点击选择配送地址'}}" leftIcon="location" arrow bind:click="selectAddress" />
-      <t-cell title="运费" note="免运费" leftIcon="discount" />
-    </t-cell-group>
-  </view>
+
 
   <!-- 商品详情 -->
   <view class="product-description">

@@ -1,20 +1,30 @@
 <!-- 顶部导航栏 -->
-<t-navbar title="我的订单" />
+<t-navbar title="我的订单">
+  <view slot="left" class="navbar-left" bindtap="goBack">
+    <t-icon name="chevron-left" size="44rpx" />
+  </view>
+</t-navbar>
 
 <!-- 订单状态标签 -->
 <view class="order-tabs">
   <t-tabs value="{{currentTab}}" bind:change="onTabChange">
     <t-tab-panel 
-      wx:for="{{tabList}}" 
-      wx:key="_id"
-      label="{{item.label}}" 
+      wx:for="{{tabs}}" 
+      wx:key="value"
+      label="{{item.label}}{{item.count > 0 ? ' (' + item.count + ')' : ''}}" 
       value="{{item.value}}"
     />
   </t-tabs>
 </view>
 
+<!-- 加载状态 -->
+<view class="loading-container" wx:if="{{loading}}">
+  <t-loading theme="spinner" size="40rpx" />
+  <text class="loading-text">加载中...</text>
+</view>
+
 <!-- 订单列表 -->
-<scroll-view scroll-y class="orders-container" refresher-enabled="{{true}}" bind:refresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+<scroll-view scroll-y class="orders-container" wx:if="{{!loading}}" refresher-enabled="{{true}}" bind:refresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
   <view class="order-list">
     <!-- 订单项 -->
     <view 
@@ -32,6 +42,10 @@
         </view>
         <view class="order-status {{item.statusClass}}">
           {{item.statusText}}
+          <!-- 待支付订单显示倒计时 -->
+          <view wx:if="{{item.status === 'pending' && item.remainingTime}}" class="countdown">
+            <text class="countdown-text">剩余: {{item.remainingTime}}</text>
+          </view>
         </view>
       </view>
 
@@ -69,9 +83,8 @@
             wx:if="{{item.status === 'pending'}}"
             size="small" 
             theme="primary" 
-            bind:tap="payOrder"
+            catchtap="payOrder"
             data-id="{{item._id}}"
-            catch:tap="true"
           >
             立即支付
           </t-button>
@@ -79,42 +92,38 @@
             wx:if="{{item.status === 'pending'}}"
             size="small" 
             variant="outline" 
-            bind:tap="cancelOrder"
+            catchtap="cancelOrder"
             data-id="{{item._id}}"
-            catch:tap="true"
             style="margin-left: 16rpx;"
           >
             取消订单
           </t-button>
           
           <t-button 
-            wx:if="{{item.status === 'shipping'}}"
+            wx:if="{{item.status === 'paid'}}"
             size="small" 
             variant="outline" 
-            bind:tap="contactSeller"
+            catchtap="contactSeller"
             data-id="{{item._id}}"
-            catch:tap="true"
           >
             联系卖家
           </t-button>
           
           <t-button 
-            wx:if="{{item.status === 'receiving'}}"
+            wx:if="{{item.status === 'shipping'}}"
             size="small" 
             theme="primary" 
-            bind:tap="confirmReceive"
+            catchtap="confirmReceive"
             data-id="{{item._id}}"
-            catch:tap="true"
           >
             确认收货
           </t-button>
           <t-button 
-            wx:if="{{item.status === 'receiving'}}"
+            wx:if="{{item.status === 'shipping'}}"
             size="small" 
             variant="outline" 
-            bind:tap="viewLogistics"
+            catchtap="viewLogistics"
             data-id="{{item._id}}"
-            catch:tap="true"
             style="margin-left: 16rpx;"
           >
             查看物流
@@ -124,9 +133,8 @@
             wx:if="{{item.status === 'completed'}}"
             size="small" 
             theme="primary" 
-            bind:tap="writeReview"
+            catchtap="writeReview"
             data-id="{{item._id}}"
-            catch:tap="true"
           >
             评价
           </t-button>
@@ -134,23 +142,11 @@
             wx:if="{{item.status === 'completed'}}"
             size="small" 
             variant="outline" 
-            bind:tap="buyAgain"
+            catchtap="buyAgain"
             data-id="{{item._id}}"
-            catch:tap="true"
             style="margin-left: 16rpx;"
           >
             再次购买
-          </t-button>
-          
-          <t-button 
-            wx:if="{{item.status === 'review'}}"
-            size="small" 
-            theme="primary" 
-            bind:tap="writeReview"
-            data-id="{{item._id}}"
-            catch:tap="true"
-          >
-            写评价
           </t-button>
         </view>
       </view>

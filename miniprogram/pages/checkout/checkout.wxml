@@ -1,0 +1,209 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="确认订单" />
+
+<view class="checkout-container">
+  <!-- 加载状态 -->
+  <view class="loading-container" wx:if="{{loading}}">
+    <t-loading theme="spinner" size="40rpx" />
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 主要内容 -->
+  <scroll-view scroll-y class="checkout-content" wx:if="{{!loading}}">
+    <!-- 收货地址 -->
+    <view class="address-section">
+      <view class="section-title">
+        <t-icon name="location" size="32rpx" color="#3b82f6" />
+        <text>收货地址</text>
+      </view>
+      <view class="address-card" bindtap="selectAddress">
+        <view wx:if="{{deliveryAddress}}" class="address-info">
+          <view class="address-main">
+            <text class="address-name">{{userInfo.nickname || '收货人'}}</text>
+            <text class="address-phone">{{userInfo.phone || '请完善手机号'}}</text>
+          </view>
+          <text class="address-detail">{{deliveryAddress}}</text>
+        </view>
+        <view wx:else class="no-address">
+          <t-icon name="location" size="48rpx" color="#ccc" />
+          <text class="no-address-text">请选择收货地址</text>
+        </view>
+        <t-icon name="chevron-right" size="32rpx" color="#999" />
+      </view>
+    </view>
+
+    <!-- 商品列表 -->
+    <view class="products-section">
+      <view class="section-title">
+        <t-icon name="shop" size="32rpx" color="#3b82f6" />
+        <text>商品信息</text>
+      </view>
+      
+      <!-- 按商家分组显示商品 -->
+      <view 
+        class="merchant-group" 
+        wx:for="{{merchants}}" 
+        wx:key="merchantId"
+        wx:for-item="merchant"
+      >
+        <!-- 商家信息 -->
+        <view class="merchant-header">
+          <t-icon name="shop" size="28rpx" color="#3b82f6" />
+          <text class="merchant-name">{{merchant.merchantName}}</text>
+        </view>
+        
+        <!-- 商品列表 -->
+        <view class="product-list">
+          <view 
+            class="product-item" 
+            wx:for="{{merchant.items}}" 
+            wx:key="bookId"
+            wx:for-item="item"
+          >
+            <view class="product-image">
+              <t-image 
+                wx:if="{{item.images && item.images.length > 0 && item.images[0].length > 2}}"
+                src="{{item.images[0]}}" 
+                mode="aspectFill"
+                width="120rpx"
+                height="120rpx"
+                loading="lazy"
+                error-icon="book"
+              />
+              <text wx:else class="book-emoji">{{item.images && item.images[0] ? item.images[0] : '📚'}}</text>
+            </view>
+            <view class="product-info">
+              <text class="product-title">{{item.title}}</text>
+              <view class="product-footer">
+                <text class="product-price">¥{{item.price}}</text>
+                <text class="product-quantity">x{{item.quantity}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+        <!-- 商家小计 -->
+        <view class="merchant-total">
+          <text>小计: ¥{{merchant.totalPrice}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 配送信息 -->
+    <view class="delivery-section">
+      <view class="section-title">
+        <t-icon name="delivery" size="32rpx" color="#3b82f6" />
+        <text>配送信息</text>
+      </view>
+      <t-cell-group>
+        <t-cell title="配送方式" note="校内配送" />
+        <t-cell title="配送时间" note="1-2个工作日" />
+        <t-cell title="运费" note="免运费" rightIcon="none" />
+      </t-cell-group>
+    </view>
+
+    <!-- 优惠信息 -->
+    <view class="coupon-section">
+      <view class="section-title">
+        <t-icon name="discount" size="32rpx" color="#3b82f6" />
+        <text>优惠信息</text>
+      </view>
+      <t-cell title="优惠券" note="暂无可用优惠券" arrow bind:click="selectCoupon" />
+    </view>
+
+    <!-- 订单备注 -->
+    <view class="remark-section">
+      <view class="section-title">
+        <t-icon name="edit" size="32rpx" color="#3b82f6" />
+        <text>订单备注</text>
+      </view>
+      <view class="remark-input">
+        <t-textarea
+          placeholder="选填，建议先和卖家沟通"
+          value="{{remark}}"
+          bind:change="onRemarkChange"
+          maxlength="100"
+          autosize
+        />
+      </view>
+    </view>
+
+    <!-- 费用明细 -->
+    <view class="cost-section">
+      <view class="section-title">
+        <t-icon name="money" size="32rpx" color="#3b82f6" />
+        <text>费用明细</text>
+      </view>
+      <view class="cost-list">
+        <view class="cost-item">
+          <text class="cost-label">商品总价</text>
+          <text class="cost-value">¥{{totalPrice}}</text>
+        </view>
+        <view class="cost-item">
+          <text class="cost-label">配送费</text>
+          <text class="cost-value">¥0.00</text>
+        </view>
+        <view class="cost-item">
+          <text class="cost-label">优惠</text>
+          <text class="cost-value discount">-¥0.00</text>
+        </view>
+        <view class="cost-item total">
+          <text class="cost-label">实付款</text>
+          <text class="cost-value">¥{{totalPrice}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部间距 -->
+    <view class="bottom-space"></view>
+  </scroll-view>
+</view>
+
+<!-- 底部操作栏 -->
+<view class="checkout-footer" wx:if="{{!loading}}">
+  <view class="footer-info">
+    <text class="total-label">实付款:</text>
+    <text class="total-price">¥{{totalPrice}}</text>
+  </view>
+  <t-button 
+    theme="primary" 
+    size="large"
+    bind:tap="submitOrder"
+    loading="{{submitting}}"
+    disabled="{{!canSubmit}}"
+    style="flex: 1; margin-left: 24rpx;"
+  >
+    {{submitting ? '提交中...' : '提交订单'}}
+  </t-button>
+</view>
+
+<!-- 地址选择弹窗 -->
+<t-popup 
+  visible="{{showAddressPicker}}" 
+  bind:visible-change="onAddressPickerChange"
+  placement="bottom"
+>
+  <view class="address-picker">
+    <view class="picker-header">
+      <text class="picker-title">选择收货地址</text>
+      <t-icon name="close" size="32rpx" bind:tap="closeAddressPicker" />
+    </view>
+    <view class="address-list">
+      <view 
+        class="address-option {{selectedAddressIndex === index ? 'selected' : ''}}"
+        wx:for="{{addressList}}" 
+        wx:key="id"
+        bindtap="selectAddressOption"
+        data-index="{{index}}"
+      >
+        <t-radio checked="{{selectedAddressIndex === index}}" />
+        <text class="address-text">{{item.name}}</text>
+      </view>
+    </view>
+    <view class="picker-footer">
+      <t-button theme="primary" bind:tap="confirmAddress" style="width: 100%;">
+        确认选择
+      </t-button>
+    </view>
+  </view>
+</t-popup> 
