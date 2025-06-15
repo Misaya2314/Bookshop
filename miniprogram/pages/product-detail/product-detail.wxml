@@ -14,20 +14,20 @@
 
   <!-- 商品详情内容 -->
   <view wx:if="{{product && !loading}}">
-    <!-- 商品图片轮播 -->
-    <view class="product-images">
+  <!-- 商品图片轮播 -->
+  <view class="product-images">
       <!-- 如果有真实图片，显示图片轮播 -->
       <block wx:if="{{product.images && product.images.length > 0 && product.images[0] !== '📖' && product.images[0] !== '📚'}}">
         <swiper 
           class="image-swiper"
-          autoplay="{{false}}"
-          indicator-dots="{{true}}"
+      autoplay="{{false}}"
+      indicator-dots="{{true}}"
           indicator-color="rgba(255,255,255,0.5)"
           indicator-active-color="#fff"
           circular="{{true}}"
-          current="{{currentImageIndex}}"
+      current="{{currentImageIndex}}"
           bindchange="onImageChange"
-        >
+    >
           <swiper-item wx:for="{{product.images}}" wx:key="*this" wx:for-index="imgIndex">
             <image 
               src="{{item}}" 
@@ -48,7 +48,7 @@
           <text class="product-emoji">{{product.images && product.images[0] ? product.images[0] : '📚'}}</text>
         </view>
       </block>
-    </view>
+  </view>
 
   <!-- 商品基本信息 -->
   <view class="product-info">

@@ -237,17 +237,66 @@ Page({
     })
   },
 
-  addToCart() {
+  async addToCart() {
+    if (!this.data.product) {
+      wx.showToast({
+        title: '商品信息加载中',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 检查登录状态
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo || !userInfo.openid) {
+      wx.showModal({
+        title: '需要登录',
+        content: '请先登录后再使用购物车功能',
+        showCancel: false,
+        success: () => {
+          wx.switchTab({
+            url: '/pages/profile/profile'
+          })
+        }
+      })
+      return
+    }
+
     wx.showLoading({ title: '添加中...' })
     
-    // 模拟加入购物车
-    setTimeout(() => {
-      wx.hideLoading()
-      wx.showToast({
-        title: '已加入购物车',
-        icon: 'success'
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'cart',
+        data: {
+          action: 'addToCart',
+          bookId: this.data.product.id,
+          quantity: 1
+        }
       })
-    }, 1000)
+
+      const response = result.result as any
+      console.log('加入购物车结果:', response)
+
+      if (response.code === 0) {
+        wx.showToast({
+          title: response.message || '已加入购物车',
+          icon: 'success'
+        })
+      } else {
+        wx.showToast({
+          title: response.message || '添加失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('加入购物车失败:', error)
+      wx.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
   },
 
   buyNow() {

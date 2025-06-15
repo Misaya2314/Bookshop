@@ -180,7 +180,7 @@
       </view>
     </view>
   </view>
-</scroll-view>
+</scroll-view> 
 
 <!-- 添加/编辑商品弹窗 -->
 <t-popup 

@@ -73,7 +73,7 @@ Page({
       const response = result.result as any
       if (response.code === 0) {
         const newBooks = response.data.books
-        this.setData({
+    this.setData({
           books: refresh ? newBooks : [...books, ...newBooks],
           hasMore: response.data.hasMore,
           page: refresh ? 2 : page + 1
