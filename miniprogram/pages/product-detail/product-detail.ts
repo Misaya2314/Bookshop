@@ -47,16 +47,20 @@ Page({
     wx.showLoading({ title: '加载中...' })
     
     try {
-      const result = await wx.cloud.callFunction({
-        name: 'books',
-        data: {
-          action: 'getBookDetail',
-          bookId: productId
-        }
-      })
+      // 并行加载商品详情和收藏状态
+      const [bookResult, favoriteResult] = await Promise.all([
+        wx.cloud.callFunction({
+          name: 'books',
+          data: {
+            action: 'getBookDetail',
+            bookId: productId
+          }
+        }),
+        this.checkFavoriteStatus(productId)
+      ])
 
-      console.log('云函数返回结果:', result)
-      const response = result.result as any
+      console.log('云函数返回结果:', bookResult)
+      const response = bookResult.result as any
       
       if (response.code === 0) {
         // 将数据格式化为页面需要的格式，匹配实际数据库字段
@@ -74,7 +78,7 @@ Page({
           rating: Number(bookData.rating) || 0,
           sales: Number(bookData.sales) || 0,
           stock: Number(bookData.stock) || 0,
-          isFavorite: false,
+          isFavorite: favoriteResult,
           images: this.processImages(bookData.images, bookData.icon),
           params: [
             { label: '书籍状态', value: bookData.condition || '良好' },
@@ -204,18 +208,98 @@ Page({
     })
   },
 
-  toggleFavorite() {
+  async toggleFavorite() {
     if (!this.data.product) return;
     
-    const isFavorite = !this.data.product.isFavorite
-    this.setData({
-      'product.isFavorite': isFavorite
-    })
+    // 检查登录状态
+    const userInfo = wx.getStorageSync('userInfo')
+    if (!userInfo || !userInfo.openid) {
+      wx.showModal({
+        title: '需要登录',
+        content: '请先登录后再使用收藏功能',
+        showCancel: false,
+        success: () => {
+          wx.switchTab({
+            url: '/pages/profile/profile'
+          })
+        }
+      })
+      return
+    }
+
+    const currentFavorite = this.data.product.isFavorite
+    const newFavorite = !currentFavorite
     
-    wx.showToast({
-      title: isFavorite ? '已收藏' : '已取消收藏',
-      icon: 'success'
+    // 先更新UI状态
+    this.setData({
+      'product.isFavorite': newFavorite
     })
+
+    try {
+      wx.showLoading({ title: newFavorite ? '收藏中...' : '取消中...' })
+
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: newFavorite ? 'addToFavorites' : 'removeFromFavorites',
+          bookId: this.data.product.id
+        }
+      })
+
+      const response = result.result as any
+
+      if (response.code === 0) {
+        wx.showToast({
+          title: response.message || (newFavorite ? '收藏成功' : '取消收藏成功'),
+          icon: 'success'
+        })
+      } else {
+        // 操作失败，恢复原状态
+        this.setData({
+          'product.isFavorite': currentFavorite
+        })
+        wx.showToast({
+          title: response.message || '操作失败',
+          icon: 'none'
+        })
+      }
+    } catch (error) {
+      console.error('收藏操作失败:', error)
+      // 操作失败，恢复原状态
+      this.setData({
+        'product.isFavorite': currentFavorite
+      })
+      wx.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      })
+    } finally {
+      wx.hideLoading()
+    }
+  },
+
+  // 检查收藏状态
+  async checkFavoriteStatus(bookId: string): Promise<boolean> {
+    try {
+      const userInfo = wx.getStorageSync('userInfo')
+      if (!userInfo || !userInfo.openid) {
+        return false
+      }
+
+      const result = await wx.cloud.callFunction({
+        name: 'books',
+        data: {
+          action: 'checkFavoriteStatus',
+          bookId: bookId
+        }
+      })
+
+      const response = result.result as any
+      return response.code === 0 ? response.data.isFavorite : false
+    } catch (error) {
+      console.error('检查收藏状态失败:', error)
+      return false
+    }
   },
 
   selectAddress() {

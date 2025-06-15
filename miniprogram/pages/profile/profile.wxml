@@ -122,20 +122,4 @@
       />
     </t-cell-group>
   </view>
-
-  <!-- 帮助与反馈 -->
-  <view class="menu-section">
-    <view class="section-title">帮助与反馈</view>
-    <t-cell-group>
-      <t-cell 
-        wx:for="{{helpMenus}}" 
-        wx:key="_id"
-        title="{{item.title}}" 
-        leftIcon="{{item.icon}}"
-        arrow
-        bind:click="onMenuClick"
-        data-action="{{item.action}}"
-      />
-    </t-cell-group>
-  </view>
 </view> 

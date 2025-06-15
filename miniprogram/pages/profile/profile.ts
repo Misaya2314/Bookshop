@@ -15,24 +15,16 @@ Page({
       { type: 'pending', label: '待支付', icon: 'time', color: '#f59e0b', count: 1 },
       { type: 'shipping', label: '待发货', icon: 'order', color: '#3b82f6', count: 2 },
       { type: 'receiving', label: '待收货', icon: 'delivery', color: '#10b981', count: 1 },
-      { type: 'completed', label: '已完成', icon: 'check-circle', color: '#6b7280', count: 0 },
-      { type: 'review', label: '待评价', icon: 'star', color: '#6b7280', count: 0 }
+      { type: 'completed', label: '已完成', icon: 'check-circle', color: '#6b7280', count: 0 }
     ],
     tradeMenus: [
       { id: 1, title: '我的收藏', icon: 'heart', action: 'favorites' },
-      { id: 2, title: '浏览历史', icon: 'history', action: 'history' },
-      { id: 3, title: '客服中心', icon: 'service', action: 'service' },
-      { id: 4, title: '收货地址', icon: 'location', action: 'address' }
+      { id: 2, title: '客服中心', icon: 'service', action: 'service' },
+      { id: 3, title: '收货地址', icon: 'location', action: 'address' }
     ],
     settingMenus: [
       { id: 1, title: '个人信息', icon: 'user', action: 'userInfo' },
-      { id: 2, title: '我的评价', icon: 'star', action: 'reviews' },
-      { id: 3, title: '设置', icon: 'setting', action: 'settings' }
-    ],
-    helpMenus: [
-      { id: 1, title: '常见问题', icon: 'help', action: 'faq' },
-      { id: 2, title: '意见反馈', icon: 'mail', action: 'feedback' },
-      { id: 3, title: '关于我们', icon: 'info-circle', action: 'about' }
+      { id: 2, title: '设置', icon: 'setting', action: 'settings' }
     ]
   },
 
@@ -121,9 +113,6 @@ Page({
       case 'favorites':
         this.goToFavorites()
         break
-      case 'history':
-        this.goToHistory()
-        break
       case 'service':
         this.contactService()
         break
@@ -133,20 +122,8 @@ Page({
       case 'userInfo':
         this.editUserInfo()
         break
-      case 'reviews':
-        this.goToReviews()
-        break
       case 'settings':
         this.goToSettings()
-        break
-      case 'faq':
-        this.goToFAQ()
-        break
-      case 'feedback':
-        this.goToFeedback()
-        break
-      case 'about':
-        this.goToAbout()
         break
       default:
         wx.showToast({
@@ -159,12 +136,6 @@ Page({
   goToFavorites() {
     wx.navigateTo({
       url: '/pages/favorites/favorites'
-    })
-  },
-
-  goToHistory() {
-    wx.navigateTo({
-      url: '/pages/history/history'
     })
   },
 
@@ -188,33 +159,9 @@ Page({
     })
   },
 
-  goToReviews() {
-    wx.navigateTo({
-      url: '/pages/my-reviews/my-reviews'
-    })
-  },
-
   goToSettings() {
     wx.navigateTo({
       url: '/pages/settings/settings'
-    })
-  },
-
-  goToFAQ() {
-    wx.navigateTo({
-      url: '/pages/faq/faq'
-    })
-  },
-
-  goToFeedback() {
-    wx.navigateTo({
-      url: '/pages/feedback/feedback'
-    })
-  },
-
-  goToAbout() {
-    wx.navigateTo({
-      url: '/pages/about/about'
     })
   },
 

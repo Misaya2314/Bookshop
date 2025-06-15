@@ -1,0 +1,179 @@
+page {
+  background-color: #f5f5f5;
+  height: 100vh;
+}
+
+.favorites-container {
+  height: calc(100vh - 88rpx);
+  display: flex;
+  flex-direction: column;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200rpx;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.favorites-scroll {
+  flex: 1;
+  padding: 30rpx;
+}
+
+.favorites-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+}
+
+.favorite-item {
+  background: white;
+  border-radius: 12rpx;
+  padding: 30rpx;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  position: relative;
+}
+
+.book-image {
+  width: 120rpx;
+  height: 160rpx;
+  background: #f5f5f5;
+  border-radius: 8rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.book-emoji {
+  font-size: 48rpx;
+}
+
+.book-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+}
+
+.book-title {
+  font-size: 32rpx;
+  font-weight: 500;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-author {
+  font-size: 26rpx;
+  color: #666;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.book-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 8rpx;
+}
+
+.book-price {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #ff4757;
+}
+
+.merchant-name {
+  font-size: 24rpx;
+  color: #999;
+}
+
+.favorite-time {
+  font-size: 22rpx;
+  color: #999;
+  margin-top: 4rpx;
+}
+
+.favorite-actions {
+  margin-left: 24rpx;
+  padding: 12rpx;
+}
+
+/* 加载更多样式 */
+.loading-more {
+  text-align: center;
+  padding: 40rpx 0;
+  color: #999;
+  font-size: 28rpx;
+}
+
+/* 没有更多数据样式 */
+.no-more {
+  padding: 60rpx 0;
+  text-align: center;
+}
+
+.no-more-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.no-more-icon {
+  font-size: 64rpx;
+  opacity: 0.6;
+}
+
+.no-more-text {
+  font-size: 28rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.no-more-tip {
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* 空状态样式 */
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24rpx;
+  padding: 60rpx 40rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  opacity: 0.6;
+}
+
+.empty-title {
+  font-size: 32rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+  margin-bottom: 20rpx;
+}

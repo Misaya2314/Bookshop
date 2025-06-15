@@ -34,6 +34,14 @@ exports.main = async (event, context) => {
         return await getRecommendBooks(event)
       case 'getMerchantBooks':
         return await getMerchantBooks(event, wxContext)
+      case 'addToFavorites':
+        return await addToFavorites(event, wxContext)
+      case 'removeFromFavorites':
+        return await removeFromFavorites(event, wxContext)
+      case 'getFavorites':
+        return await getFavorites(event, wxContext)
+      case 'checkFavoriteStatus':
+        return await checkFavoriteStatus(event, wxContext)
       default:
         return {
           code: -1,
@@ -404,6 +412,181 @@ async function getMerchantBooks({ status, page = 1, pageSize = 20 }, wxContext) 
     }
   } catch (error) {
     console.error('获取商家图书错误:', error)
+    throw error
+  }
+}
+
+// 添加到收藏夹
+async function addToFavorites({ bookId }, wxContext) {
+  const { OPENID } = wxContext
+
+  if (!bookId) {
+    return {
+      code: -1,
+      message: '图书ID不能为空'
+    }
+  }
+
+  try {
+    // 检查图书是否存在
+    const bookResult = await db.collection('books').doc(bookId).get()
+    if (!bookResult.data) {
+      return {
+        code: -1,
+        message: '图书不存在'
+      }
+    }
+
+    // 检查是否已经收藏
+    const existingFavorite = await db.collection('favorites')
+      .where({
+        openid: OPENID,
+        bookId: bookId
+      })
+      .get()
+
+    if (existingFavorite.data.length > 0) {
+      return {
+        code: -1,
+        message: '已经收藏过该图书'
+      }
+    }
+
+    // 添加收藏记录
+    const favoriteData = {
+      openid: OPENID,
+      bookId: bookId,
+      title: bookResult.data.title,
+      author: bookResult.data.author,
+      price: bookResult.data.price,
+      originalPrice: bookResult.data.originalPrice,
+      images: bookResult.data.images,
+      icon: bookResult.data.icon,
+      merchantId: bookResult.data.merchantId,
+      merchantName: bookResult.data.merchantName,
+      createTime: new Date()
+    }
+
+    const result = await db.collection('favorites').add({
+      data: favoriteData
+    })
+
+    return {
+      code: 0,
+      message: '收藏成功',
+      data: {
+        favoriteId: result._id
+      }
+    }
+  } catch (error) {
+    console.error('添加收藏错误:', error)
+    throw error
+  }
+}
+
+// 从收藏夹移除
+async function removeFromFavorites({ bookId }, wxContext) {
+  const { OPENID } = wxContext
+
+  if (!bookId) {
+    return {
+      code: -1,
+      message: '图书ID不能为空'
+    }
+  }
+
+  try {
+    const result = await db.collection('favorites')
+      .where({
+        openid: OPENID,
+        bookId: bookId
+      })
+      .remove()
+
+    if (result.stats.removed === 0) {
+      return {
+        code: -1,
+        message: '该图书未收藏'
+      }
+    }
+
+    return {
+      code: 0,
+      message: '取消收藏成功',
+      data: {
+        removed: result.stats.removed
+      }
+    }
+  } catch (error) {
+    console.error('移除收藏错误:', error)
+    throw error
+  }
+}
+
+// 获取收藏夹
+async function getFavorites({ page = 1, pageSize = 20 }, wxContext) {
+  const { OPENID } = wxContext
+
+  try {
+    const skip = (page - 1) * pageSize
+
+    const result = await db.collection('favorites')
+      .where({ openid: OPENID })
+      .orderBy('createTime', 'desc')
+      .skip(skip)
+      .limit(pageSize)
+      .get()
+
+    // 获取总数
+    const countResult = await db.collection('favorites')
+      .where({ openid: OPENID })
+      .count()
+
+    return {
+      code: 0,
+      message: '获取收藏列表成功',
+      data: {
+        favorites: result.data,
+        total: countResult.total,
+        page,
+        pageSize,
+        hasMore: result.data.length === pageSize
+      }
+    }
+  } catch (error) {
+    console.error('获取收藏列表错误:', error)
+    throw error
+  }
+}
+
+// 检查收藏状态
+async function checkFavoriteStatus({ bookId }, wxContext) {
+  const { OPENID } = wxContext
+
+  if (!bookId) {
+    return {
+      code: -1,
+      message: '图书ID不能为空'
+    }
+  }
+
+  try {
+    const result = await db.collection('favorites')
+      .where({
+        openid: OPENID,
+        bookId: bookId
+      })
+      .get()
+
+    return {
+      code: 0,
+      message: '检查收藏状态成功',
+      data: {
+        isFavorite: result.data.length > 0
+      }
+    }
+  } catch (error) {
+    console.error('检查收藏状态错误:', error)
     throw error
   }
 } 

@@ -61,7 +61,11 @@
       
       <!-- 没有更多数据 -->
       <view class="no-more" wx:if="{{!hasMore && books.length > 0}}">
-        <text>没有更多了</text>
+        <view class="no-more-content">
+          <text class="no-more-icon">📚</text>
+          <text class="no-more-text">没有更多图书了</text>
+          <text class="no-more-tip">已为您展示全部结果</text>
+        </view>
       </view>
       
       <!-- 空状态 -->

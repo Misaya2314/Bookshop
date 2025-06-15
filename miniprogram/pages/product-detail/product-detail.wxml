@@ -125,38 +125,6 @@
       <text class="description-text">{{product.description}}</text>
     </view>
   </view>
-
-  <!-- 评价区域 -->
-  <view class="reviews-section">
-    <view class="section-header">
-      <text class="section-title">买家评价</text>
-      <view class="view-all" bindtap="goToAllReviews">
-        <text>查看全部</text>
-        <t-icon name="chevron-right" size="28rpx" />
-      </view>
-    </view>
-    <view class="review-item" wx:for="{{product.reviews}}" wx:key="_id">
-      <view class="review-header">
-        <t-avatar size="small">
-          <text slot="content">{{item.userName.charAt(0)}}</text>
-        </t-avatar>
-        <view class="review-user">
-          <text class="user-name">{{item.userName}}</text>
-          <text class="review-time">{{item.time}}</text>
-        </view>
-        <view class="review-rating">
-          <block wx:for="{{5}}" wx:key="*this" wx:for-index="star">
-            <t-icon 
-              name="star-filled" 
-              size="24rpx" 
-              color="{{star < item.rating ? '#fbbf24' : '#e5e7eb'}}" 
-            />
-          </block>
-        </view>
-      </view>
-      <text class="review-content">{{item.content}}</text>
-    </view>
-  </view>
   </view>
 
   <!-- 错误状态 -->
