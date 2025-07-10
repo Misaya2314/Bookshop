@@ -13,18 +13,20 @@ Page({
       { label: '已取消', value: 'cancelled', count: 0 }
     ],
     orders: [] as any[],
-    countdownTimer: null as any
+    countdownTimer: null as any,
+    currentUserOpenid: '' // 添加当前用户openid跟踪
   },
 
   onLoad(options: any) {
     const type = options.type || 'all'
     this.setData({ currentTab: type })
-    this.loadOrders(type)
+    // 首先验证登录状态，然后加载订单
+    this.checkLoginAndLoadOrders(type)
   },
   
   onShow() {
-    // 每次显示页面时重新加载订单数据
-    this.loadOrders(this.data.currentTab)
+    // 每次显示页面时重新验证登录状态并加载订单数据
+    this.checkLoginAndLoadOrders(this.data.currentTab)
     // 启动倒计时
     this.startCountdown()
   },
@@ -39,6 +41,75 @@ Page({
     this.clearCountdown()
   },
 
+  // 检查登录状态并加载订单
+  async checkLoginAndLoadOrders(status: string) {
+    // 获取当前本地存储的用户信息
+    const userInfo = wx.getStorageSync('userInfo')
+    
+    if (!userInfo || !userInfo.openid) {
+      // 用户未登录，跳转到登录页
+      wx.redirectTo({
+        url: '/pages/login/login'
+      })
+      return
+    }
+
+    try {
+      // 验证云端登录状态，确保openid一致
+      const result = await wx.cloud.callFunction({
+        name: 'login',
+        data: {
+          action: 'getUserInfo'
+        }
+      })
+
+      const response = result.result as any
+      
+      if (response.code !== 0) {
+        // 云端登录状态无效，清除本地存储并跳转登录页
+        wx.removeStorageSync('userInfo')
+        wx.redirectTo({
+          url: '/pages/login/login'
+        })
+        return
+      }
+
+      const cloudUserInfo = response.data
+      
+      // 检查本地openid与云端是否一致
+      if (userInfo.openid !== cloudUserInfo.openid) {
+        console.log('用户身份不一致，清除本地数据并重新登录')
+        wx.removeStorageSync('userInfo')
+        wx.redirectTo({
+          url: '/pages/login/login'
+        })
+        return
+      }
+
+      // 检查是否为新用户或用户切换
+      if (this.data.currentUserOpenid && this.data.currentUserOpenid !== cloudUserInfo.openid) {
+        console.log('检测到用户切换，清空订单数据')
+        this.setData({ 
+          orders: [],
+          currentUserOpenid: cloudUserInfo.openid
+        })
+      } else {
+        this.setData({ currentUserOpenid: cloudUserInfo.openid })
+      }
+
+      // 验证通过，加载订单数据
+      this.loadOrders(status)
+      
+    } catch (error) {
+      console.error('验证登录状态失败:', error)
+      wx.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      })
+      this.setData({ loading: false })
+    }
+  },
+
   onTabChange(e: any) {
     const tab = e.detail.value
     this.setData({ currentTab: tab })
@@ -47,25 +118,17 @@ Page({
 
   // 加载订单数据
   async loadOrders(status: string = 'all') {
-    // 检查登录状态
-    const userInfo = wx.getStorageSync('userInfo')
-    if (!userInfo || !userInfo.openid) {
-      wx.showModal({
-        title: '需要登录',
-        content: '请先登录后查看订单',
-        showCancel: false,
-        success: () => {
-          wx.switchTab({
-            url: '/pages/profile/profile'
-          })
-        }
-      })
-      return
-    }
-
     this.setData({ loading: true })
 
     try {
+      // 获取当前用户信息用于验证
+      const userInfo = wx.getStorageSync('userInfo')
+      console.log('当前前端用户信息:', { 
+        openid: userInfo?.openid, 
+        nickname: userInfo?.nickName,
+        currentUserOpenid: this.data.currentUserOpenid 
+      })
+
       // 并行获取当前状态订单和所有订单（用于计数）
       const [currentResult, allResult] = await Promise.all([
         wx.cloud.callFunction({
@@ -90,11 +153,36 @@ Page({
 
       const currentResponse = currentResult.result as any
       const allResponse = allResult.result as any
+      
       console.log('获取订单结果:', currentResponse)
+      console.log('所有订单结果:', allResponse)
+      
+      // 检查返回的订单数据中是否有不属于当前用户的订单
+      if (currentResponse.code === 0 && currentResponse.data) {
+        const currentUserOpenid = userInfo?.openid
+        currentResponse.data.forEach((order: any, index: number) => {
+          if (order.userId !== currentUserOpenid) {
+            console.error(`前端发现数据异常: 订单 ${index} (${order.orderNo}) 的 userId (${order.userId}) 与当前用户 (${currentUserOpenid}) 不匹配`)
+          }
+        })
+      }
 
       if (currentResponse.code === 0) {
+        const currentUserOpenid = userInfo?.openid
+        
+        // 前端强制过滤：只保留属于当前用户的订单
+        const userOrders = currentResponse.data.filter((order: any) => {
+          const isMatch = order.userId === currentUserOpenid
+          if (!isMatch) {
+            console.error(`前端过滤: 移除不属于当前用户的订单 ${order.orderNo}`)
+          }
+          return isMatch
+        })
+        
+        console.log(`前端过滤结果: 原始 ${currentResponse.data.length} 条，过滤后 ${userOrders.length} 条`)
+        
         // 格式化订单数据，添加倒计时
-        const orders = currentResponse.data.map((order: any) => {
+        const orders = userOrders.map((order: any) => {
           const formattedOrder = {
             ...order,
             id: order._id, // 兼容现有模板
@@ -116,9 +204,13 @@ Page({
           return formattedOrder
         })
 
-        // 更新订单计数（使用所有订单数据）
+        // 更新订单计数（使用所有订单数据，但需要过滤）
         if (allResponse.code === 0) {
-          this.updateOrderCounts(allResponse.data)
+          const allUserOrders = allResponse.data.filter((order: any) => {
+            return order.userId === currentUserOpenid
+          })
+          console.log(`统计数据过滤: 原始 ${allResponse.data.length} 条，过滤后 ${allUserOrders.length} 条`)
+          this.updateOrderCounts(allUserOrders)
         }
 
         // 获取标签名称

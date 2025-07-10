@@ -8,9 +8,52 @@ const db = cloud.database()
 
 exports.main = async (event, context) => {
   const { action } = event
-  const { OPENID } = cloud.getWXContext()
+  const wxContext = cloud.getWXContext()
+  const { OPENID, APPID, UNIONID } = wxContext
 
-  console.log('订单云函数调用:', { action, openid: OPENID })
+  console.log('订单云函数调用:', { 
+    action, 
+    openid: OPENID, 
+    appid: APPID,
+    timestamp: new Date().toISOString()
+  })
+
+  // 验证用户身份
+  if (!OPENID) {
+    console.error('OPENID 获取失败:', wxContext)
+    return {
+      code: -1,
+      message: '用户身份验证失败，无法获取 OPENID'
+    }
+  }
+
+  // 验证用户是否存在
+  try {
+    const userResult = await db.collection('users').where({
+      openid: OPENID
+    }).get()
+    
+    console.log(`用户验证结果: openid=${OPENID}, 查询到用户数=${userResult.data.length}`)
+    
+    if (userResult.data.length === 0) {
+      console.error(`用户不存在: openid=${OPENID}`)
+      return {
+        code: -1,
+        message: '用户不存在，请重新登录'
+      }
+    }
+    
+    // 输出用户基本信息（不包含敏感数据）
+    const user = userResult.data[0]
+    console.log(`当前用户: id=${user._id}, openid=${user.openid}, nickname=${user.nickName}`)
+    
+  } catch (error) {
+    console.error('验证用户存在性失败:', error)
+    return {
+      code: -1,
+      message: '身份验证错误: ' + error.message
+    }
+  }
 
   try {
     switch (action) {
@@ -190,36 +233,73 @@ async function createOrder(event, openid) {
 async function getOrders(event, openid) {
   const { status = 'all', page = 1, limit = 20 } = event
   
-  let query = db.collection('orders').where({
-    userId: openid
-  })
+  console.log('获取订单列表请求参数:', { status, page, limit, openid })
   
-  // 根据状态筛选
-  if (status !== 'all') {
-    query = query.where({
-      status: status
-    })
+  // 确保 openid 有效
+  if (!openid) {
+    console.error('openid 为空')
+    return { code: -1, message: 'openid 无效' }
   }
   
-  // 分页查询
-  const result = await query
-    .orderBy('createTime', 'desc')
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .get()
-  
-  // 格式化订单数据
-  const orders = result.data.map(order => ({
-    ...order,
-    createTime: formatDate(order.createTime),
-    totalPrice: order.totalPrice.toFixed(2),
-    statusClass: getStatusClass(order.status)
-  }))
-  
-  return {
-    code: 0,
-    message: '获取成功',
-    data: orders
+  try {
+    // 构建查询条件 - 严格按照当前用户筛选
+    const whereCondition = { userId: openid }
+    
+    // 根据状态筛选
+    if (status !== 'all') {
+      whereCondition.status = status
+    }
+    
+    console.log('查询条件:', whereCondition)
+    
+    // 执行查询
+    const result = await db.collection('orders')
+      .where(whereCondition)
+      .orderBy('createTime', 'desc')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .get()
+    
+    console.log(`查询结果统计: 共找到 ${result.data.length} 条订单`)
+    
+    // 验证查询结果的数据完整性
+    result.data.forEach((order, index) => {
+      console.log(`订单 ${index}: userId=${order.userId}, orderNo=${order.orderNo}, openid匹配=${order.userId === openid}`)
+      
+      // 如果发现不匹配的订单，记录错误
+      if (order.userId !== openid) {
+        console.error(`数据异常: 订单 ${order.orderNo} 的 userId (${order.userId}) 与当前用户 openid (${openid}) 不匹配`)
+      }
+    })
+    
+    // 再次过滤确保数据安全 - 前端保护
+    const filteredOrders = result.data.filter(order => order.userId === openid)
+    
+    if (filteredOrders.length !== result.data.length) {
+      console.error(`数据过滤: 原始查询 ${result.data.length} 条，过滤后 ${filteredOrders.length} 条`)
+    }
+    
+    // 格式化订单数据
+    const orders = filteredOrders.map(order => ({
+      ...order,
+      createTime: formatDate(order.createTime),
+      totalPrice: order.totalPrice.toFixed(2),
+      statusClass: getStatusClass(order.status)
+    }))
+    
+    console.log(`最终返回 ${orders.length} 条订单给用户 ${openid}`)
+    
+    return {
+      code: 0,
+      message: '获取成功',
+      data: orders
+    }
+  } catch (error) {
+    console.error('获取订单列表失败:', error)
+    return {
+      code: -1,
+      message: '查询订单失败: ' + error.message
+    }
   }
 }
 
@@ -231,6 +311,8 @@ async function updateOrderStatus(event, openid) {
     return { code: -1, message: '参数不完整' }
   }
   
+  console.log('更新订单状态:', { orderId, status, openid })
+  
   // 检查订单是否存在且属于当前用户
   const orderResult = await db.collection('orders').doc(orderId).get()
   if (!orderResult.data) {
@@ -239,6 +321,7 @@ async function updateOrderStatus(event, openid) {
   
   const order = orderResult.data
   if (order.userId !== openid) {
+    console.log('权限验证失败:', { orderUserId: order.userId, currentOpenid: openid })
     return { code: -1, message: '无权限操作此订单' }
   }
   
@@ -265,6 +348,8 @@ async function cancelOrder(event, openid) {
     return { code: -1, message: '订单ID不能为空' }
   }
   
+  console.log('取消订单:', { orderId, openid })
+  
   // 检查订单
   const orderResult = await db.collection('orders').doc(orderId).get()
   if (!orderResult.data) {
@@ -273,6 +358,7 @@ async function cancelOrder(event, openid) {
   
   const order = orderResult.data
   if (order.userId !== openid) {
+    console.log('权限验证失败:', { orderUserId: order.userId, currentOpenid: openid })
     return { code: -1, message: '无权限操作此订单' }
   }
   
@@ -306,6 +392,8 @@ async function payOrder(event, openid) {
     return { code: -1, message: '订单ID不能为空' }
   }
   
+  console.log('支付订单:', { orderId, openid })
+  
   // 检查订单
   const orderResult = await db.collection('orders').doc(orderId).get()
   if (!orderResult.data) {
@@ -314,6 +402,7 @@ async function payOrder(event, openid) {
   
   const order = orderResult.data
   if (order.userId !== openid) {
+    console.log('权限验证失败:', { orderUserId: order.userId, currentOpenid: openid })
     return { code: -1, message: '无权限操作此订单' }
   }
   
@@ -376,6 +465,8 @@ async function getOrderDetail(event, openid) {
     return { code: -1, message: '订单ID不能为空' }
   }
   
+  console.log('获取订单详情:', { orderId, openid })
+  
   const orderResult = await db.collection('orders').doc(orderId).get()
   if (!orderResult.data) {
     return { code: -1, message: '订单不存在' }
@@ -383,6 +474,7 @@ async function getOrderDetail(event, openid) {
   
   const order = orderResult.data
   if (order.userId !== openid) {
+    console.log('权限验证失败:', { orderUserId: order.userId, currentOpenid: openid })
     return { code: -1, message: '无权限查看此订单' }
   }
   
