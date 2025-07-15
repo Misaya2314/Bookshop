@@ -273,50 +273,79 @@ Page({
 
   async payOrder(e: any) {
     const orderId = e.currentTarget.dataset.id
-    wx.showModal({
-      title: '确认支付',
-      content: '确定要支付此订单吗？',
-      confirmText: '立即支付',
-      success: async (res) => {
-        if (res.confirm) {
-          wx.showLoading({ title: '支付中...' })
+    console.log('前端支付订单ID:', orderId)
+    console.log('订单ID类型:', typeof orderId)
+    
+    // 查找对应的订单数据
+    const orderData = this.data.orders.find(order => order._id === orderId)
+    console.log('找到的订单数据:', orderData)
+    
+    try {
+      wx.showLoading({ title: '准备支付...' })
           
-          try {
-            const result = await wx.cloud.callFunction({
-              name: 'orders',
-              data: {
-                action: 'payOrder',
-                orderId: orderId
-              }
-            })
+      // 调用支付云函数获取支付参数
+      const result = await wx.cloud.callFunction({
+        name: 'orders',
+        data: {
+          action: 'payOrder',
+          orderId: orderId
+        }
+      })
 
-            const response = result.result as any
-            
-            if (response.code === 0) {
-              wx.showToast({
-                title: '支付成功',
-                icon: 'success'
-              })
-              // 重新加载订单数据
+      const response = result.result as any
+      console.log('支付云函数返回:', response)
+    
+      if (response.code === 0) {
+        wx.hideLoading()
+        
+        // 调用微信支付
+        wx.requestPayment({
+          timeStamp: response.data.timeStamp,
+          nonceStr: response.data.nonceStr,
+          package: response.data.package,
+          signType: response.data.signType,
+          paySign: response.data.paySign,
+          success: (payRes) => {
+            console.log('微信支付成功:', payRes)
+            wx.showToast({
+              title: '支付成功',
+              icon: 'success'
+            })
+            // 重新加载订单数据
+            setTimeout(() => {
               this.loadOrders(this.data.currentTab)
+            }, 1500)
+          },
+          fail: (payErr) => {
+            console.error('微信支付失败:', payErr)
+            if (payErr.errMsg.includes('cancel')) {
+              wx.showToast({
+                title: '支付已取消',
+                icon: 'none'
+              })
             } else {
               wx.showToast({
-                title: response.message || '支付失败',
+                title: '支付失败，请重试',
                 icon: 'none'
               })
             }
-          } catch (error) {
-            console.error('支付失败:', error)
-            wx.showToast({
-              title: '网络错误，请重试',
-              icon: 'none'
-            })
-          } finally {
-            wx.hideLoading()
           }
-        }
+        })
+      } else {
+        wx.hideLoading()
+        wx.showToast({
+          title: response.message || '支付准备失败',
+          icon: 'none'
+        })
       }
-    })
+    } catch (error) {
+      console.error('支付处理失败:', error)
+      wx.hideLoading()
+      wx.showToast({
+        title: '网络错误，请重试',
+        icon: 'none'
+      })
+    }
   },
 
   async cancelOrder(e: any) {

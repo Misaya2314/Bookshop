@@ -181,7 +181,7 @@
 | ----------------- | ------ | ---- | -------------- | --------------------------------------------------------------------- |
 | `_id`             | String | ✅   | 订单唯一标识   | `"2ed3518f6843b1f7021c27270..."`                                      |
 | `orderNumber`     | String | ✅   | 订单号         | `"ORD20250615183836001"`                                              |
-| `openid`          | String | ✅   | 用户标识       | `"oYYEH7MKF20_IGr_r0rbcnh2t4Mc"`                                      |
+| `userId`          | String | ✅   | 用户标识       | `"oYYEH7MKF20_IGr_r0rbcnh2t4Mc"`                                      |
 | `merchantId`      | String | ✅   | 商家 ID        | `"system"`                                                            |
 | `merchantName`    | String | ✅   | 商家名称       | `"系统管理员"`                                                        |
 | `products`        | Array  | ✅   | 商品列表       | 见下方商品结构说明                                                    |
@@ -352,7 +352,7 @@ db.collection("favorites").createIndex(
 ```javascript
 // 用户订单索引
 db.collection("orders").createIndex({
-  openid: 1,
+  userId: 1,
   createTime: -1,
 });
 

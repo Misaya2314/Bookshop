@@ -395,7 +395,7 @@ Page({
 
   // 处理支付
   async processPayment(orderId: string) {
-    wx.showLoading({ title: '支付中...' })
+    wx.showLoading({ title: '准备支付...' })
 
     try {
       const result = await wx.cloud.callFunction({
@@ -407,19 +407,54 @@ Page({
       })
 
       const response = result.result as any
+      console.log('支付云函数返回:', response)
       
       if (response.code === 0) {
-        wx.showToast({
-          title: '支付成功',
-          icon: 'success'
-        })
+        wx.hideLoading()
         
-        setTimeout(() => {
-          wx.redirectTo({
-            url: '/pages/orders/orders?type=paid'
-          })
-        }, 1500)
+        // 调用微信支付
+        wx.requestPayment({
+          timeStamp: response.data.timeStamp,
+          nonceStr: response.data.nonceStr,
+          package: response.data.package,
+          signType: response.data.signType,
+          paySign: response.data.paySign,
+          success: (payRes) => {
+            console.log('微信支付成功:', payRes)
+            wx.showToast({
+              title: '支付成功',
+              icon: 'success'
+            })
+            
+            setTimeout(() => {
+              wx.redirectTo({
+                url: '/pages/orders/orders?type=paid'
+              })
+            }, 1500)
+          },
+          fail: (payErr) => {
+            console.error('微信支付失败:', payErr)
+            if (payErr.errMsg.includes('cancel')) {
+              wx.showToast({
+                title: '支付已取消',
+                icon: 'none'
+              })
+            } else {
+              wx.showToast({
+                title: '支付失败，请重试',
+                icon: 'none'
+              })
+            }
+            
+            setTimeout(() => {
+              wx.redirectTo({
+                url: '/pages/orders/orders?type=pending'
+              })
+            }, 1500)
+          }
+        })
       } else {
+        wx.hideLoading()
         wx.showToast({
           title: response.message || '支付失败',
           icon: 'none'
@@ -433,6 +468,7 @@ Page({
       }
     } catch (error) {
       console.error('支付失败:', error)
+      wx.hideLoading()
       wx.showToast({
         title: '支付失败，请重试',
         icon: 'none'
@@ -443,8 +479,6 @@ Page({
           url: '/pages/orders/orders?type=pending'
         })
       }, 1500)
-    } finally {
-      wx.hideLoading()
     }
   }
 }) 

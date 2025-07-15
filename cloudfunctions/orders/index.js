@@ -15,6 +15,7 @@ exports.main = async (event, context) => {
     action, 
     openid: OPENID, 
     appid: APPID,
+    openidLength: OPENID ? OPENID.length : 0,
     timestamp: new Date().toISOString()
   })
 
@@ -384,7 +385,7 @@ async function cancelOrder(event, openid) {
   }
 }
 
-// 支付订单
+// 支付订单（调用支付云函数）
 async function payOrder(event, openid) {
   const { orderId } = event
   
@@ -392,68 +393,85 @@ async function payOrder(event, openid) {
     return { code: -1, message: '订单ID不能为空' }
   }
   
-  console.log('支付订单:', { orderId, openid })
+  console.log('发起支付:', { orderId, openid })
   
-  // 检查订单
-  const orderResult = await db.collection('orders').doc(orderId).get()
-  if (!orderResult.data) {
-    return { code: -1, message: '订单不存在' }
-  }
-  
-  const order = orderResult.data
-  if (order.userId !== openid) {
-    console.log('权限验证失败:', { orderUserId: order.userId, currentOpenid: openid })
-    return { code: -1, message: '无权限操作此订单' }
-  }
-  
-  if (order.status !== 'pending') {
-    return { code: -1, message: '订单状态错误' }
-  }
-  
-  // 检查订单是否过期
-  if (new Date() > new Date(order.expireTime)) {
-    // 自动取消过期订单
-    await db.collection('orders').doc(orderId).update({
+  try {
+    // 获取订单信息
+    const orderResult = await db.collection('orders').doc(orderId).get()
+    if (!orderResult.data) {
+      return { code: -1, message: '订单不存在' }
+    }
+    
+    const order = orderResult.data
+    console.log('支付订单信息:', { 
+      orderId: order._id, 
+      orderNo: order.orderNo, 
+      orderUserId: order.userId, 
+      currentOpenid: openid,
+      userIdType: typeof order.userId,
+      openidType: typeof openid,
+      userIdLength: order.userId ? order.userId.length : 0,
+      openidLength: openid ? openid.length : 0,
+      isEqual: order.userId === openid,
+      trimmedEqual: order.userId.trim() === openid.trim()
+    })
+    
+    if (order.userId !== openid) {
+      console.log('权限验证失败:', { 
+        orderUserId: order.userId, 
+        currentOpenid: openid,
+        userIdLength: order.userId ? order.userId.length : 0,
+        openidLength: openid ? openid.length : 0,
+        userIdCharCodes: order.userId ? order.userId.split('').map(c => c.charCodeAt(0)) : [],
+        openidCharCodes: openid ? openid.split('').map(c => c.charCodeAt(0)) : []
+      })
+      return { code: -1, message: '无权限操作此订单' }
+    }
+    
+    if (order.status !== 'pending') {
+      return { code: -1, message: '订单状态错误' }
+    }
+    
+    // 调用支付云函数进行统一下单
+    console.log('准备调用支付云函数:', {
+      orderId: orderId,
+      orderUserId: order.userId,
+      currentOpenid: openid,
+      totalFee: order.totalPrice,
+      orderNo: order.orderNo
+    })
+    
+    const paymentResult = await cloud.callFunction({
+      name: 'payment',
       data: {
-        status: 'cancelled',
-        statusText: '已取消（超时）',
-        updateTime: new Date()
+        action: 'unifiedOrder',
+        orderId: orderId,
+        totalFee: order.totalPrice,
+        description: `学长二手书-订单${order.orderNo}`,
+        openid: openid  // 传递当前用户的 openid
       }
     })
-    return { code: -1, message: '订单已超时' }
-  }
-  
-  // 再次检查库存
-  for (const item of order.items) {
-    const bookResult = await db.collection('books').doc(item.bookId).get()
-    if (!bookResult.data || bookResult.data.stock < item.quantity) {
-      return { code: -1, message: `商品 ${item.title} 库存不足` }
-    }
-  }
-  
-  // 扣减库存
-  for (const item of order.items) {
-    await db.collection('books').doc(item.bookId).update({
-      data: {
-        stock: db.command.inc(-item.quantity),
-        sales: db.command.inc(item.quantity)
+    
+    console.log('支付云函数完整调用结果:', JSON.stringify(paymentResult, null, 2))
+    console.log('支付云函数result字段:', paymentResult.result)
+    console.log('支付云函数errMsg字段:', paymentResult.errMsg)
+    
+    // 检查云函数调用是否成功
+    if (paymentResult.errMsg !== 'callFunction:ok') {
+      console.error('云函数调用失败:', paymentResult.errMsg)
+      return {
+        code: -1,
+        message: '支付服务调用失败: ' + paymentResult.errMsg
       }
-    })
-  }
-  
-  // 更新订单状态为已支付
-  await db.collection('orders').doc(orderId).update({
-    data: {
-      status: 'paid',
-      statusText: '待发货',
-      payTime: new Date(),
-      updateTime: new Date()
     }
-  })
-  
-  return {
-    code: 0,
-    message: '支付成功'
+    
+    return paymentResult.result
+  } catch (error) {
+    console.error('支付处理异常:', error)
+    return {
+      code: -1,
+      message: '支付处理失败: ' + error.message
+    }
   }
 }
 
