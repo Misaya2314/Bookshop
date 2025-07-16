@@ -271,6 +271,38 @@ Page({
     })
   },
 
+  // 检查支付状态
+  async checkPaymentStatus(orderId: string) {
+    console.log('检查支付状态:', orderId)
+    
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'payment',
+        data: {
+          action: 'queryOrder',
+          orderId: orderId
+        }
+      })
+
+      const response = result.result as any
+      console.log('支付状态查询结果:', response)
+      
+      if (response.code === 0) {
+        console.log('支付状态确认成功:', response.data.status)
+        return response.data
+      } else if (response.code === 1) {
+        console.log('支付状态查询:', response.message)
+        return response.data
+      } else {
+        console.error('支付状态查询失败:', response.message)
+        return null
+      }
+    } catch (error) {
+      console.error('查询支付状态异常:', error)
+      return null
+    }
+  },
+
   async payOrder(e: any) {
     const orderId = e.currentTarget.dataset.id
     console.log('前端支付订单ID:', orderId)
@@ -311,10 +343,11 @@ Page({
               title: '支付成功',
               icon: 'success'
             })
-            // 重新加载订单数据
-            setTimeout(() => {
+            // 支付成功后主动查询支付状态确保同步
+            this.checkPaymentStatus(orderId).then(() => {
+              // 重新加载订单数据
               this.loadOrders(this.data.currentTab)
-            }, 1500)
+            })
           },
           fail: (payErr) => {
             console.error('微信支付失败:', payErr)

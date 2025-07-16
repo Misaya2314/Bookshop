@@ -10,9 +10,15 @@ exports.main = async (event, context) => {
   const { action } = event
   const { OPENID } = cloud.getWXContext()
 
-  console.log('支付云函数调用:', { action, openid: OPENID })
+  console.log('支付云函数调用:', { action, openid: OPENID, eventKeys: Object.keys(event) })
 
   try {
+    // 检查是否是微信支付回调（微信支付回调不会有action参数，但会有支付相关字段）
+    if (!action && (event.resultCode || event.returnCode || event.outTradeNo)) {
+      console.log('检测到微信支付回调:', event)
+      return await paymentNotify(event)
+    }
+    
     switch (action) {
       case 'unifiedOrder':
         return await unifiedOrder(event, OPENID)
@@ -21,6 +27,7 @@ exports.main = async (event, context) => {
       case 'queryOrder':
         return await queryOrder(event, OPENID)
       default:
+        console.log('未知操作，事件内容:', event)
         return {
           code: -1,
           message: '未知操作'
@@ -221,7 +228,9 @@ async function unifiedOrder(event, contextOpenid) {
 
 // 支付结果通知处理
 async function paymentNotify(event) {
-  console.log('支付结果通知:', event)
+  console.log('=== 支付结果通知开始 ===')
+  console.log('支付通知事件完整内容:', JSON.stringify(event, null, 2))
+  console.log('事件字段列表:', Object.keys(event))
 
   try {
     const { resultCode, outTradeNo, transactionId, totalFee } = event
@@ -318,7 +327,8 @@ async function queryOrder(event, contextOpenid) {
     if (order.status === 'pending' && order.orderNo) {
       try {
         const queryResult = await cloud.cloudPay.queryOrder({
-          outTradeNo: order.orderNo
+          outTradeNo: order.orderNo,
+          subMchId: '1716913038' // 添加商户号参数
         })
 
         console.log('微信支付查询结果:', queryResult)
