@@ -243,16 +243,28 @@ async function paymentNotify(event) {
 
       if (orderResult.data.length === 0) {
         console.error('订单不存在:', outTradeNo)
-        return { code: -1, message: '订单不存在' }
+        return 'FAIL' // 微信支付回调格式
       }
 
       const order = orderResult.data[0]
+      
+      // 幂等性检查：如果订单已经是已支付状态，直接返回成功，避免重复处理
+      if (order.status === 'paid') {
+        console.log('订单已处理过，避免重复处理:', { 
+          orderId: order._id, 
+          orderNo: outTradeNo,
+          existingTransactionId: order.transactionId || 'unknown',
+          currentTransactionId: transactionId,
+          orderStatus: order.status
+        })
+        return 'SUCCESS' // 直接返回SUCCESS，让微信停止重试
+      }
       
       // 验证金额
       const orderTotalFee = Math.round(order.totalPrice * 100)
       if (orderTotalFee !== totalFee) {
         console.error('金额不匹配:', { orderTotalFee, totalFee })
-        return { code: -1, message: '金额不匹配' }
+        return 'FAIL' // 微信支付回调格式
       }
 
       // 更新订单状态
@@ -266,8 +278,10 @@ async function paymentNotify(event) {
         }
       })
 
-      // 扣减库存
+      // 扣减库存（只在首次处理时执行）
+      console.log('开始扣减库存，订单商品数量:', order.items.length)
       for (const item of order.items) {
+        console.log(`扣减库存: bookId=${item.bookId}, quantity=${item.quantity}`)
         await db.collection('books').doc(item.bookId).update({
           data: {
             stock: db.command.inc(-item.quantity),
@@ -276,16 +290,21 @@ async function paymentNotify(event) {
         })
       }
 
-      console.log('订单支付成功，状态已更新:', order._id)
+      console.log('订单支付成功，状态已更新:', { 
+        orderId: order._id, 
+        orderNo: outTradeNo,
+        transactionId: transactionId,
+        totalFee: totalFee
+      })
       
-      return { code: 0, message: '支付成功' }
+      return 'SUCCESS' // 微信支付回调要求返回SUCCESS字符串
     } else {
       console.log('支付失败或取消:', event)
-      return { code: -1, message: '支付失败' }
+      return 'FAIL' // 微信支付回调格式
     }
   } catch (error) {
     console.error('支付通知处理异常:', error)
-    return { code: -1, message: '处理异常: ' + error.message }
+    return 'FAIL' // 微信支付回调格式
   }
 }
 
