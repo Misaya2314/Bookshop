@@ -72,6 +72,12 @@ exports.main = async (event, context) => {
         return await getOrderDetail(event, OPENID)
       case 'shipOrder':
         return await shipOrder(event, OPENID)
+      case 'getMerchantOrders':
+        return await getMerchantOrders(event, OPENID)
+      case 'getMerchantStats':
+        return await getMerchantStats(event, OPENID)
+      case 'merchantShipOrder':
+        return await merchantShipOrder(event, OPENID)
       default:
         return {
           code: -1,
@@ -545,6 +551,175 @@ async function shipOrder(event, openid) {
   return {
     code: 0,
     message: '发货成功'
+  }
+}
+
+// 获取商家订单列表
+async function getMerchantOrders(event, openid) {
+  const { page = 1, limit = 20 } = event
+  const { merchantId } = event
+
+  if (!merchantId) {
+    return { code: -1, message: '商家ID不能为空' }
+  }
+
+  console.log('获取商家订单列表请求参数:', { page, limit, merchantId, openid })
+
+  try {
+    const whereCondition = { merchantId: merchantId }
+    const result = await db.collection('orders')
+      .where(whereCondition)
+      .orderBy('createTime', 'desc')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .get()
+
+    console.log(`查询商家订单结果统计: 共找到 ${result.data.length} 条订单`)
+
+    const orders = result.data.map(order => ({
+      ...order,
+      createTime: formatDate(order.createTime),
+      totalPrice: order.totalPrice.toFixed(2),
+      statusClass: getStatusClass(order.status)
+    }))
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: orders
+    }
+  } catch (error) {
+    console.error('获取商家订单列表失败:', error)
+    return {
+      code: -1,
+      message: '查询商家订单失败: ' + error.message
+    }
+  }
+}
+
+// 获取商家统计数据
+async function getMerchantStats(event, openid) {
+  const { merchantId } = event
+
+  if (!merchantId) {
+    return { code: -1, message: '商家ID不能为空' }
+  }
+
+  console.log('获取商家统计数据请求参数:', { merchantId, openid })
+
+  try {
+    const ordersResult = await db.collection('orders')
+      .where({ merchantId: merchantId })
+      .get()
+
+    const orders = ordersResult.data
+
+    const totalOrders = orders.length
+    
+    // 只计算已支付订单的收入（paid、shipping、completed状态）
+    const paidOrders = orders.filter(order => ['paid', 'shipping', 'completed'].includes(order.status))
+    const totalRevenue = paidOrders.reduce((sum, order) => sum + order.totalPrice, 0)
+    const totalQuantity = orders.reduce((sum, order) => sum + order.totalQuantity, 0)
+
+    const pendingOrders = orders.filter(order => order.status === 'pending').length
+    const paidOrdersCount = orders.filter(order => order.status === 'paid').length
+    const shippingOrders = orders.filter(order => order.status === 'shipping').length
+    const completedOrders = orders.filter(order => order.status === 'completed').length
+    const cancelledOrders = orders.filter(order => order.status === 'cancelled').length
+
+    return {
+      code: 0,
+      message: '获取成功',
+      data: {
+        totalOrders,
+        totalRevenue,
+        totalQuantity,
+        pendingOrders,
+        paidOrders: paidOrdersCount,
+        shippingOrders,
+        completedOrders,
+        cancelledOrders
+      }
+    }
+  } catch (error) {
+    console.error('获取商家统计数据失败:', error)
+    return {
+      code: -1,
+      message: '查询商家统计数据失败: ' + error.message
+    }
+  }
+}
+
+// 商家发货
+async function merchantShipOrder(event, openid) {
+  const { orderId } = event
+
+  if (!orderId) {
+    return { code: -1, message: '订单ID不能为空' }
+  }
+
+  console.log('商家发货请求:', { orderId, openid })
+
+  try {
+    // 检查订单
+    const orderResult = await db.collection('orders').doc(orderId).get()
+    if (!orderResult.data) {
+      return { code: -1, message: '订单不存在' }
+    }
+
+    const order = orderResult.data
+    console.log('订单信息:', { 
+      orderId: order._id, 
+      merchantId: order.merchantId, 
+      status: order.status,
+      orderUserId: order.userId 
+    })
+
+    // 获取当前用户信息，验证是否为商家
+    const userResult = await db.collection('users').where({ openid: openid }).get()
+    if (!userResult.data.length) {
+      return { code: -1, message: '用户不存在' }
+    }
+
+    const currentUser = userResult.data[0]
+    console.log('当前用户信息:', { 
+      userId: currentUser._id, 
+      openid: currentUser.openid,
+      isMerchant: currentUser.isMerchant 
+    })
+
+    // 验证是否是订单的商家（比较merchantId和当前用户ID）
+    if (order.merchantId !== currentUser._id) {
+      return { code: -1, message: '无权限操作此订单，只能处理自己的订单' }
+    }
+
+    // 检查订单状态
+    if (order.status !== 'paid') {
+      return { code: -1, message: '订单状态错误，只有已支付的订单可以发货' }
+    }
+
+    // 更新订单状态为待收货
+    await db.collection('orders').doc(orderId).update({
+      data: {
+        status: 'shipping',
+        statusText: '待收货',
+        shipTime: new Date(),
+        updateTime: new Date()
+      }
+    })
+
+    console.log('发货成功，订单状态已更新:', { orderId, newStatus: 'shipping' })
+
+    return {
+      code: 0,
+      message: '发货成功'
+    }
+  } catch (error) {
+    console.error('发货操作失败:', error)
+    return {
+      code: -1,
+      message: '发货失败: ' + error.message
+    }
   }
 }
 

@@ -86,7 +86,13 @@
       data-id="{{item._id}}"
     >
       <view class="book-cover">
-        <text class="book-emoji">{{item.icon}}</text>
+        <image 
+          wx:if="{{item.images && item.images.length > 0}}"
+          src="{{item.images[0]}}" 
+          class="book-image" 
+          mode="aspectFill"
+        />
+        <text wx:else class="book-emoji">{{item.icon}}</text>
       </view>
       <view class="book-info">
         <text class="book-title">{{item.title}}</text>
@@ -117,7 +123,13 @@
       data-id="{{item._id}}"
     >
       <view class="grid-book-cover">
-        <text class="book-emoji">{{item.icon}}</text>
+        <image 
+          wx:if="{{item.images && item.images.length > 0}}"
+          src="{{item.images[0]}}" 
+          class="book-image" 
+          mode="aspectFill"
+        />
+        <text wx:else class="book-emoji">{{item.icon}}</text>
       </view>
       <text class="grid-book-title">{{item.title}}</text>
       <text class="grid-book-author">{{item.author}}</text>

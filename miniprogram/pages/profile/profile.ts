@@ -19,12 +19,10 @@ Page({
     ],
     tradeMenus: [
       { id: 1, title: '我的收藏', icon: 'heart', action: 'favorites' },
-      { id: 2, title: '客服中心', icon: 'chat', action: 'service' },
-      { id: 3, title: '收货地址', icon: 'location', action: 'address' }
+      { id: 2, title: '客服中心', icon: 'chat', action: 'service' }
     ],
     settingMenus: [
-      { id: 1, title: '个人信息', icon: 'user', action: 'userInfo' },
-      { id: 2, title: '设置', icon: 'setting', action: 'settings' }
+      { id: 1, title: '个人信息', icon: 'user', action: 'userInfo' }
     ]
   },
 

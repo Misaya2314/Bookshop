@@ -98,10 +98,17 @@ page {
   align-items: center;
   justify-content: center;
   margin-bottom: 24rpx;
+  overflow: hidden;
 }
 
 .book-emoji {
   font-size: 64rpx;
+}
+
+.book-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
 }
 
 .product-title {

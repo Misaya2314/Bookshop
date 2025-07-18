@@ -316,18 +316,18 @@ Page({
       wx.showLoading({ title: '准备支付...' })
           
       // 调用支付云函数获取支付参数
-      const result = await wx.cloud.callFunction({
-        name: 'orders',
-        data: {
-          action: 'payOrder',
-          orderId: orderId
-        }
-      })
+            const result = await wx.cloud.callFunction({
+              name: 'orders',
+              data: {
+                action: 'payOrder',
+                orderId: orderId
+              }
+            })
 
-      const response = result.result as any
+            const response = result.result as any
       console.log('支付云函数返回:', response)
-    
-      if (response.code === 0) {
+            
+            if (response.code === 0) {
         wx.hideLoading()
         
         // 调用微信支付
@@ -339,10 +339,10 @@ Page({
           paySign: response.data.paySign,
           success: (payRes) => {
             console.log('微信支付成功:', payRes)
-            wx.showToast({
-              title: '支付成功',
-              icon: 'success'
-            })
+              wx.showToast({
+                title: '支付成功',
+                icon: 'success'
+              })
             // 支付成功后主动查询支付状态确保同步
             this.checkPaymentStatus(orderId).then(() => {
               // 重新加载订单数据
@@ -368,17 +368,17 @@ Page({
         wx.hideLoading()
         wx.showToast({
           title: response.message || '支付准备失败',
-          icon: 'none'
-        })
-      }
-    } catch (error) {
+                icon: 'none'
+              })
+            }
+          } catch (error) {
       console.error('支付处理失败:', error)
       wx.hideLoading()
-      wx.showToast({
-        title: '网络错误，请重试',
-        icon: 'none'
-      })
-    }
+            wx.showToast({
+              title: '网络错误，请重试',
+              icon: 'none'
+            })
+      }
   },
 
   async cancelOrder(e: any) {

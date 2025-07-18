@@ -41,15 +41,14 @@ Page({
     showAddressPicker: false,
     selectedAddressIndex: -1,
     addressList: [
-      { id: '1', name: 'A校区一号宿舍楼下' },
-      { id: '2', name: 'A校区图书馆门口' },
-      { id: '3', name: 'A校区教学楼前' },
-      { id: '4', name: 'B校区一号宿舍楼下' },
-      { id: '5', name: 'B校区图书馆门口' },
-      { id: '6', name: 'B校区教学楼前' },
-      { id: '7', name: 'C校区一号宿舍楼下' },
-      { id: '8', name: 'C校区图书馆门口' },
-      { id: '9', name: 'C校区教学楼前' }
+      { id: '1', name: '花溪校区图书馆门口' },
+      { id: '2', name: '花溪校区一号宿舍楼下' },
+      { id: '3', name: '花溪校区教学楼前' },
+      { id: '4', name: '花溪校区食堂门口' },
+      { id: '5', name: '两江校区图书馆门口' },
+      { id: '6', name: '两江校区一号宿舍楼下' },
+      { id: '7', name: '两江校区教学楼前' },
+      { id: '8', name: '两江校区食堂门口' }
     ] as AddressOption[]
   },
 
@@ -453,16 +452,16 @@ Page({
           paySign: response.data.paySign,
           success: (payRes) => {
             console.log('微信支付成功:', payRes)
-            wx.showToast({
-              title: '支付成功',
-              icon: 'success'
-            })
-            
+        wx.showToast({
+          title: '支付成功',
+          icon: 'success'
+        })
+        
             // 支付成功后主动查询支付状态确保同步
             this.checkPaymentStatus(orderId).then(() => {
-              setTimeout(() => {
-                wx.redirectTo({
-                  url: '/pages/orders/orders?type=paid'
+        setTimeout(() => {
+          wx.redirectTo({
+            url: '/pages/orders/orders?type=paid'
                 })
               }, 1000)
             })
@@ -484,8 +483,8 @@ Page({
             setTimeout(() => {
               wx.redirectTo({
                 url: '/pages/orders/orders?type=pending'
-              })
-            }, 1500)
+          })
+        }, 1500)
           }
         })
       } else {

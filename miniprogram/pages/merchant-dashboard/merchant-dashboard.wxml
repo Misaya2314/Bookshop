@@ -5,12 +5,15 @@
   </view>
 </t-navbar>
 
-<scroll-view scroll-y class="dashboard-container">
+<!-- 加载状态 -->
+<t-loading wx:if="{{loading}}" theme="circular" size="40rpx" text="加载中..." />
+
+<scroll-view scroll-y class="dashboard-container" wx:else>
   <!-- 店铺概览 -->
   <view class="shop-overview">
     <view class="shop-header">
-      <t-avatar size="large" class="shop-avatar">
-        <text slot="content">{{shopInfo.name.charAt(0)}}</text>
+      <t-avatar size="large" class="shop-avatar" image="{{shopInfo.avatarUrl}}">
+        <text slot="content" wx:if="{{!shopInfo.avatarUrl}}">{{shopInfo.name.charAt(0)}}</text>
       </t-avatar>
       <view class="shop-details">
         <text class="shop-name">{{shopInfo.name}}</text>
@@ -21,7 +24,7 @@
           </t-tag>
         </view>
       </view>
-      <t-icon name="chevron-right" size="32rpx" color="#999" bind:tap="editShopInfo" />
+      <t-icon name="chevron-right" size="32rpx" color="#999" />
     </view>
   </view>
 
@@ -29,13 +32,10 @@
   <view class="stats-section">
     <view class="section-title">经营数据</view>
     <view class="stats-grid">
-      <view class="stat-item" wx:for="{{stats}}" wx:key="type" bindtap="viewStatDetail" data-type="{{item.type}}">
+      <view class="stat-item" wx:for="{{stats}}" wx:key="type">
         <text class="stat-value">{{item.value}}</text>
         <text class="stat-label">{{item.label}}</text>
-        <view class="stat-trend {{item.trend > 0 ? 'up' : 'down'}}" wx:if="{{item.trend}}">
-          <t-icon name="{{item.trend > 0 ? 'arrow-up' : 'arrow-down'}}" size="20rpx" />
-          <text>{{Math.abs(item.trend)}}%</text>
-        </view>
+        <text class="stat-unit">{{item.unit}}</text>
       </view>
     </view>
   </view>
@@ -43,40 +43,74 @@
   <!-- 快捷操作 -->
   <view class="quick-actions">
     <view class="section-title">快捷操作</view>
-    <t-grid column="{{3}}" border="{{false}}">
-      <t-grid-item 
+    <view class="action-grid">
+      <view 
+        class="action-item" 
         wx:for="{{quickActions}}" 
         wx:key="id"
-        text="{{item.name}}"
-        bind:click="handleQuickAction"
+        bind:tap="handleQuickAction"
         data-action="{{item.action}}"
       >
-        <view slot="icon" class="action-icon" style="background-color: {{item.bgColor}}">
+        <view class="action-icon" style="background-color: {{item.bgColor}}">
           <t-icon name="{{item.icon}}" size="48rpx" color="white" />
         </view>
-      </t-grid-item>
-    </t-grid>
+        <text class="action-name">{{item.name}}</text>
+      </view>
+    </view>
   </view>
 
   <!-- 待处理事项 -->
-  <view class="pending-tasks">
+  <view class="pending-tasks" wx:if="{{pendingTasks && pendingTasks.length > 0}}">
     <view class="section-title">待处理事项</view>
-    <t-cell-group>
-      <t-cell 
+    <view class="task-list">
+      <view 
+        class="task-item" 
         wx:for="{{pendingTasks}}" 
         wx:key="id"
-        title="{{item.title}}" 
-        note="{{item.desc}}"
-        leftIcon="{{item.icon}}"
-        arrow
-        bind:click="handleTask"
+        bind:tap="handleTask"
         data-action="{{item.action}}"
       >
-        <t-tag slot="note" theme="{{item.urgent ? 'danger' : 'primary'}}" size="small" wx:if="{{item.count > 0}}">
-          {{item.count}}
-        </t-tag>
-      </t-cell>
-    </t-cell-group>
+        <view class="task-icon {{item.urgent ? 'urgent' : ''}}">
+          <t-icon name="{{item.icon}}" size="40rpx" />
+        </view>
+        <view class="task-content">
+          <text class="task-title">{{item.title}}</text>
+          <text class="task-desc">{{item.desc}}</text>
+        </view>
+        <view class="task-badge" wx:if="{{item.count > 0}}">
+          <t-tag theme="{{item.urgent ? 'danger' : 'primary'}}" size="small">
+            {{item.count}}
+          </t-tag>
+        </view>
+        <t-icon name="chevron-right" size="32rpx" color="#ccc" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近订单 -->
+  <view class="recent-orders" wx:if="{{recentOrders && recentOrders.length > 0}}">
+    <view class="section-header">
+      <text class="section-title">最近订单</text>
+      <t-button size="small" variant="text" bind:tap="goToOrderManagement">查看全部</t-button>
+    </view>
+    <view class="order-list">
+      <view class="order-item" wx:for="{{recentOrders}}" wx:key="_id" bindtap="viewOrderDetail" data-id="{{item._id}}">
+        <view class="order-header">
+          <text class="order-no">{{item.orderNo}}</text>
+          <text class="order-status status-{{item.status}}">{{item.statusText}}</text>
+        </view>
+        <view class="order-content">
+          <text class="order-products">{{item.items[0].title}}{{item.items.length > 1 ? ' 等' + item.items.length + '件商品' : ''}}</text>
+          <text class="order-amount">¥{{item.totalPrice}}</text>
+        </view>
+        <view class="order-footer">
+          <text class="order-time">{{item.createTime}}</text>
+          <t-button wx:if="{{item.status === 'paid'}}" size="small" theme="primary" bind:tap="shipOrder" data-id="{{item._id}}">
+            发货
+          </t-button>
+        </view>
+      </view>
+    </view>
   </view>
 
   <!-- 商品管理 -->
@@ -84,8 +118,8 @@
     <view class="section-header">
       <text class="section-title">商品管理</text>
       <view class="section-actions">
-        <t-button size="small" theme="primary" bind:tap="addProduct">
-          <t-icon name="add" size="28rpx" style="margin-right: 8rpx;" />
+        <t-button size="medium" theme="primary" shape="round" bind:tap="addProduct">
+          <t-icon name="add" size="32rpx" style="margin-right: 8rpx;" />
           添加商品
         </t-button>
       </view>
@@ -99,195 +133,160 @@
         bindtap="switchTab"
         data-tab="{{item.value}}"
       >
-        <text>{{item.label}}</text>
-        <view class="tab-badge" wx:if="{{item.count > 0}}">{{item.count}}</view>
+        <text class="tab-label">{{item.label}}</text>
+        <text class="tab-count">({{item.count}})</text>
       </view>
     </view>
 
-    <view class="product-list">
-      <view 
-        class="product-item" 
-        wx:for="{{products}}" 
-        wx:key="_id"
-        bindtap="editProduct"
-        data-id="{{item._id}}"
-      >
+    <view class="product-list" wx:if="{{products.length > 0}}">
+      <view class="product-item" wx:for="{{products}}" wx:key="_id">
         <view class="product-image">
-          <text class="product-emoji">{{item.icon}}</text>
+          <image wx:if="{{item.images && item.images.length > 0}}" src="{{item.images[0]}}" mode="aspectFill" class="product-img" />
+          <text wx:else class="product-icon">{{item.icon}}</text>
         </view>
         <view class="product-info">
           <text class="product-title">{{item.title}}</text>
-          <text class="product-price">¥{{item.price}}</text>
-          <view class="product-stats">
+          <text class="product-author">{{item.author}}</text>
+          <view class="product-meta">
+            <text class="product-price">¥{{item.price}}</text>
+            <text class="product-stock stock-{{item.stock <= 5 ? 'low' : 'normal'}}">库存: {{item.stock}}</text>
             <text class="product-sales">销量: {{item.sales}}</text>
-            <text class="product-stock">库存: {{item.stock}}</text>
           </view>
         </view>
         <view class="product-actions">
-          <t-button 
-            size="small" 
-            variant="outline"
-            bind:tap="toggleProductStatus"
-            data-id="{{item._id}}"
-            catch:tap="true"
-          >
-            {{item.status === 'active' ? '下架' : '上架'}}
+          <t-button size="small" variant="outline" bind:tap="editProduct" data-id="{{item._id}}">
+            编辑
+          </t-button>
+          <t-button size="small" variant="text" bind:tap="toggleProductStatus" data-id="{{item._id}}">
+            管理
           </t-button>
         </view>
       </view>
     </view>
 
-    <!-- 空状态 -->
-    <view class="empty-products" wx:if="{{products.length === 0}}">
+    <view class="empty-products" wx:else>
       <view class="empty-icon">📚</view>
       <text class="empty-text">暂无商品</text>
       <text class="empty-desc">快去添加您的第一本书吧</text>
-      <t-button theme="primary" size="large" bind:tap="addProduct" style="margin-top: 40rpx; width: 300rpx;">
+      <t-button theme="primary" size="large" bind:tap="addProduct" style="margin-top: 40rpx;">
         添加商品
       </t-button>
     </view>
   </view>
+</scroll-view>
 
-  <!-- 最近订单 -->
-  <view class="recent-orders">
-    <view class="section-header">
-      <text class="section-title">最近订单</text>
-      <view class="view-all" bindtap="goToOrderManagement">
-        <text>查看全部</text>
-        <t-icon name="chevron-right" size="28rpx" />
-      </view>
-    </view>
-    
-    <view class="order-list">
-      <view 
-        class="order-item" 
-        wx:for="{{recentOrders}}" 
-        wx:key="id"
-        bindtap="viewOrderDetail"
-        data-id="{{item.id}}"
-      >
-        <view class="order-info">
-          <text class="order-number">订单号: {{item.orderNumber}}</text>
-          <text class="order-time">{{item.createTime}}</text>
-        </view>
-        <view class="order-products">
-          <text class="product-names">{{item.productNames}}</text>
-          <text class="order-amount">¥{{item.totalAmount}}</text>
-        </view>
-        <view class="order-status {{item.statusClass}}">
-          {{item.statusText}}
-        </view>
-      </view>
-    </view>
-  </view>
-</scroll-view> 
-
-<!-- 添加/编辑商品弹窗 -->
-<t-popup 
-  visible="{{showProductModal}}" 
-  bind:visible-change="onProductModalChange"
-  placement="bottom"
->
+<!-- 商品添加/编辑模态框 -->
+<t-popup visible="{{showProductModal}}" placement="bottom" bind:visible-change="onProductModalChange">
   <view class="product-modal">
     <view class="modal-header">
       <text class="modal-title">{{editingProduct ? '编辑商品' : '添加商品'}}</text>
-      <t-icon name="close" size="44rpx" bind:tap="closeProductModal" />
+      <t-icon name="close" size="48rpx" bind:tap="closeProductModal" />
     </view>
     
     <scroll-view scroll-y class="modal-content">
-      <view class="form-section">
-        <t-input 
-          label="书名" 
-          model:value="{{productForm.title}}" 
-          placeholder="请输入书名"
-          required
-        />
-        
-        <t-input 
-          label="作者" 
-          model:value="{{productForm.author}}" 
-          placeholder="请输入作者"
-          required
-        />
-        
-        <t-input 
-          label="价格" 
-          model:value="{{productForm.price}}" 
-          placeholder="请输入价格"
-          type="number"
-          required
-        />
-        
-        <t-input 
-          label="库存" 
-          model:value="{{productForm.stock}}" 
-          placeholder="请输入库存数量"
-          type="number"
-          required
-        />
-        
-        <t-input 
-          label="图标" 
-          model:value="{{productForm.icon}}" 
-          placeholder="请输入表情符号作为图标"
-        />
-        
-        <!-- 图片上传区域 -->
-        <view class="form-item">
-          <view class="form-label">商品图片</view>
-          <view class="image-upload-area">
-            <view class="uploaded-images" wx:if="{{productForm.images && productForm.images.length > 0}}">
-              <view 
-                class="image-item" 
-                wx:for="{{productForm.images}}" 
-                wx:key="*this"
-              >
-                <image 
-                  src="{{item}}" 
-                  mode="aspectFill"
-                  class="uploaded-image"
-                />
-                <view 
-                  class="delete-image" 
-                  bindtap="deleteImage"
-                  data-index="{{index}}"
-                >
-                  ×
-                </view>
-              </view>
-            </view>
-            
-            <view 
-              class="upload-btn" 
-              bindtap="uploadImage"
-              wx:if="{{!productForm.images || productForm.images.length < 3}}"
-            >
-              <text class="upload-icon">+</text>
-              <text class="upload-text">添加图片</text>
+      <!-- 图片上传区域 -->
+      <view class="image-upload-section">
+        <text class="section-label">商品图片</text>
+        <view class="image-grid">
+          <view class="image-item" wx:for="{{productForm.images}}" wx:key="*this">
+            <image src="{{item}}" mode="aspectFill" class="uploaded-image" />
+            <view class="image-delete" bind:tap="deleteImage" data-index="{{index}}">
+              <t-icon name="close" size="24rpx" color="#fff" />
             </view>
           </view>
+          <view class="image-upload-btn" bind:tap="uploadImage" wx:if="{{productForm.images.length < 3}}">
+            <t-icon name="add" size="48rpx" color="#999" />
+            <text class="upload-text">上传图片</text>
+            <text class="upload-tip">最多3张</text>
+          </view>
         </view>
+      </view>
+
+      <!-- 基本信息 -->
+      <view class="form-section">
+        <text class="section-label">基本信息</text>
+        <t-cell-group>
+          <t-cell title="书名" required>
+            <t-input slot="note" placeholder="请输入书名" value="{{productForm.title}}" bind:change="onInputChange" data-field="title" />
+          </t-cell>
+          
+          <t-cell title="作者" required>
+            <t-input slot="note" placeholder="请输入作者" value="{{productForm.author}}" bind:change="onInputChange" data-field="author" />
+          </t-cell>
+          
+          <t-cell title="现价" required>
+            <t-input slot="note" placeholder="请输入现价" value="{{productForm.price}}" type="digit" bind:change="onInputChange" data-field="price" />
+          </t-cell>
+          
+          <t-cell title="原价">
+            <t-input slot="note" placeholder="请输入原价" value="{{productForm.originalPrice}}" type="digit" bind:change="onInputChange" data-field="originalPrice" />
+          </t-cell>
+          
+          <t-cell title="库存" required>
+            <t-input slot="note" placeholder="请输入库存数量" value="{{productForm.stock}}" type="number" bind:change="onInputChange" data-field="stock" />
+          </t-cell>
+        </t-cell-group>
+      </view>
+
+      <!-- 分类信息 -->
+      <view class="form-section">
+        <text class="section-label">分类信息</text>
+        <t-cell-group>
+          <t-cell title="分类" arrow>
+            <picker slot="note" mode="selector" range="{{categoryOptions}}" range-key="name" value="{{productForm.categoryIndex}}" bind:change="onCategoryChange">
+              <text>{{productForm.categoryName}}</text>
+            </picker>
+          </t-cell>
+          
+          <t-cell title="子分类" arrow>
+            <picker slot="note" mode="selector" range="{{subCategoryOptions}}" range-key="name" value="{{productForm.subCategoryIndex}}" bind:change="onSubCategoryChange">
+              <text>{{productForm.subCategoryName}}</text>
+            </picker>
+          </t-cell>
+          
+          <t-cell title="品相" arrow>
+            <picker slot="note" mode="selector" range="{{conditionOptions}}" value="{{productForm.conditionIndex}}" bind:change="onConditionChange">
+              <text>{{productForm.condition}}</text>
+            </picker>
+          </t-cell>
+        </t-cell-group>
+      </view>
+
+      <!-- 详细信息 -->
+      <view class="form-section">
+        <text class="section-label">详细信息</text>
+        <t-cell-group>
+          <t-cell title="出版社">
+            <t-input slot="note" placeholder="请输入出版社" value="{{productForm.publisher}}" bind:change="onInputChange" data-field="publisher" />
+          </t-cell>
+          
+          <t-cell title="ISBN">
+            <t-input slot="note" placeholder="请输入ISBN" value="{{productForm.isbn}}" bind:change="onInputChange" data-field="isbn" />
+          </t-cell>
+          
+          <t-cell title="图标">
+            <t-input slot="note" placeholder="请输入emoji图标" value="{{productForm.icon}}" bind:change="onInputChange" data-field="icon" />
+          </t-cell>
+        </t-cell-group>
         
-        <t-picker 
-          label="分类"
-          value="{{productForm.categoryId}}"
-          bind:change="onCategoryChange"
-          range="{{categoryOptions}}"
-          range-key="name"
-        />
-        
-        <t-textarea 
-          label="描述" 
-          model:value="{{productForm.description}}" 
-          placeholder="请输入商品描述"
-          maxlength="500"
-        />
+        <!-- 描述字段单独处理 -->
+        <view class="description-field">
+          <text class="field-label">图书描述</text>
+          <textarea 
+            class="description-textarea"
+            placeholder="请输入图书描述"
+            value="{{productForm.description}}"
+            bind:input="onDescriptionChange"
+            maxlength="500"
+            show-confirm-bar="{{false}}"
+          />
+        </view>
       </view>
     </scroll-view>
     
     <view class="modal-footer">
-      <t-button theme="default" block bindtap="closeProductModal">取消</t-button>
-      <t-button theme="primary" block bindtap="saveProduct" loading="{{saving}}" style="margin-top: 16rpx;">
+      <t-button variant="outline" bind:tap="closeProductModal" style="margin-right: 20rpx;">取消</t-button>
+      <t-button theme="primary" bind:tap="saveProduct" loading="{{saving}}" style="flex: 1;">
         {{editingProduct ? '保存' : '添加'}}
       </t-button>
     </view>

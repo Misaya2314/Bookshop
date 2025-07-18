@@ -153,6 +153,12 @@ page {
   font-size: 48rpx;
 }
 
+.book-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
+}
+
 .book-info {
   flex: 1;
   display: flex;
@@ -231,6 +237,13 @@ page {
   align-items: center;
   justify-content: center;
   margin-bottom: 16rpx;
+  overflow: hidden;
+}
+
+.grid-book-cover .book-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 8rpx;
 }
 
 .grid-book-title {

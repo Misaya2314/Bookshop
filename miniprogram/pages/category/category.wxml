@@ -43,7 +43,13 @@
           data-id="{{item._id}}"
         >
           <view class="product-image">
-            <text class="book-emoji">{{item.icon}}</text>
+            <image 
+              wx:if="{{item.images && item.images.length > 0}}"
+              src="{{item.images[0]}}" 
+              class="book-image" 
+              mode="aspectFill"
+            />
+            <text wx:else class="book-emoji">{{item.icon}}</text>
           </view>
           <text class="product-title">{{item.title}}</text>
           <text class="product-author">{{item.author}}</text>
