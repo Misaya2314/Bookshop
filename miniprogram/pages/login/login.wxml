@@ -12,6 +12,21 @@
     <text class="welcome-desc">连接校园买家与卖家\n让专业书籍流转更高效</text>
   </view>
 
+  <!-- 隐私政策同意区域 -->
+  <view class="privacy-section">
+    <view class="privacy-checkbox-container" bindtap="toggleAgreement">
+      <view class="custom-checkbox {{isAgreed ? 'checked' : ''}}">
+        <text class="checkbox-icon" wx:if="{{isAgreed}}">✓</text>
+      </view>
+      <view class="privacy-text">
+        <text>我已阅读并同意</text>
+        <text class="link" catchtap="viewAgreement">《用户服务协议》</text>
+        <text>和</text>
+        <text class="link" catchtap="viewPrivacy">《隐私保护指引》</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 底部登录区域 -->
   <view class="login-section">
     <t-button 
@@ -20,16 +35,14 @@
       block
       bind:tap="wxLogin"
       loading="{{isLoading}}"
+      disabled="{{!isAgreed || isLoading}}"
     >
       <t-icon name="wechat" size="40rpx" style="margin-right: 16rpx;" />
       微信授权登录
     </t-button>
     
-    <view class="privacy-info">
-      <text>登录即表示同意</text>
-      <text class="link" bindtap="viewAgreement">《用户协议》</text>
-      <text>和</text>
-      <text class="link" bindtap="viewPrivacy">《隐私政策》</text>
+    <view class="tips" wx:if="{{!isAgreed}}">
+      <text>请先阅读并同意用户协议和隐私政策</text>
     </view>
   </view>
 </view> 

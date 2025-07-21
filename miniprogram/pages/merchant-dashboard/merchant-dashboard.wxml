@@ -79,8 +79,8 @@
         </view>
         <view class="task-badge" wx:if="{{item.count > 0}}">
           <t-tag theme="{{item.urgent ? 'danger' : 'primary'}}" size="small">
-            {{item.count}}
-          </t-tag>
+          {{item.count}}
+        </t-tag>
         </view>
         <t-icon name="chevron-right" size="32rpx" color="#ccc" />
       </view>
@@ -148,7 +148,7 @@
           <text class="product-title">{{item.title}}</text>
           <text class="product-author">{{item.author}}</text>
           <view class="product-meta">
-            <text class="product-price">¥{{item.price}}</text>
+          <text class="product-price">¥{{item.price}}</text>
             <text class="product-stock stock-{{item.stock <= 5 ? 'low' : 'normal'}}">库存: {{item.stock}}</text>
             <text class="product-sales">销量: {{item.sales}}</text>
           </view>
@@ -173,7 +173,7 @@
       </t-button>
     </view>
   </view>
-</scroll-view>
+</scroll-view> 
 
 <!-- 商品添加/编辑模态框 -->
 <t-popup visible="{{showProductModal}}" placement="bottom" bind:visible-change="onProductModalChange">
@@ -184,7 +184,7 @@
     </view>
     
     <scroll-view scroll-y class="modal-content">
-      <!-- 图片上传区域 -->
+        <!-- 图片上传区域 -->
       <view class="image-upload-section">
         <text class="section-label">商品图片</text>
         <view class="image-grid">
@@ -277,9 +277,9 @@
             placeholder="请输入图书描述"
             value="{{productForm.description}}"
             bind:input="onDescriptionChange"
-            maxlength="500"
+          maxlength="500"
             show-confirm-bar="{{false}}"
-          />
+        />
         </view>
       </view>
     </scroll-view>

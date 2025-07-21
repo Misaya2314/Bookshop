@@ -1,19 +1,40 @@
 <!-- 顶部标题栏 -->
 <t-navbar title="购物车">
-  <view slot="right" class="edit-btn" bindtap="toggleEdit">
+  <view slot="right" class="edit-btn" bindtap="toggleEdit" wx:if="{{isLoggedIn}}">
     <text>{{isEditing ? '完成' : '编辑'}}</text>
   </view>
 </t-navbar>
 
 <view class="cart-container">
+  <!-- 未登录引导界面 -->
+  <view class="login-guide" wx:if="{{!isLoggedIn}}">
+    <view class="guide-content">
+      <view class="guide-icon">🛒</view>
+      <text class="guide-title">购物车空空如也</text>
+      <text class="guide-desc">登录后查看您添加的商品</text>
+      <t-button 
+        theme="primary" 
+        size="large" 
+        bind:tap="goToLogin"
+        class="login-btn"
+      >
+        立即登录
+      </t-button>
+      <view class="browse-tip">
+        <text>您也可以继续浏览商品</text>
+        <text class="browse-link" bindtap="goToBrowse"> 去逛逛 →</text>
+      </view>
+    </view>
+  </view>
+
   <!-- 加载状态 -->
-  <view class="loading-container" wx:if="{{loading}}">
+  <view class="loading-container" wx:if="{{loading && isLoggedIn}}">
     <t-loading theme="spinner" size="40rpx" />
     <text class="loading-text">加载中...</text>
   </view>
 
   <!-- 购物车商品列表 -->
-  <scroll-view scroll-y class="cart-content" wx:if="{{!loading && cartItems.length > 0}}">
+  <scroll-view scroll-y class="cart-content" wx:if="{{!loading && isLoggedIn && cartItems.length > 0}}">
     <!-- 商家分组 -->
     <view 
       class="merchant-group" 
@@ -95,24 +116,26 @@
 
   </scroll-view>
 
-  <!-- 空购物车状态 -->
-  <view class="empty-cart" wx:if="{{!loading && cartItems.length === 0}}">
-    <view class="empty-icon">🛒</view>
-    <text class="empty-text">购物车是空的</text>
-    <text class="empty-desc">快去挑选心仪的书籍吧</text>
-    <t-button 
-      theme="primary" 
-      size="large" 
-      bind:tap="goShopping"
-      style="margin-top: 40rpx; width: 400rpx;"
-    >
-      去逛逛
-    </t-button>
+  <!-- 空购物车状态（已登录但无商品） -->
+  <view class="empty-cart" wx:if="{{!loading && isLoggedIn && cartItems.length === 0}}">
+    <view class="empty-content">
+      <view class="empty-icon">📚</view>
+      <text class="empty-title">购物车是空的</text>
+      <text class="empty-desc">快去挑选心仪的书籍吧</text>
+      <t-button 
+        theme="primary" 
+        size="large" 
+        bind:tap="goToBrowse"
+        class="browse-btn"
+      >
+        去逛逛
+      </t-button>
+    </view>
   </view>
 </view>
 
-<!-- 底部结算栏 -->
-<view class="cart-footer" wx:if="{{cartItems.length > 0}}">
+<!-- 底部操作栏 -->
+<view class="cart-actions" wx:if="{{!loading && isLoggedIn && cartItems.length > 0}}">
   <view class="footer-content">
     <view class="footer-left">
       <t-checkbox 

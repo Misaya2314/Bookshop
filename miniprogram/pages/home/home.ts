@@ -3,6 +3,8 @@ Page({
     searchValue: '',
     loading: false,
     componentError: false,
+    isLoggedIn: false, // 添加登录状态标识
+    userInfo: null, // 用户信息
     banners: [
       {
         id: 1,
@@ -44,7 +46,9 @@ Page({
     
     this.addErrorHandler()
     
+    // 检查登录状态但不强制跳转
     this.checkLoginStatus()
+    // 无论是否登录都加载基础数据
     this.loadHomeData()
   },
 
@@ -122,14 +126,15 @@ Page({
     }
   },
 
-  // 检查登录状态
+  // 检查登录状态（不强制跳转）
   async checkLoginStatus() {
     const userInfo = wx.getStorageSync('userInfo')
     
     if (!userInfo || !userInfo.openid) {
-      // 用户未登录，跳转到登录页
-      wx.redirectTo({
-        url: '/pages/login/login'
+      // 用户未登录，更新状态但不跳转
+      this.setData({ 
+        isLoggedIn: false,
+        userInfo: null 
       })
       return
     }
@@ -144,15 +149,26 @@ Page({
       })
 
       if ((result.result as any)?.code !== 0) {
-        // 登录状态无效，清除本地存储并跳转登录页
+        // 登录状态无效，清除本地存储并更新状态
         wx.removeStorageSync('userInfo')
-        wx.redirectTo({
-          url: '/pages/login/login'
+        this.setData({ 
+          isLoggedIn: false,
+          userInfo: null 
+        })
+      } else {
+        // 登录状态有效
+        this.setData({ 
+          isLoggedIn: true,
+          userInfo: userInfo 
         })
       }
     } catch (error) {
       console.error('验证登录状态失败:', error)
-      // 网络错误时暂时不跳转，允许用户继续使用
+      // 网络错误时假设已登录，让用户继续使用
+      this.setData({ 
+        isLoggedIn: !!userInfo,
+        userInfo: userInfo 
+      })
     }
   },
 

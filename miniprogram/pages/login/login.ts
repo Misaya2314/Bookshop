@@ -1,10 +1,25 @@
 Page({
   data: {
-    isLoading: false
+    isLoading: false,
+    isAgreed: false
   },
 
   onLoad() {
     this.checkLoginStatus()
+  },
+
+  // 切换隐私政策同意状态
+  toggleAgreement() {
+    this.setData({
+      isAgreed: !this.data.isAgreed
+    })
+  },
+
+  // 兼容旧的方法名（如果其他地方有调用）
+  onPrivacyAgreeChange(e: any) {
+    this.setData({
+      isAgreed: e.detail.checked
+    })
   },
 
   async checkLoginStatus() {
@@ -37,6 +52,15 @@ Page({
   },
 
   wxLogin() {
+    // 检查是否已同意隐私政策
+    if (!this.data.isAgreed) {
+      wx.showToast({
+        title: '请先同意用户协议和隐私政策',
+        icon: 'none'
+      })
+      return
+    }
+
     this.setData({ isLoading: true })
 
           // 获取用户信息

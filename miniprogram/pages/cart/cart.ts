@@ -23,6 +23,7 @@ interface Merchant {
 
 Page({
   data: {
+    isLoggedIn: false, // 添加登录状态
     isEditing: false,
     allChecked: false,
     totalPrice: '0.00',
@@ -34,12 +35,10 @@ Page({
 
   onLoad() {
     this.checkLoginStatus()
-    this.loadCartData()
   },
 
   onShow() {
     this.checkLoginStatus()
-    this.loadCartData() // 每次显示都重新加载购物车数据
     
     if (typeof this.getTabBar === 'function' && this.getTabBar()) {
       this.getTabBar().setData({
@@ -52,17 +51,31 @@ Page({
   checkLoginStatus() {
     const userInfo = wx.getStorageSync('userInfo')
     if (!userInfo || !userInfo.openid) {
-      wx.showModal({
-        title: '需要登录',
-        content: '请先登录后再使用购物车功能',
-        showCancel: false,
-        success: () => {
-          wx.switchTab({
-            url: '/pages/profile/profile'
-          })
-        }
+      // 用户未登录，显示登录引导界面
+      this.setData({ 
+        isLoggedIn: false,
+        loading: false 
       })
+      return
     }
+
+    // 用户已登录，加载购物车数据
+    this.setData({ isLoggedIn: true })
+    this.loadCartData()
+  },
+
+  // 引导用户登录
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    })
+  },
+
+  // 去逛逛商品
+  goToBrowse() {
+    wx.switchTab({
+      url: '/pages/home/home'
+    })
   },
 
   // 加载购物车数据

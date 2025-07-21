@@ -62,15 +62,19 @@ exports.main = async (event, context) => {
 async function getBooks({ page = 1, pageSize = 20, categoryId, subCategoryId, status = 'active' }) {
   try {
     const skip = (page - 1) * pageSize
-    let query = db.collection('books').where({ status })
+    
+    // 构建查询条件
+    let whereConditions = { status }
 
-    // 按分类筛选
+    // 同时满足一级分类和二级分类条件
     if (categoryId) {
-      query = query.where({ categoryId })
+      whereConditions.categoryId = categoryId
     }
     if (subCategoryId && subCategoryId !== 'all') {
-      query = query.where({ subCategoryId })
+      whereConditions.subCategoryId = subCategoryId
     }
+    
+    let query = db.collection('books').where(whereConditions)
 
     // 执行查询
     const result = await query

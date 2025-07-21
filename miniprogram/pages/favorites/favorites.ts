@@ -1,75 +1,92 @@
 import { checkLoginStatus } from '../../utils/auth'
 
 interface FavoriteItem {
-  _id: string
-  bookId: string
-  title: string
-  author: string
-  price: number
-  originalPrice?: number
-  images: string[]
-  icon: string
-  merchantId: string
-  merchantName: string
-  createTime: string
+  _id?: string; // 添加_id属性
+  id: string;
+  bookId: string;
+  title: string;
+  price: number;
+  originalPrice?: number;
+  images?: string[];
+  icon?: string;
+  createTime: string;
 }
 
 Page({
   data: {
+    isLoggedIn: false, // 添加登录状态
     favorites: [] as FavoriteItem[],
     loading: true,
-    loadingMore: false,
-    hasMore: true,
+    loadingMore: false, // 添加loadingMore属性
     page: 1,
     pageSize: 20,
-    hasLoaded: false
+    hasMore: true,
+    hasLoaded: false // 添加hasLoaded属性
   },
 
   onLoad() {
-    console.log('收藏页面 onLoad')
     this.checkLoginAndLoad()
   },
 
   onShow() {
-    console.log('收藏页面 onShow, hasLoaded:', this.data.hasLoaded)
-    // 只有在已经加载过数据后，再次显示页面时才刷新
-    if (this.data.hasLoaded) {
-      console.log('页面已加载过，刷新数据')
-      this.refreshFavorites()
+    // 每次显示都重新检查登录状态
+    this.checkLoginAndLoad()
+  },
+
+  onReachBottom() {
+    if (this.data.hasMore && !this.data.loadingMore && this.data.isLoggedIn) {
+      this.loadFavorites()
     }
+  },
+
+  onPullDownRefresh() {
+    this.refreshFavorites()
+    wx.stopPullDownRefresh()
   },
 
   // 检查登录状态并加载数据
   checkLoginAndLoad() {
     if (!checkLoginStatus()) {
-      wx.showModal({
-        title: '请先登录',
-        content: '查看收藏需要先登录账号',
-        confirmText: '去登录',
-        success: (res) => {
-          if (res.confirm) {
-            wx.navigateTo({
-              url: '/pages/login/login'
-            })
-          } else {
-            wx.navigateBack()
-          }
-        }
+      // 用户未登录，显示登录引导界面
+      this.setData({ 
+        isLoggedIn: false,
+        loading: false 
       })
       return
     }
     
+    // 用户已登录，加载收藏数据
+    this.setData({ isLoggedIn: true })
     this.loadFavorites()
+  },
+
+  // 引导用户登录
+  goToLogin() {
+    wx.navigateTo({
+      url: '/pages/login/login'
+    })
+  },
+
+  // 去逛逛商品
+  goToBrowse() {
+    wx.switchTab({
+      url: '/pages/home/home'
+    })
   },
 
   // 刷新收藏列表
   refreshFavorites() {
     // 检查登录状态
     if (!checkLoginStatus()) {
+      this.setData({ 
+        isLoggedIn: false,
+        loading: false 
+      })
       return
     }
     
     this.setData({
+      isLoggedIn: true,
       favorites: [],
       page: 1,
       hasMore: true,
@@ -115,9 +132,9 @@ Page({
         const updatedFavorites = this.data.page === 1 ? newFavorites : [...this.data.favorites, ...newFavorites]
         console.log('更新后收藏数量:', updatedFavorites.length)
 
-        // 去重处理，防止重复数据
+        // 去重处理，防止重复数据，使用_id或id进行去重
         const uniqueFavorites = updatedFavorites.filter((item: FavoriteItem, index: number, self: FavoriteItem[]) => 
-          index === self.findIndex((t: FavoriteItem) => t._id === item._id)
+          index === self.findIndex((t: FavoriteItem) => (t._id || t.id) === (item._id || item.id))
         )
 
         console.log('去重后收藏数量:', uniqueFavorites.length)
@@ -241,18 +258,5 @@ Page({
     wx.switchTab({
       url: '/pages/home/home'
     })
-  },
-
-  // 下拉刷新
-  onPullDownRefresh() {
-    this.refreshFavorites()
-    wx.stopPullDownRefresh()
-  },
-
-  // 上拉加载更多
-  onReachBottom() {
-    if (this.data.hasMore && !this.data.loadingMore) {
-      this.loadFavorites()
-    }
   }
 }) 
