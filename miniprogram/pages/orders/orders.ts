@@ -5,12 +5,12 @@ Page({
     refreshing: false,
     loading: true,
     tabs: [
-      { label: '全部', value: 'all', count: 0 },
-      { label: '待付款', value: 'pending', count: 0 },
-      { label: '待发货', value: 'paid', count: 0 },
-      { label: '待收货', value: 'shipping', count: 0 },
-      { label: '已完成', value: 'completed', count: 0 },
-      { label: '已取消', value: 'cancelled', count: 0 }
+      { label: '全部', value: 'all', count: 0, labelWithCount: '全部' },
+      { label: '待付款', value: 'pending', count: 0, labelWithCount: '待付款' },
+      { label: '待发货', value: 'paid', count: 0, labelWithCount: '待发货' },
+      { label: '待收货', value: 'shipping', count: 0, labelWithCount: '待收货' },
+      { label: '已完成', value: 'completed', count: 0, labelWithCount: '已完成' },
+      { label: '已取消', value: 'cancelled', count: 0, labelWithCount: '已取消' }
     ],
     orders: [] as any[],
     countdownTimer: null as any,
@@ -573,10 +573,14 @@ Page({
       }
     })
     
-    const updatedTabs = this.data.tabs.map(tab => ({
-      ...tab,
-      count: counts[tab.value as keyof typeof counts] || 0
-    }))
+    const updatedTabs = this.data.tabs.map(tab => {
+      const count = counts[tab.value as keyof typeof counts] || 0
+      return {
+        ...tab,
+        count: count,
+        labelWithCount: count > 0 ? `${tab.label} (${count})` : tab.label
+      }
+    })
     
     this.setData({ tabs: updatedTabs })
   },

@@ -1,3 +1,6 @@
+import { ProductForm } from '../../types/product-form'
+import { checkLoginStatus, isMerchant } from '../../utils/auth'
+
 Page({
   data: {
     currentTab: 'all',
@@ -6,17 +9,17 @@ Page({
     userInfo: {} as any,
     shopInfo: {
       name: '我的书店',
-      description: '精品图书，品质保证',
+      description: '精品商品，品质保证',
       status: 'active',
       statusText: '营业中',
       avatarUrl: ''
     },
     // 统计数据
     stats: [
-      { type: 'sales', label: '总销量', value: '0', trend: 0, unit: '本' },
+      { type: 'sales', label: '总销量', value: '0', trend: 0, unit: '件' },
       { type: 'orders', label: '订单数', value: '0', trend: 0, unit: '单' },
       { type: 'revenue', label: '总收入', value: '0', trend: 0, unit: '元' },
-      { type: 'stock', label: '库存数', value: '0', trend: 0, unit: '本' }
+      { type: 'stock', label: '库存数', value: '0', trend: 0, unit: '件' }
     ],
     // 快捷操作
     quickActions: [
@@ -67,41 +70,66 @@ Page({
       price: '',
       originalPrice: '',
       stock: '',
-      categoryId: 1,
-      categoryIndex: 0,
-      categoryName: '计算机',
-      subCategoryId: 'textbook',
-      subCategoryIndex: 0,
-      subCategoryName: '教材',
+      collegeId: 1,
+      collegeIndex: 0,
+      collegeName: '数学科学学院',
+      majorId: 'all',
+      majorIndex: 0,
+      majorName: '全部专业',
       description: '',
       condition: '良好',
       conditionIndex: 1,
-      publisher: '',
-      isbn: '',
       icon: '📚',
       images: [] as string[]
-    },
-    // 分类选项
-    categoryOptions: [
-      { id: 1, name: '计算机' },
-      { id: 2, name: '医学' },
-      { id: 3, name: '管理学' },
-      { id: 4, name: '英语' },
-      { id: 5, name: '法律' },
-      { id: 6, name: '理工' },
-      { id: 7, name: '艺术' }
-    ],
-    subCategoryOptions: [
-      { id: 'textbook', name: '教材' },
-      { id: 'reference', name: '参考书' },
-      { id: 'exam', name: '考研资料' }
-    ],
+    } as ProductForm,
+    // 学院和专业选项
+    collegeOptions: [] as any[],
+    majorOptions: [] as any[],
     conditionOptions: ['全新', '良好', '一般'],
     saving: false
   },
 
   async onLoad() {
+    // 权限验证：检查登录状态
+    if (!checkLoginStatus()) {
+      wx.showToast({
+        title: '请先登录',
+        icon: 'none',
+        duration: 2000
+      })
+      setTimeout(() => {
+        wx.redirectTo({
+          url: '/pages/login/login'
+        })
+      }, 2000)
+      return
+    }
+
+    // 权限验证：检查商家身份
+    if (!isMerchant()) {
+      wx.showModal({
+        title: '访问受限',
+        content: '您还不是商家，是否申请成为商家？',
+        showCancel: true,
+        confirmText: '申请',
+        cancelText: '返回',
+        success: (res) => {
+          if (res.confirm) {
+            wx.redirectTo({
+              url: '/pages/merchant-apply/merchant-apply'
+            })
+          } else {
+            wx.switchTab({
+              url: '/pages/profile/profile'
+            })
+          }
+        }
+      })
+      return
+    }
+
     await this.loadUserInfo()
+    await this.initCollegeData()
     await this.loadAllData()
   },
 
@@ -124,6 +152,40 @@ Page({
       }
     } catch (error) {
       console.error('获取用户信息失败:', error)
+    }
+  },
+
+  // 初始化学院数据
+  async initCollegeData() {
+    try {
+      // 使用 require 替代动态 import
+      const collegeDataModule = require('../../utils/college-data')
+      const { collegeData, getMajorsByCollegeId } = collegeDataModule
+      
+      console.log('学院数据导入成功:', collegeData)
+      console.log('学院数据长度:', collegeData.length)
+      
+      const collegeOptions = collegeData.map((college: any) => ({
+        id: college.id,
+        name: college.name
+      }))
+      
+      const majorOptions = getMajorsByCollegeId(1) // 默认第一个学院的专业
+      
+      console.log('学院选项:', collegeOptions)
+      console.log('专业选项:', majorOptions)
+      
+      this.setData({
+        collegeOptions,
+        majorOptions
+      })
+    } catch (error) {
+      console.error('初始化学院数据失败:', error)
+      console.error('错误详情:', (error as Error).stack)
+      wx.showToast({
+        title: '初始化数据失败',
+        icon: 'none'
+      })
     }
   },
 
@@ -152,7 +214,7 @@ Page({
   // 加载商家统计数据
   async loadMerchantStats() {
     try {
-      // 获取图书统计
+      // 获取商品统计
       const bookStatsResult = await wx.cloud.callFunction({
         name: 'books',
         data: {
@@ -218,7 +280,7 @@ Page({
     }
   },
 
-  // 加载商家图书
+  // 加载商家商品
   async loadMerchantBooks() {
     try {
       const result = await wx.cloud.callFunction({
@@ -383,25 +445,23 @@ Page({
         price: '',
         originalPrice: '',
         stock: '',
-        categoryId: 1,
-        categoryIndex: 0,
-        categoryName: '计算机',
-        subCategoryId: 'textbook',
-        subCategoryIndex: 0,
-        subCategoryName: '教材',
+        collegeId: 1,
+        collegeIndex: 0,
+        collegeName: '数学科学学院',
+        majorId: 'all',
+        majorIndex: 0,
+        majorName: '全部专业',
         description: '',
         condition: '良好',
         conditionIndex: 1,
-        publisher: '',
-        isbn: '',
         icon: '📚',
         images: []
-      }
+      } as ProductForm
     })
   },
 
   // 编辑商品
-  editProduct(e: any) {
+  async editProduct(e: any) {
     const productId = e.currentTarget.dataset.id
     const product = this.data.allProducts.find(p => p._id === productId)
     
@@ -413,34 +473,46 @@ Page({
       return
     }
 
-    // 找到分类和子分类的索引
-    const categoryIndex = this.data.categoryOptions.findIndex(cat => cat.id === product.categoryId)
-    const subCategoryIndex = this.data.subCategoryOptions.findIndex(sub => sub.id === product.subCategoryId)
+    // 找到学院和专业的索引
+    const collegeIndex = this.data.collegeOptions.findIndex(college => college.id === product.collegeId)
+    
+    // 获取该学院的专业列表
+    let majorOptions = this.data.majorOptions
+    if (product.collegeId) {
+      try {
+        const collegeDataModule = require('../../utils/college-data')
+        const { getMajorsByCollegeId } = collegeDataModule
+        majorOptions = getMajorsByCollegeId(product.collegeId)
+      } catch (error) {
+        console.error('获取专业列表失败:', error)
+      }
+    }
+    
+    const majorIndex = majorOptions.findIndex(major => major.id === product.majorId)
     const conditionIndex = this.data.conditionOptions.findIndex(cond => cond === product.condition)
 
     this.setData({
       showProductModal: true,
       editingProduct: product,
+      majorOptions: majorOptions,
       productForm: {
         title: product.title || '',
         author: product.author || '',
         price: product.price ? product.price.toString() : '',
         originalPrice: product.originalPrice ? product.originalPrice.toString() : '',
         stock: product.stock ? product.stock.toString() : '',
-        categoryId: product.categoryId || 1,
-        categoryIndex: categoryIndex >= 0 ? categoryIndex : 0,
-        categoryName: this.data.categoryOptions[categoryIndex >= 0 ? categoryIndex : 0].name,
-        subCategoryId: product.subCategoryId || 'textbook',
-        subCategoryIndex: subCategoryIndex >= 0 ? subCategoryIndex : 0,
-        subCategoryName: this.data.subCategoryOptions[subCategoryIndex >= 0 ? subCategoryIndex : 0].name,
+        collegeId: product.collegeId || 1,
+        collegeIndex: collegeIndex >= 0 ? collegeIndex : 0,
+        collegeName: this.data.collegeOptions[collegeIndex >= 0 ? collegeIndex : 0]?.name || '数学科学学院',
+        majorId: product.majorId || 'all',
+        majorIndex: majorIndex >= 0 ? majorIndex : 0,
+        majorName: majorOptions[majorIndex >= 0 ? majorIndex : 0]?.name || '全部专业',
         description: product.description || '',
         condition: product.condition || '良好',
         conditionIndex: conditionIndex >= 0 ? conditionIndex : 1,
-        publisher: product.publisher || '',
-        isbn: product.isbn || '',
         icon: product.icon || '📚',
         images: product.images || []
-      }
+      } as ProductForm
     })
   },
 
@@ -460,25 +532,69 @@ Page({
     }
   },
 
-  // 分类选择改变
-  onCategoryChange(e: any) {
-    const categoryOptions = this.data.categoryOptions
-    const selectedCategory = categoryOptions[e.detail.value]
-    this.setData({
-      'productForm.categoryId': selectedCategory.id,
-      'productForm.categoryIndex': e.detail.value,
-      'productForm.categoryName': selectedCategory.name
-    })
+  // 学院选择改变
+  async onCollegeChange(e: any) {
+    const collegeOptions = this.data.collegeOptions
+    const selectedCollege = collegeOptions[e.detail.value]
+    
+    if (!selectedCollege) {
+      console.error('未找到选中的学院')
+      return
+    }
+    
+    try {
+      // 使用 require 替代动态 import
+      const collegeDataModule = require('../../utils/college-data')
+      const { getMajorsByCollegeId } = collegeDataModule
+      const majorOptions = getMajorsByCollegeId(selectedCollege.id)
+      
+      this.setData({
+        'productForm.collegeId': selectedCollege.id,
+        'productForm.collegeIndex': e.detail.value,
+        'productForm.collegeName': selectedCollege.name,
+        'productForm.majorId': 'all',
+        'productForm.majorIndex': 0,
+        'productForm.majorName': '全部专业',
+        majorOptions: majorOptions
+      })
+    } catch (error) {
+      console.error('更新专业列表失败:', error)
+      wx.showToast({
+        title: '更新专业列表失败',
+        icon: 'none'
+      })
+    }
   },
 
-  // 子分类选择改变
-  onSubCategoryChange(e: any) {
-    const subCategoryOptions = this.data.subCategoryOptions
-    const selectedSubCategory = subCategoryOptions[e.detail.value]
+  // 专业选择改变
+  onMajorChange(e: any) {
+    const majorOptions = this.data.majorOptions
+    const majorIndex = e.detail.value
+    
+    // 边界检查
+    if (!majorOptions || !Array.isArray(majorOptions) || majorIndex < 0 || majorIndex >= majorOptions.length) {
+      console.error('专业选择器索引越界:', { majorOptions, majorIndex })
+      wx.showToast({
+        title: '专业选择失败',
+        icon: 'none'
+      })
+      return
+    }
+    
+    const selectedMajor = majorOptions[majorIndex]
+    if (!selectedMajor || !selectedMajor.id) {
+      console.error('选中的专业数据无效:', selectedMajor)
+      wx.showToast({
+        title: '专业数据错误',
+        icon: 'none'
+      })
+      return
+    }
+    
     this.setData({
-      'productForm.subCategoryId': selectedSubCategory.id,
-      'productForm.subCategoryIndex': e.detail.value,
-      'productForm.subCategoryName': selectedSubCategory.name
+      'productForm.majorId': selectedMajor.id,
+      'productForm.majorIndex': majorIndex,
+      'productForm.majorName': selectedMajor.name
     })
   },
 
@@ -537,18 +653,18 @@ Page({
     this.setData({ saving: true })
 
     try {
-      const bookData = {
+      const bookData: any = {
         title: productForm.title.trim(),
-        author: productForm.author.trim(),
+        author: productForm.author.trim(), // 商品简要描述
         price: parseFloat(productForm.price),
         originalPrice: productForm.originalPrice ? parseFloat(productForm.originalPrice) : parseFloat(productForm.price),
         stock: parseInt(productForm.stock),
-        categoryId: productForm.categoryId,
-        subCategoryId: productForm.subCategoryId,
+        collegeId: productForm.collegeId,
+        collegeName: productForm.collegeName,
+        majorId: productForm.majorId,
+        majorName: productForm.majorName,
         description: productForm.description.trim(),
         condition: productForm.condition,
-        publisher: productForm.publisher.trim(),
-        isbn: productForm.isbn.trim(),
         icon: productForm.icon,
         images: productForm.images,
         status: 'active'
@@ -559,10 +675,14 @@ Page({
         ? { ...bookData, bookId: editingProduct._id }
         : bookData
 
+      console.log('保存商品请求数据:', { action, ...data })
+
       const result = await wx.cloud.callFunction({
         name: 'books',
         data: { action, ...data }
       })
+
+      console.log('云函数返回结果:', result)
 
       const response = result.result as any
       if (response.code === 0) {
@@ -657,7 +777,7 @@ Page({
   showDeleteConfirm(productId: string) {
     wx.showModal({
       title: '确认删除',
-      content: '删除后无法恢复，确定要删除这本图书吗？',
+      content: '删除后无法恢复，确定要删除这件商品吗？',
       success: (res) => {
         if (res.confirm) {
           this.deleteProduct(productId)

@@ -9,36 +9,39 @@ Page({
       {
         id: 1,
         title: '新学期优惠',
-        subtitle: '专业教材 9折起',
+        subtitle: '专业商品 9折起',
         bgColor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-        image: 'cloud://cloud1-8gbfcrr39555713f.636c-cloud1-8gbfcrr39555713f-1355783267/book-covers/1749909745183_yptr84wow.jpg', // 云存储图片ID，如：cloud://xxx/banners/banner1.jpg
-        link: '/pages/category/category?id=1'
+        image: 'cloud://cloud1-8gbfcrr39555713f.636c-cloud1-8gbfcrr39555713f-1355783267/book-covers/1749909745183_yptr84wow.jpg',
+        link: '/pages/category/category'
       },
       {
         id: 2,
-        title: '考研资料',
-        subtitle: '助力考研路',
+        title: '学习用品',
+        subtitle: '助力学习路',
         bgColor: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-        image: '', // 云存储图片ID
-        link: '/pages/category/category?id=exam'
+        image: '',
+        link: '/pages/category/category'
       },
       {
         id: 3,
         title: '计算机专区',
-        subtitle: '程序员必备书籍',
+        subtitle: '程序员必备商品',
         bgColor: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-        image: '', // 云存储图片ID
-        link: '/pages/category/category?id=computer'
+        image: '',
+        link: '/pages/category/category'
       }
     ],
     categories: [
-      { id: 1, name: '计算机', icon: '💻', bgColor: '#dbeafe' },
-      { id: 2, name: '医学', icon: '⚕️', bgColor: '#dcfce7' },
-      { id: 3, name: '管理学', icon: '💼', bgColor: '#fed7aa' },
-      { id: 4, name: '法律', icon: '🏛️', bgColor: '#e9d5ff' }
+      { id: 3, name: '计算机学院', icon: '💻', bgColor: '#dbeafe' },
+      { id: 9, name: '药学学院', icon: '💊', bgColor: '#dcfce7' },
+      { id: 7, name: '管理学院', icon: '💼', bgColor: '#fed7aa' },
+      { id: 13, name: '知识产权', icon: '🏛️', bgColor: '#e9d5ff' },
+      { id: 2, name: '经济金融', icon: '💰', bgColor: '#fef3c7' },
+      { id: 11, name: '机械工程', icon: '⚙️', bgColor: '#f3e8ff' },
+      { id: 6, name: '电气学院', icon: '⚡', bgColor: '#ecfdf5' },
+      { id: 16, name: 'AI学院', icon: '🤖', bgColor: '#fef2f2' }
     ],
-    hotBooks: [],
-    recommendBooks: []
+    hotBooks: []
   },
 
   onLoad() {
@@ -68,18 +71,11 @@ Page({
     this.setData({ loading: true })
     
     try {
-      // 并行获取热门图书和推荐图书
-      const [hotBooksResult, recommendBooksResult] = await Promise.all([
-        this.getHotBooks(),
-        this.getRecommendBooks()
-      ])
+      // 只获取热门商品
+      const hotBooksResult = await this.getHotBooks()
 
       if (hotBooksResult.code === 0) {
         this.setData({ hotBooks: hotBooksResult.data })
-      }
-
-      if (recommendBooksResult.code === 0) {
-        this.setData({ recommendBooks: recommendBooksResult.data })
       }
     } catch (error) {
       console.error('加载首页数据失败:', error)
@@ -92,39 +88,24 @@ Page({
     }
   },
 
-  // 获取热门图书
+  // 获取热门商品
   async getHotBooks() {
     try {
       const result = await wx.cloud.callFunction({
         name: 'books',
         data: {
           action: 'getHotBooks',
-          limit: 6
+          limit: 5
         }
       })
       return result.result as any
     } catch (error) {
-      console.error('获取热门图书失败:', error)
+      console.error('获取热门商品失败:', error)
       return { code: -1, message: '获取失败' }
     }
   },
 
-  // 获取推荐图书
-  async getRecommendBooks() {
-    try {
-      const result = await wx.cloud.callFunction({
-        name: 'books',
-        data: {
-          action: 'getRecommendBooks',
-          limit: 10
-        }
-      })
-      return result.result as any
-    } catch (error) {
-      console.error('获取推荐图书失败:', error)
-      return { code: -1, message: '获取失败' }
-    }
-  },
+
 
   // 检查登录状态（不强制跳转）
   async checkLoginStatus() {
@@ -230,9 +211,21 @@ Page({
   },
 
   goToCategory(e: any) {
-    const categoryId = e.currentTarget.dataset.id
+    const collegeId = e.currentTarget.dataset.id
     wx.switchTab({
-      url: '/pages/category/category'
+      url: '/pages/category/category',
+      success: () => {
+        // 通过全局数据或者事件传递学院ID给分类页面
+        if (collegeId) {
+          setTimeout(() => {
+            const pages = getCurrentPages()
+            const categoryPage = pages[pages.length - 1]
+            if (categoryPage.selectCollege) {
+              categoryPage.selectCollege({ currentTarget: { dataset: { id: collegeId } } })
+            }
+          }, 100)
+        }
+      }
     })
   },
 
@@ -252,7 +245,7 @@ Page({
 
   onShareAppMessage() {
     return {
-      title: '学长二手书 - 校园专业图书交易平台',
+      title: '学长二手商品 - 校园专业商品交易平台',
       path: '/pages/home/home'
     }
   },

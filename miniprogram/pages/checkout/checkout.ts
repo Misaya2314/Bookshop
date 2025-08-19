@@ -41,14 +41,8 @@ Page({
     showAddressPicker: false,
     selectedAddressIndex: -1,
     addressList: [
-      { id: '1', name: '花溪校区图书馆门口' },
-      { id: '2', name: '花溪校区一号宿舍楼下' },
-      { id: '3', name: '花溪校区教学楼前' },
-      { id: '4', name: '花溪校区食堂门口' },
-      { id: '5', name: '两江校区图书馆门口' },
-      { id: '6', name: '两江校区一号宿舍楼下' },
-      { id: '7', name: '两江校区教学楼前' },
-      { id: '8', name: '两江校区食堂门口' }
+      { id: '1', name: '花溪校区' },
+      { id: '2', name: '两江校区' }
     ] as AddressOption[]
   },
 
@@ -197,9 +191,8 @@ Page({
   // 根据校区获取默认地址
   getDefaultAddressByCampus(campus: string) {
     const campusMap: { [key: string]: string } = {
-      'A校区': '1',
-      'B校区': '4', 
-      'C校区': '7'
+      '花溪校区': '1',
+      '两江校区': '2'
     }
     
     const addressId = campusMap[campus]

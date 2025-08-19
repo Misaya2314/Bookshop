@@ -121,7 +121,7 @@
     <view class="empty-content">
       <view class="empty-icon">📚</view>
       <text class="empty-title">购物车是空的</text>
-      <text class="empty-desc">快去挑选心仪的书籍吧</text>
+      <text class="empty-desc">快去挑选心仪的商品吧</text>
       <t-button 
         theme="primary" 
         size="large" 

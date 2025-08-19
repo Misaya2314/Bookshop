@@ -1,26 +1,17 @@
+import { collegeData, getCollegeById, getMajorsByCollegeId } from '../../utils/college-data'
+
 Page({
   data: {
-    selectedCategory: 1,
-    selectedSubCategory: 'all',
+    selectedCollege: 1, // 改为学院ID
+    selectedMajor: 'all', // 改为专业ID
     loading: false,
-    categories: [
-      { id: 1, name: '计算机', icon: '💻' },
-      { id: 2, name: '医学', icon: '⚕️' },
-      { id: 3, name: '管理学', icon: '💼' },
-      { id: 4, name: '英语', icon: '🇬🇧' },
-      { id: 5, name: '法律', icon: '🏛️' },
-      { id: 6, name: '理工', icon: '🔬' },
-      { id: 7, name: '艺术', icon: '🎨' }
-    ],
-    subCategories: [
-      { id: 'all', name: '全部' },
-      { id: 'textbook', name: '教材' },
-      { id: 'reference', name: '参考书' },
-      { id: 'exam', name: '考研资料' }
-    ],
+    refreshing: false,
+    colleges: collegeData, // 使用学院数据
+    majors: getMajorsByCollegeId(1), // 当前学院的专业列表
     books: [],
     page: 1,
-    hasMore: true
+    hasMore: true,
+    scrollIntoView: '' // 用于控制横向滚动
   },
 
   onLoad() {
@@ -35,24 +26,32 @@ Page({
     }
   },
 
-  selectCategory(e: any) {
-    const categoryId = e.currentTarget.dataset.id
+  selectCollege(e: any) {
+    const collegeId = e.currentTarget.dataset.id
+    const majors = getMajorsByCollegeId(collegeId)
     this.setData({
-      selectedCategory: categoryId,
-      selectedSubCategory: 'all'
+      selectedCollege: collegeId,
+      selectedMajor: 'all',
+      majors: majors,
+      scrollIntoView: 'major-0' // 滚动到第一个专业（全部专业）
     })
     this.loadBooks()
   },
 
-  onSubCategoryChange(e: any) {
+  selectMajor(e: any) {
+    const majorId = e.currentTarget.dataset.id
+    const majorIndex = e.currentTarget.dataset.index
+    
     this.setData({
-      selectedSubCategory: e.detail.value
+      selectedMajor: majorId,
+      scrollIntoView: `major-${majorIndex}`
     })
+    
     this.loadBooks()
   },
 
   async loadBooks(refresh = true) {
-    const { selectedCategory, selectedSubCategory, page, books } = this.data
+    const { selectedCollege, selectedMajor, page, books } = this.data
     
     if (refresh) {
       this.setData({ loading: true, page: 1, books: [], hasMore: true })
@@ -62,9 +61,9 @@ Page({
       const result = await wx.cloud.callFunction({
         name: 'books',
         data: {
-          action: 'getBooksByCategory',
-          categoryId: selectedCategory,
-          subCategoryId: selectedSubCategory,
+          action: 'getBooksByCollege',
+          collegeId: selectedCollege,
+          majorId: selectedMajor,
           page: refresh ? 1 : page,
           pageSize: 20
         }
@@ -85,7 +84,7 @@ Page({
         })
       }
     } catch (error) {
-      console.error('加载图书失败:', error)
+      console.error('加载商品失败:', error)
       wx.showToast({
         title: '网络错误',
         icon: 'none'
@@ -95,7 +94,7 @@ Page({
     }
   },
 
-  // 加载更多图书
+  // 加载更多商品
   async loadMoreBooks() {
     if (!this.data.hasMore || this.data.loading) return
     await this.loadBooks(false)
@@ -110,8 +109,9 @@ Page({
 
   // 下拉刷新
   onPullDownRefresh() {
+    this.setData({ refreshing: true })
     this.loadBooks().finally(() => {
-      wx.stopPullDownRefresh()
+      this.setData({ refreshing: false })
     })
   },
 

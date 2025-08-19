@@ -1,5 +1,5 @@
 <!-- 顶部导航栏 -->
-<t-navbar title="我的订单">
+<t-navbar title="订单管理">
   <view slot="left" class="navbar-left" bindtap="goBack">
     <t-icon name="chevron-left" size="44rpx" />
   </view>
@@ -24,28 +24,31 @@
 </view>
 
 <!-- 订单列表 -->
-<scroll-view scroll-y class="orders-container" wx:if="{{!loading}}" refresher-enabled="{{true}}" bind:refresherrefresh="onRefresh" refresher-triggered="{{refreshing}}">
+<scroll-view 
+  scroll-y 
+  class="orders-container" 
+  wx:if="{{!loading}}" 
+  refresher-enabled="{{true}}" 
+  bind:refresherrefresh="onRefresh" 
+  refresher-triggered="{{refreshing}}"
+>
   <view class="order-list">
     <!-- 订单项 -->
     <view 
       class="order-item" 
       wx:for="{{orders}}" 
       wx:key="_id"
-      bindtap="goToOrderDetail"
+      bindtap="viewOrderDetail"
       data-id="{{item._id}}"
     >
       <!-- 订单头部 -->
       <view class="order-header">
-        <view class="merchant-info">
-          <t-icon name="shop" size="32rpx" color="#3b82f6" />
-          <text class="merchant-name">{{item.merchantName}}</text>
+        <view class="buyer-info">
+          <t-icon name="user" size="32rpx" color="#3b82f6" />
+          <text class="buyer-name">{{item.buyerName || '买家'}}</text>
         </view>
         <view class="order-status {{item.statusClass}}">
           {{item.statusText}}
-          <!-- 待支付订单显示倒计时 -->
-          <view wx:if="{{item.status === 'pending' && item.remainingTime}}" class="countdown">
-            <text class="countdown-text">剩余: {{item.remainingTime}}</text>
-          </view>
         </view>
       </view>
 
@@ -58,7 +61,13 @@
           wx:for-item="product"
         >
           <view class="product-image">
-            <text class="book-emoji">{{product.icon}}</text>
+            <image 
+              wx:if="{{product.images && product.images.length > 0}}"
+              src="{{product.images[0]}}" 
+              class="book-image" 
+              mode="aspectFill"
+            />
+            <text wx:else class="book-emoji">{{product.icon || '📚'}}</text>
           </view>
           <view class="product-info">
             <text class="product-title">{{product.title}}</text>
@@ -71,84 +80,73 @@
         </view>
       </view>
 
-      <!-- 订单底部信息 -->
-      <view class="order-footer">
-        <view class="order-info">
+      <!-- 订单信息 -->
+      <view class="order-info">
+        <view class="order-detail">
           <text class="order-time">{{item.createTime}}</text>
-          <text class="order-total">共{{item.totalQuantity}}件商品 合计: ¥{{item.totalPrice}}</text>
+          <text class="order-address">{{item.deliveryAddress}}</text>
         </view>
-        <view class="order-actions">
-          <!-- 根据订单状态显示不同操作按钮 -->
+        <text class="order-total">共{{item.totalQuantity}}件商品 合计: ¥{{item.totalPrice}}</text>
+      </view>
+
+      <!-- 订单操作 -->
+      <view class="order-actions">
+        <!-- 待发货状态 -->
+        <block wx:if="{{item.status === 'paid'}}">
           <t-button 
-            wx:if="{{item.status === 'pending'}}"
-            size="small" 
-            theme="primary" 
-            catchtap="payOrder"
-            data-id="{{item._id}}"
-          >
-            立即支付
-          </t-button>
-          <t-button 
-            wx:if="{{item.status === 'pending'}}"
             size="small" 
             variant="outline" 
-            catchtap="cancelOrder"
+            catchtap="contactBuyer"
+            data-id="{{item._id}}"
+          >
+            联系买家
+          </t-button>
+          <t-button 
+            size="small" 
+            theme="primary" 
+            catchtap="shipOrder"
             data-id="{{item._id}}"
             style="margin-left: 16rpx;"
           >
-            取消订单
+            立即发货
           </t-button>
-          
+        </block>
+        
+        <!-- 已发货状态 -->
+        <block wx:if="{{item.status === 'shipping'}}">
           <t-button 
-            wx:if="{{item.status === 'paid'}}"
             size="small" 
             variant="outline" 
-            catchtap="contactSeller"
+            catchtap="contactBuyer"
             data-id="{{item._id}}"
           >
-            联系卖家
+            联系买家
           </t-button>
-          
+        </block>
+        
+        <!-- 已完成状态 -->
+        <block wx:if="{{item.status === 'completed'}}">
           <t-button 
-            wx:if="{{item.status === 'shipping'}}"
-            size="small" 
-            theme="primary" 
-            catchtap="confirmReceive"
-            data-id="{{item._id}}"
-          >
-            确认收货
-          </t-button>
-          <t-button 
-            wx:if="{{item.status === 'shipping'}}"
             size="small" 
             variant="outline" 
-            catchtap="viewLogistics"
+            catchtap="contactBuyer"
             data-id="{{item._id}}"
-            style="margin-left: 16rpx;"
           >
-            查看物流
+            联系买家
           </t-button>
-          
+        </block>
+        
+        <!-- 其他状态显示查看详情 -->
+        <block wx:if="{{item.status !== 'paid' && item.status !== 'shipping' && item.status !== 'completed'}}">
           <t-button 
-            wx:if="{{item.status === 'completed'}}"
             size="small" 
-            theme="primary" 
-            catchtap="writeReview"
+            variant="outline"
+            catchtap="viewOrderDetail"
             data-id="{{item._id}}"
           >
-            评价
+            查看详情
           </t-button>
-          <t-button 
-            wx:if="{{item.status === 'completed'}}"
-            size="small" 
-            variant="outline" 
-            catchtap="buyAgain"
-            data-id="{{item._id}}"
-            style="margin-left: 16rpx;"
-          >
-            再次购买
-          </t-button>
-        </view>
+        </block>
       </view>
     </view>
   </view>
@@ -157,14 +155,6 @@
   <view class="empty-orders" wx:if="{{orders.length === 0}}">
     <view class="empty-icon">📋</view>
     <text class="empty-text">暂无{{currentTabLabel}}订单</text>
-    <text class="empty-desc">去看看有什么好商品吧</text>
-    <t-button 
-      theme="primary" 
-      size="large" 
-      bind:tap="goShopping"
-      style="margin-top: 40rpx; width: 400rpx;"
-    >
-      去逛逛
-    </t-button>
+    <text class="empty-desc">等待买家下单吧</text>
   </view>
-</scroll-view> 
+</scroll-view>

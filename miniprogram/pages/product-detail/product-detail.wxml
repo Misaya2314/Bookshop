@@ -67,10 +67,10 @@
         <text>{{product.rating}}分</text>
       </view>
       <view class="stat-item">
-        <text>已售{{product.sales}}本</text>
+        <text>已售{{product.sales}}件</text>
       </view>
       <view class="stat-item">
-        <text>库存: {{product.stock}}本</text>
+        <text>库存: {{product.stock}}件</text>
       </view>
     </view>
   </view>
@@ -101,7 +101,7 @@
         <text class="seller-desc">{{product.seller.college}} · {{product.seller.grade}}</text>
         <view class="seller-stats">
           <text class="seller-rating">⭐ {{product.seller.rating}}分</text>
-          <text class="seller-sales">已售{{product.seller.totalSales}}本</text>
+          <text class="seller-sales">已售{{product.seller.totalSales}}件</text>
         </view>
       </view>
       <t-icon name="chevron-right" size="32rpx" color="#999" />

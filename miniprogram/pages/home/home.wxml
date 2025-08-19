@@ -2,7 +2,7 @@
 <view class="home-header">
   <t-search 
     model:value="{{searchValue}}" 
-    placeholder="搜索书名、作者..." 
+    placeholder="搜索商品..." 
     bind:submit="onSearch"
     bind:focus="onSearchFocus"
   />
@@ -55,8 +55,11 @@
   </view>
 </view>
 
-<!-- 快捷入口 -->
+<!-- 学院分类 -->
 <view class="quick-menu">
+  <view class="section-header">
+    <text class="section-title">学院分类</text>
+  </view>
   <t-grid column="{{4}}" border="{{false}}">
     <t-grid-item 
       wx:for="{{categories}}" 
@@ -109,31 +112,4 @@
   </view>
 </view>
 
-<!-- 为你推荐 -->
-<view class="recommend-grid-section">
-  <view class="section-header">
-    <text class="section-title">为你推荐</text>
-  </view>
-  <view class="grid-books">
-    <view 
-      class="grid-book-item" 
-      wx:for="{{recommendBooks}}" 
-      wx:key="_id"
-      bindtap="goToDetail"
-      data-id="{{item._id}}"
-    >
-      <view class="grid-book-cover">
-        <image 
-          wx:if="{{item.images && item.images.length > 0}}"
-          src="{{item.images[0]}}" 
-          class="book-image" 
-          mode="aspectFill"
-        />
-        <text wx:else class="book-emoji">{{item.icon}}</text>
-      </view>
-      <text class="grid-book-title">{{item.title}}</text>
-      <text class="grid-book-author">{{item.author}}</text>
-      <text class="grid-book-price">¥{{item.price}}</text>
-    </view>
-  </view>
-</view> 
+ 

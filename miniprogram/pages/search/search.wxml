@@ -2,7 +2,7 @@
 <view class="search-header">
   <t-search 
     model:value="{{searchValue}}" 
-    placeholder="搜索书名、作者..." 
+    placeholder="搜索商品..." 
     bind:submit="onSearch"
     bind:clear="onClear"
     autofocus="{{true}}"
@@ -61,7 +61,7 @@
     <text>搜索中...</text>
   </view>
 
-  <!-- 书籍列表 -->
+  <!-- 商品列表 -->
   <view class="book-list" wx:if="{{!loading}}">
     <view 
       class="book-item" 
@@ -79,7 +79,7 @@
         <view class="book-footer">
           <text class="book-price">¥{{item.price}}</text>
           <view class="book-stats">
-            <text class="book-sales">已售{{item.sales}}本</text>
+            <text class="book-sales">已售{{item.sales}}件</text>
             <text class="book-stock">库存{{item.stock}}</text>
           </view>
         </view>
@@ -89,7 +89,7 @@
 
   <!-- 无结果 -->
   <view class="no-result" wx:if="{{!loading && books.length === 0}}">
-    <text class="no-result-text">未找到相关图书</text>
+    <text class="no-result-text">未找到相关商品</text>
     <text class="no-result-tip">试试其他关键词吧</text>
   </view>
 

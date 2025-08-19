@@ -111,22 +111,7 @@
       <t-cell title="优惠券" note="暂无可用优惠券" arrow bind:click="selectCoupon" />
     </view>
 
-    <!-- 订单备注 -->
-    <view class="remark-section">
-      <view class="section-title">
-        <t-icon name="edit" size="32rpx" color="#3b82f6" />
-        <text>订单备注</text>
-      </view>
-      <view class="remark-input">
-        <t-textarea
-          placeholder="选填，建议先和卖家沟通"
-          value="{{remark}}"
-          bind:change="onRemarkChange"
-          maxlength="100"
-          autosize
-        />
-      </view>
-    </view>
+
 
     <!-- 费用明细 -->
     <view class="cost-section">

@@ -105,4 +105,42 @@ export function isMerchant(): boolean {
 export function getMerchantStatus(): string {
   const userInfo = getCurrentUser()
   return userInfo?.merchantStatus || ''
+}
+
+// 权限验证中间件 - 检查商家权限
+export function requireMerchantAuth(): boolean {
+  if (!checkLoginStatus()) {
+    wx.showToast({
+      title: '请先登录',
+      icon: 'none'
+    })
+    wx.redirectTo({
+      url: '/pages/login/login'
+    })
+    return false
+  }
+
+  if (!isMerchant()) {
+    wx.showModal({
+      title: '访问受限',
+      content: '您还不是商家，是否申请成为商家？',
+      showCancel: true,
+      confirmText: '申请',
+      cancelText: '返回',
+      success: (res) => {
+        if (res.confirm) {
+          wx.redirectTo({
+            url: '/pages/merchant-apply/merchant-apply'
+          })
+        } else {
+          wx.switchTab({
+            url: '/pages/profile/profile'
+          })
+        }
+      }
+    })
+    return false
+  }
+
+  return true
 } 

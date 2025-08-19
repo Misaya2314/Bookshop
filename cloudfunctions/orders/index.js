@@ -559,6 +559,12 @@ async function getMerchantOrders(event, openid) {
   const { page = 1, limit = 20 } = event
   const { merchantId } = event
 
+  // 验证商家权限
+  const authResult = await verifyMerchantAuth(openid)
+  if (!authResult.success) {
+    return authResult.error
+  }
+
   if (!merchantId) {
     return { code: -1, message: '商家ID不能为空' }
   }
@@ -600,6 +606,12 @@ async function getMerchantOrders(event, openid) {
 // 获取商家统计数据
 async function getMerchantStats(event, openid) {
   const { merchantId } = event
+
+  // 验证商家权限
+  const authResult = await verifyMerchantAuth(openid)
+  if (!authResult.success) {
+    return authResult.error
+  }
 
   if (!merchantId) {
     return { code: -1, message: '商家ID不能为空' }
@@ -688,6 +700,11 @@ async function merchantShipOrder(event, openid) {
       isMerchant: currentUser.isMerchant 
     })
 
+    // 验证商家身份
+    if (!currentUser.isMerchant) {
+      return { code: -1, message: '权限不足，只有商家才能执行此操作' }
+    }
+
     // 验证是否是订单的商家（比较merchantId和当前用户ID）
     if (order.merchantId !== currentUser._id) {
       return { code: -1, message: '无权限操作此订单，只能处理自己的订单' }
@@ -767,4 +784,41 @@ function getStatusClass(status) {
     'cancelled': 'cancelled'
   }
   return classMap[status] || 'pending'
+}
+
+// 验证商家权限的通用函数
+async function verifyMerchantAuth(openid) {
+  try {
+    const userResult = await db.collection('users').where({ openid: openid }).get()
+    if (!userResult.data.length) {
+      return { 
+        success: false, 
+        error: { code: -1, message: '用户不存在' },
+        user: null 
+      }
+    }
+
+    const user = userResult.data[0]
+    
+    if (!user.isMerchant) {
+      return { 
+        success: false, 
+        error: { code: -1, message: '权限不足，只有商家才能执行此操作' },
+        user: null 
+      }
+    }
+
+    return { 
+      success: true, 
+      error: null,
+      user: user 
+    }
+  } catch (error) {
+    console.error('验证商家权限失败:', error)
+    return { 
+      success: false, 
+      error: { code: -1, message: '权限验证失败' },
+      user: null 
+    }
+  }
 } 

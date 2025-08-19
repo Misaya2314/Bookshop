@@ -206,12 +206,12 @@
       <view class="form-section">
         <text class="section-label">基本信息</text>
         <t-cell-group>
-          <t-cell title="书名" required>
-            <t-input slot="note" placeholder="请输入书名" value="{{productForm.title}}" bind:change="onInputChange" data-field="title" />
+          <t-cell title="商品名称" required>
+            <t-input slot="note" placeholder="请输入商品名称" value="{{productForm.title}}" bind:change="onInputChange" data-field="title" />
           </t-cell>
           
-          <t-cell title="作者" required>
-            <t-input slot="note" placeholder="请输入作者" value="{{productForm.author}}" bind:change="onInputChange" data-field="author" />
+          <t-cell title="商品描述" required>
+            <t-input slot="note" placeholder="请输入简单描述" value="{{productForm.author}}" bind:change="onInputChange" data-field="author" />
           </t-cell>
           
           <t-cell title="现价" required>
@@ -232,15 +232,15 @@
       <view class="form-section">
         <text class="section-label">分类信息</text>
         <t-cell-group>
-          <t-cell title="分类" arrow>
-            <picker slot="note" mode="selector" range="{{categoryOptions}}" range-key="name" value="{{productForm.categoryIndex}}" bind:change="onCategoryChange">
-              <text>{{productForm.categoryName}}</text>
+          <t-cell title="学院" arrow>
+            <picker slot="note" mode="selector" range="{{collegeOptions}}" range-key="name" value="{{productForm.collegeIndex}}" bind:change="onCollegeChange">
+              <text>{{productForm.collegeName}}</text>
             </picker>
           </t-cell>
           
-          <t-cell title="子分类" arrow>
-            <picker slot="note" mode="selector" range="{{subCategoryOptions}}" range-key="name" value="{{productForm.subCategoryIndex}}" bind:change="onSubCategoryChange">
-              <text>{{productForm.subCategoryName}}</text>
+          <t-cell title="专业" arrow>
+            <picker slot="note" mode="selector" range="{{majorOptions}}" range-key="name" value="{{productForm.majorIndex}}" bind:change="onMajorChange">
+              <text>{{productForm.majorName}}</text>
             </picker>
           </t-cell>
           
@@ -256,14 +256,6 @@
       <view class="form-section">
         <text class="section-label">详细信息</text>
         <t-cell-group>
-          <t-cell title="出版社">
-            <t-input slot="note" placeholder="请输入出版社" value="{{productForm.publisher}}" bind:change="onInputChange" data-field="publisher" />
-          </t-cell>
-          
-          <t-cell title="ISBN">
-            <t-input slot="note" placeholder="请输入ISBN" value="{{productForm.isbn}}" bind:change="onInputChange" data-field="isbn" />
-          </t-cell>
-          
           <t-cell title="图标">
             <t-input slot="note" placeholder="请输入emoji图标" value="{{productForm.icon}}" bind:change="onInputChange" data-field="icon" />
           </t-cell>
@@ -271,10 +263,10 @@
         
         <!-- 描述字段单独处理 -->
         <view class="description-field">
-          <text class="field-label">图书描述</text>
+          <text class="field-label">商品详情</text>
           <textarea 
             class="description-textarea"
-            placeholder="请输入图书描述"
+            placeholder="请输入商品详细描述"
             value="{{productForm.description}}"
             bind:input="onDescriptionChange"
           maxlength="500"

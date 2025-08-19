@@ -28,6 +28,8 @@ exports.main = async (event, context) => {
         return await searchBooks(event)
       case 'getBooksByCategory':
         return await getBooksByCategory(event)
+      case 'getBooksByCollege':
+        return await getBooksByCollege(event)
       case 'getHotBooks':
         return await getHotBooks(event)
       case 'getRecommendBooks':
@@ -154,6 +156,11 @@ async function addBook(bookData, wxContext) {
       ...bookData,
       merchantId,
       merchantName,
+      // 兼容处理：如果没有传collegeId但有categoryId，进行转换
+      collegeId: bookData.collegeId || bookData.categoryId,
+      collegeName: bookData.collegeName || '',
+      majorId: bookData.majorId || bookData.subCategoryId || 'all',
+      majorName: bookData.majorName || '',
       sales: 0,
       rating: 0,
       views: 0,
@@ -321,9 +328,56 @@ async function searchBooks({ keyword, page = 1, pageSize = 20 }) {
   }
 }
 
-// 按分类获取图书
+// 按分类获取图书（保留兼容性）
 async function getBooksByCategory({ categoryId, subCategoryId = 'all', page = 1, pageSize = 20 }) {
   return await getBooks({ page, pageSize, categoryId, subCategoryId })
+}
+
+// 按学院获取图书
+async function getBooksByCollege({ collegeId, majorId = 'all', page = 1, pageSize = 20 }) {
+  try {
+    const skip = (page - 1) * pageSize
+    
+    // 构建查询条件
+    let whereConditions = { status: 'active' }
+
+    // 按学院筛选
+    if (collegeId) {
+      whereConditions.collegeId = collegeId
+    }
+    
+    // 按专业筛选（如果不是"全部专业"）
+    if (majorId && majorId !== 'all') {
+      whereConditions.majorId = majorId
+    }
+    
+    let query = db.collection('books').where(whereConditions)
+
+    // 执行查询
+    const result = await query
+      .orderBy('createTime', 'desc')
+      .skip(skip)
+      .limit(pageSize)
+      .get()
+
+    // 获取总数
+    const countResult = await query.count()
+
+    return {
+      code: 0,
+      message: '获取图书列表成功',
+      data: {
+        books: result.data,
+        total: countResult.total,
+        page,
+        pageSize,
+        hasMore: result.data.length === pageSize
+      }
+    }
+  } catch (error) {
+    console.error('按学院获取图书错误:', error)
+    throw error
+  }
 }
 
 // 获取热门图书

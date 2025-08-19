@@ -3,13 +3,13 @@
   <view class="logo-section">
     <view class="logo-icon">📚</view>
     <text class="app-title">学长二手书</text>
-    <text class="app-subtitle">校园专业图书交易平台</text>
+    <text class="app-subtitle">校园专业交易平台</text>
   </view>
 
   <!-- 中间欢迎区域 -->
   <view class="welcome-section">
     <text class="welcome-title">欢迎来到学长二手书</text>
-    <text class="welcome-desc">连接校园买家与卖家\n让专业书籍流转更高效</text>
+    <text class="welcome-desc">连接校园买家与卖家\n让闲置物品流转更高效</text>
   </view>
 
   <!-- 隐私政策同意区域 -->

@@ -80,12 +80,9 @@ Page({
           isFavorite: favoriteResult,
           images: this.processImages(bookData.images, bookData.icon),
           params: [
-            { label: '书籍状态', value: bookData.condition || '良好' },
-            { label: '出版社', value: bookData.publisher || '未知' },
-            { label: '作者', value: bookData.author || '未知' },
-            { label: 'ISBN', value: bookData.isbn || '未知' },
-            { label: '分类', value: this.getCategoryName(bookData.categoryId || 0) },
-            { label: '子分类', value: this.getSubCategoryName(bookData.subCategoryId || '') }
+            { label: '商品状态', value: bookData.condition || '良好' },
+            { label: '分类', value: bookData.collegeName || '其他' },
+            { label: '子分类', value: bookData.majorName || '其他' }
           ],
           seller: {
             id: bookData.merchantId || '',

@@ -1,13 +1,5 @@
 {
-  "usingComponents": {
-    "t-tabs": "tdesign-miniprogram/tabs/tabs",
-    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
-    "t-sticky": "tdesign-miniprogram/sticky/sticky",
-    "t-icon": "tdesign-miniprogram/icon/icon",
-    "t-tag": "tdesign-miniprogram/tag/tag"
-  },
-  "navigationBarTitleText": "分类",
-  "navigationBarBackgroundColor": "#ffffff",
-  "navigationBarTextStyle": "black",
+  "usingComponents": {},
+  "navigationStyle": "custom",
   "backgroundColor": "#f5f5f5"
 } 

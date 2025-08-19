@@ -1,11 +1,14 @@
 page {
   background-color: #f5f5f5;
   height: 100vh;
+  padding: 0;
+  margin: 0;
 }
 
 .category-container {
   display: flex;
   height: calc(100vh - 88rpx);
+  margin-top: 88rpx;
 }
 
 /* 左侧分类栏 */
@@ -20,10 +23,15 @@ page {
 }
 
 .category-item {
-  padding: 30rpx 20rpx;
+  padding: 32rpx 20rpx;
   text-align: center;
   border-bottom: 1rpx solid #f8f8f8;
   position: relative;
+  transition: all 0.2s ease;
+}
+
+.category-item:hover {
+  background: #f8f9ff;
 }
 
 .category-item.active {
@@ -43,14 +51,17 @@ page {
 }
 
 .category-icon {
-  font-size: 48rpx;
-  margin-bottom: 8rpx;
+  font-size: 44rpx;
+  margin-bottom: 12rpx;
+  line-height: 1;
 }
 
 .category-name {
   display: block;
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #666;
+  line-height: 1.2;
+  word-break: break-all;
 }
 
 .category-item.active .category-name {
@@ -61,14 +72,73 @@ page {
 /* 右侧内容区 */
 .content-area {
   flex: 1;
+  width: calc(100vw - 200rpx);
   display: flex;
   flex-direction: column;
   background: #f5f5f5;
+  overflow: hidden;
 }
 
 .sub-category-tabs {
   background: white;
   border-bottom: 1rpx solid #f0f0f0;
+  height: 100rpx;
+  flex-shrink: 0;
+}
+
+.major-scroll {
+  height: 100%;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  -webkit-overflow-scrolling: touch;
+}
+
+.major-list {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 30rpx;
+  min-width: max-content;
+}
+
+.major-item {
+  flex-shrink: 0;
+  padding: 20rpx 32rpx;
+  margin-right: 24rpx;
+  border-radius: 40rpx;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 120rpx;
+  height: 60rpx;
+  box-sizing: border-box;
+}
+
+.major-item:last-child {
+  margin-right: 30rpx;
+}
+
+.major-item.active {
+  background: #3b82f6;
+  color: white;
+  box-shadow: 0 2rpx 8rpx rgba(59, 130, 246, 0.3);
+}
+
+.major-name {
+  font-size: 26rpx;
+  color: #666;
+  white-space: nowrap;
+  line-height: 1;
+  text-align: center;
+}
+
+.major-item.active .major-name {
+  color: white;
+  font-weight: 500;
 }
 
 .product-scroll {
@@ -80,6 +150,7 @@ page {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 30rpx;
+  width: 100%;
 }
 
 .product-item {
