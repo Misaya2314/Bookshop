@@ -26,7 +26,8 @@ Page({
       { id: 1, name: '添加商品', icon: 'add-circle', action: 'addProduct', bgColor: '#3b82f6' },
       { id: 2, name: '订单管理', icon: 'order', action: 'orders', bgColor: '#10b981' },
       { id: 3, name: '库存管理', icon: 'shop', action: 'inventory', bgColor: '#f59e0b' },
-      { id: 4, name: '营收统计', icon: 'chart-bar', action: 'analytics', bgColor: '#8b5cf6' }
+      { id: 4, name: '优惠券管理', icon: 'coupon', action: 'coupons', bgColor: '#ef4444' },
+      { id: 5, name: '营收统计', icon: 'chart-bar', action: 'analytics', bgColor: '#8b5cf6' }
     ],
     // 待办事项
     pendingTasks: [
@@ -404,6 +405,9 @@ Page({
         break
       case 'inventory':
         this.goToInventoryManagement()
+        break
+      case 'coupons':
+        this.goToCouponManagement()
         break
       case 'analytics':
         this.goToAnalytics()
@@ -877,6 +881,12 @@ Page({
   goToOrderManagement() {
     wx.navigateTo({
       url: '/pages/merchant-orders/merchant-orders'
+    })
+  },
+
+  goToCouponManagement() {
+    wx.navigateTo({
+      url: '/pages/merchant-coupons/merchant-coupons'
     })
   },
 

@@ -1,0 +1,18 @@
+{
+  "usingComponents": {
+    "t-navbar": "tdesign-miniprogram/navbar/navbar",
+    "t-loading": "tdesign-miniprogram/loading/loading",
+    "t-button": "tdesign-miniprogram/button/button",
+    "t-icon": "tdesign-miniprogram/icon/icon",
+    "t-tabs": "tdesign-miniprogram/tabs/tabs",
+    "t-tab-panel": "tdesign-miniprogram/tab-panel/tab-panel",
+    "t-input": "tdesign-miniprogram/input/input",
+    "t-dialog": "tdesign-miniprogram/dialog/dialog",
+    "t-toast": "tdesign-miniprogram/toast/toast",
+    "t-tag": "tdesign-miniprogram/tag/tag",
+    "t-popup": "tdesign-miniprogram/popup/popup",
+    "t-cell": "tdesign-miniprogram/cell/cell",
+    "t-cell-group": "tdesign-miniprogram/cell-group/cell-group"
+  },
+  "navigationBarTitleText": "优惠券管理"
+}

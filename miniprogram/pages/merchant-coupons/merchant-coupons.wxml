@@ -1,0 +1,139 @@
+<!-- 顶部导航栏 -->
+<t-navbar title="优惠券管理" left-arrow bind:left-click="goBack">
+  <view slot="right" class="nav-actions">
+    <t-icon name="add" size="40rpx" bind:tap="showCreateModal" />
+  </view>
+</t-navbar>
+
+<!-- 加载状态 -->
+<t-loading wx:if="{{loading}}" theme="circular" size="40rpx" text="加载中..." />
+
+<view class="container" wx:else>
+  <!-- 统计概览 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <text class="stat-value">{{statistics.totalCoupons}}</text>
+      <text class="stat-label">优惠券总数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statistics.totalUsage}}</text>
+      <text class="stat-label">总使用次数</text>
+    </view>
+    <view class="stat-item">
+      <text class="stat-value">{{statistics.activeCoupons}}</text>
+      <text class="stat-label">活跃优惠券</text>
+    </view>
+  </view>
+
+  <!-- 优惠券列表 -->
+  <view class="coupon-section">
+    <view class="section-header">
+      <text class="section-title">优惠券列表</text>
+      <t-button size="small" theme="primary" bind:tap="showCreateModal">
+        <t-icon name="add" size="24rpx" style="margin-right: 8rpx;" />
+        新增
+      </t-button>
+    </view>
+
+    <view class="coupon-list" wx:if="{{coupons.length > 0}}">
+      <view class="coupon-item" wx:for="{{coupons}}" wx:key="_id">
+        <view class="coupon-card">
+          <view class="coupon-header">
+            <view class="coupon-code">{{item.code}}</view>
+            <view class="coupon-discount">{{item.discountText}}</view>
+          </view>
+          <view class="coupon-body">
+            <text class="coupon-description" wx:if="{{item.description}}">{{item.description}}</text>
+            <view class="coupon-stats">
+              <text class="usage-count">已使用 {{item.usageCount}} 次</text>
+              <text class="create-time">{{item.createTimeText}}</text>
+            </view>
+          </view>
+          <view class="coupon-actions">
+            <t-button size="small" variant="outline" bind:tap="editCoupon" data-id="{{item._id}}">
+              编辑
+            </t-button>
+            <t-button size="small" variant="text" theme="danger" bind:tap="deleteCoupon" data-id="{{item._id}}">
+              删除
+            </t-button>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="empty-state" wx:else>
+      <t-icon name="coupon" size="80rpx" color="#ddd" />
+      <text class="empty-text">暂无优惠券</text>
+      <text class="empty-desc">创建您的第一个优惠券</text>
+      <t-button theme="primary" size="medium" bind:tap="showCreateModal" style="margin-top: 24rpx;">
+        创建优惠券
+      </t-button>
+    </view>
+  </view>
+</view>
+
+<!-- 创建/编辑优惠券弹窗 -->
+<t-popup visible="{{showModal}}" placement="bottom" bind:visible-change="onModalVisibleChange">
+  <view class="modal-container">
+    <view class="modal-header">
+      <text class="modal-title">{{editingCoupon ? '编辑优惠券' : '创建优惠券'}}</text>
+      <t-icon name="close" size="48rpx" bind:tap="hideModal" />
+    </view>
+    
+    <view class="modal-body">
+      <t-cell-group>
+        <t-cell title="优惠券代码" note="*必填，推荐使用英文和数字">
+          <t-input 
+            slot="note" 
+            value="{{form.code}}" 
+            placeholder="如：SAVE20"
+            bind:change="onCodeChange"
+            style="text-align: right;"
+          />
+        </t-cell>
+        
+        <t-cell title="折扣力度" note="*必填，0.1-1之间的小数">
+          <t-input 
+            slot="note" 
+            value="{{form.discount}}" 
+            placeholder="如：0.8表示8折"
+            type="digit"
+            bind:change="onDiscountChange"
+            style="text-align: right;"
+          />
+        </t-cell>
+        
+        <t-cell title="优惠券描述" note="可选，方便管理和识别">
+          <t-input 
+            slot="note" 
+            value="{{form.description}}" 
+            placeholder="如：新用户专享8折优惠"
+            bind:change="onDescriptionChange"
+            style="text-align: right;"
+          />
+        </t-cell>
+      </t-cell-group>
+    </view>
+    
+    <view class="modal-footer">
+      <t-button variant="outline" bind:tap="hideModal" style="margin-right: 20rpx;">取消</t-button>
+      <t-button theme="primary" bind:tap="saveCoupon" loading="{{saving}}" style="flex: 1;">
+        {{editingCoupon ? '保存' : '创建'}}
+      </t-button>
+    </view>
+  </view>
+</t-popup>
+
+<!-- Toast 组件 -->
+<t-toast id="t-toast" />
+
+<!-- 确认删除对话框 -->
+<t-dialog
+  visible="{{showDeleteDialog}}"
+  title="确认删除"
+  content="删除后将无法恢复，但已使用的统计数据会保留。确定要删除这个优惠券吗？"
+  confirm-btn="删除"
+  cancel-btn="取消"
+  bind:confirm="confirmDelete"
+  bind:cancel="cancelDelete"
+/>

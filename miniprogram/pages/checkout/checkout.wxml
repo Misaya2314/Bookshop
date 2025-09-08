@@ -10,19 +10,34 @@
 
   <!-- 主要内容 -->
   <scroll-view scroll-y class="checkout-content" wx:if="{{!loading}}">
-    <!-- 收货地址 -->
+    <!-- 收货信息 -->
     <view class="address-section">
       <view class="section-title">
         <t-icon name="location" size="32rpx" color="#3b82f6" />
-        <text>收货地址</text>
+        <text>收货信息</text>
       </view>
+      
+      <!-- 收货人姓名输入 -->
+      <view class="input-row">
+        <t-input
+          label="收货人姓名"
+          value="{{recipientName}}"
+          placeholder="请输入收货人姓名"
+          bind:change="onRecipientNameChange"
+          required
+        />
+      </view>
+      
+      <!-- 收货地址选择 -->
       <view class="address-card" bindtap="selectAddress">
         <view wx:if="{{deliveryAddress}}" class="address-info">
           <view class="address-main">
-            <text class="address-name">{{userInfo.nickname || '收货人'}}</text>
+            <text class="address-label">收货地址：</text>
+            <text class="address-detail">{{deliveryAddress}}</text>
+          </view>
+          <view class="contact-info">
             <text class="address-phone">{{userInfo.phone || '请完善手机号'}}</text>
           </view>
-          <text class="address-detail">{{deliveryAddress}}</text>
         </view>
         <view wx:else class="no-address">
           <t-icon name="location" size="48rpx" color="#ccc" />
@@ -108,7 +123,60 @@
         <t-icon name="discount" size="32rpx" color="#3b82f6" />
         <text>优惠信息</text>
       </view>
-      <t-cell title="优惠券" note="暂无可用优惠券" arrow bind:click="selectCoupon" />
+      
+      <!-- 按商家分组显示优惠券输入 -->
+      <view 
+        class="merchant-coupon-group" 
+        wx:for="{{merchants}}" 
+        wx:key="merchantId"
+        wx:for-item="merchant"
+      >
+        <view class="merchant-coupon-header">
+          <text class="merchant-name">{{merchant.merchantName}}</text>
+        </view>
+        
+        <view class="coupon-input-card">
+          <view class="coupon-input-row">
+            <t-input 
+              value="{{merchant.couponCode}}"
+              placeholder="输入优惠券代码"
+              bind:change="onCouponCodeChange"
+              data-merchant-id="{{merchant.merchantId}}"
+              style="flex: 1;"
+            />
+            <t-button 
+              size="small" 
+              theme="{{merchant.couponCode ? 'primary' : 'default'}}"
+              bind:tap="applyCoupon"
+              data-merchant-id="{{merchant.merchantId}}"
+              loading="{{merchant.validatingCoupon}}"
+            >
+              {{merchant.couponCode ? '应用' : '使用'}}
+            </t-button>
+          </view>
+          
+          <!-- 优惠券验证结果 -->
+          <view class="coupon-result" wx:if="{{merchant.couponInfo}}">
+            <view class="coupon-success">
+              <t-icon name="check-circle-filled" size="32rpx" color="#10b981" />
+              <text class="coupon-text">{{merchant.couponInfo.description || '优惠券可用'}}</text>
+              <text class="coupon-discount">{{merchant.discountText}}</text>
+              <t-icon 
+                name="close" 
+                size="24rpx" 
+                color="#999" 
+                bind:tap="removeCoupon"
+                data-merchant-id="{{merchant.merchantId}}"
+              />
+            </view>
+          </view>
+          
+          <view class="coupon-error" wx:if="{{merchant.couponError}}">
+            <t-icon name="close-circle-filled" size="32rpx" color="#ef4444" />
+            <text class="error-text">{{merchant.couponError}}</text>
+          </view>
+        </view>
+      </view>
     </view>
 
 
@@ -122,19 +190,19 @@
       <view class="cost-list">
         <view class="cost-item">
           <text class="cost-label">商品总价</text>
-          <text class="cost-value">¥{{totalPrice}}</text>
+          <text class="cost-value">¥{{originalTotalPrice}}</text>
         </view>
         <view class="cost-item">
           <text class="cost-label">配送费</text>
           <text class="cost-value">¥0.00</text>
         </view>
-        <view class="cost-item">
-          <text class="cost-label">优惠</text>
-          <text class="cost-value discount">-¥0.00</text>
+        <view class="cost-item" wx:if="{{totalDiscount > 0}}">
+          <text class="cost-label">优惠券优惠</text>
+          <text class="cost-value discount">-¥{{totalDiscount}}</text>
         </view>
         <view class="cost-item total">
           <text class="cost-label">实付款</text>
-          <text class="cost-value">¥{{totalPrice}}</text>
+          <text class="cost-value">¥{{finalTotalPrice}}</text>
         </view>
       </view>
     </view>
@@ -148,7 +216,7 @@
 <view class="checkout-footer" wx:if="{{!loading}}">
   <view class="footer-info">
     <text class="total-label">实付款:</text>
-    <text class="total-price">¥{{totalPrice}}</text>
+    <text class="total-price">¥{{finalTotalPrice}}</text>
   </view>
   <t-button 
     theme="primary" 

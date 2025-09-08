@@ -191,15 +191,62 @@ page {
 }
 
 .order-detail {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   margin-bottom: 12rpx;
 }
 
 .order-time {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #999;
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.buyer-contact {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8rpx;
+  flex-wrap: wrap;
+}
+
+.contact-label {
+  font-size: 24rpx;
+  color: #666;
+  min-width: 80rpx;
+}
+
+.contact-value {
+  font-size: 24rpx;
+  color: #333;
+  font-weight: 500;
+  margin-right: 16rpx;
+}
+
+.contact-phone {
+  font-size: 22rpx;
+  color: #666;
+  padding: 4rpx 8rpx;
+  background: #f0f0f0;
+  border-radius: 4rpx;
+}
+
+.delivery-info {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8rpx;
+}
+
+.delivery-label {
+  font-size: 24rpx;
+  color: #666;
+  min-width: 80rpx;
+  margin-right: 8rpx;
+}
+
+.delivery-address {
+  font-size: 24rpx;
+  color: #333;
+  flex: 1;
+  line-height: 1.4;
 }
 
 .order-address {

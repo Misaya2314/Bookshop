@@ -13,6 +13,7 @@
     "pages/merchant-apply/merchant-apply",
     "pages/merchant-dashboard/merchant-dashboard",
     "pages/merchant-orders/merchant-orders",
+    "pages/merchant-coupons/merchant-coupons",
     "pages/profile-setup/profile-setup",
     "pages/user-info/user-info",
     "pages/privacy/privacy",

@@ -11,6 +11,13 @@ interface MerchantData {
   merchantName: string;
   items: CheckoutItem[];
   totalPrice: string;
+  couponCode?: string;
+  couponInfo?: any;
+  couponError?: string;
+  validatingCoupon?: boolean;
+  discountText?: string;
+  originalPrice?: number;
+  finalPrice?: number;
 }
 
 interface AddressOption {
@@ -27,12 +34,16 @@ Page({
     // 订单数据
     merchants: [] as MerchantData[],
     totalPrice: '0.00',
+    originalTotalPrice: '0.00',
+    finalTotalPrice: '0.00',
+    totalDiscount: '0.00',
     totalQuantity: 0,
     orderType: 'cart', // cart | direct
     
     // 用户信息
     userInfo: {} as any,
     deliveryAddress: '',
+    recipientName: '', // 收货人姓名
     
     // 备注
     remark: '',
@@ -135,6 +146,7 @@ Page({
       loading: false
     })
     
+    this.calculateTotalPrice()
     this.checkCanSubmit()
   },
 
@@ -165,6 +177,7 @@ Page({
       loading: false
     })
     
+    this.calculateTotalPrice()
     this.checkCanSubmit()
   },
 
@@ -246,6 +259,14 @@ Page({
     this.setData({ remark: e.detail.value })
   },
 
+  // 收货人姓名变化
+  onRecipientNameChange(e: any) {
+    this.setData({ 
+      recipientName: e.detail.value 
+    })
+    this.checkCanSubmit()
+  },
+
   // 选择优惠券
   selectCoupon() {
     wx.showToast({
@@ -257,6 +278,7 @@ Page({
   // 检查是否可以提交订单
   checkCanSubmit() {
     const canSubmit = this.data.deliveryAddress !== '' && 
+                     this.data.recipientName.trim() !== '' &&
                      this.data.merchants.length > 0 && 
                      !this.data.loading
     
@@ -295,47 +317,66 @@ Page({
     this.setData({ submitting: true })
 
     try {
-      // 准备订单数据
-      const orderItems = []
-      for (const merchant of this.data.merchants) {
-        for (const item of merchant.items) {
-          orderItems.push({
+      // 准备订单数据 - 按商家分组并包含优惠券信息
+      const merchantOrders = this.data.merchants.map(merchant => {
+        const orderData: any = {
+          merchantId: merchant.merchantId,
+          merchantName: merchant.merchantName,
+          items: merchant.items.map(item => ({
             bookId: item.bookId,
             title: item.title,
             price: item.price,
             quantity: item.quantity
-          })
-        }
-      }
-
-      // 调用云函数创建订单
-      const result = await wx.cloud.callFunction({
-        name: 'orders',
-        data: {
-          action: 'createOrder',
-          items: orderItems,
-          totalPrice: parseFloat(this.data.totalPrice),
+          })),
+          totalPrice: merchant.finalPrice !== undefined ? merchant.finalPrice : parseFloat(merchant.totalPrice),
           deliveryAddress: this.data.deliveryAddress,
+          recipientName: this.data.recipientName, // 添加收货人姓名
           orderType: this.data.orderType,
           remark: this.data.remark
         }
+
+        // 添加优惠券信息（如果有）
+        if (merchant.couponInfo) {
+          orderData.couponCode = merchant.couponCode
+          orderData.couponDiscount = merchant.couponInfo.discount
+        }
+
+        return orderData
       })
 
-      const response = result.result as any
-      console.log('创建订单结果:', response)
+      // 为每个商家分别创建订单
+      const results = []
+      for (const orderData of merchantOrders) {
+        const result = await wx.cloud.callFunction({
+          name: 'orders',
+          data: {
+            action: 'createOrder',
+            ...orderData
+          }
+        })
+        results.push(result.result)
+      }
 
-      if (response.code === 0) {
+      console.log('创建订单结果:', results)
+      
+      // 检查是否所有订单都创建成功
+      const allSuccess = results.every((result: any) => result && result.code === 0)
+
+      if (allSuccess) {
         wx.showToast({
           title: '订单创建成功',
           icon: 'success'
         })
 
+        // 收集所有创建成功的订单
+        const allOrders = results.map((result: any) => result && result.data ? result.data : []).flat()
+
         // 延迟跳转到支付页面或订单列表
         setTimeout(() => {
-          if (response.data && response.data.length > 0) {
+          if (allOrders && allOrders.length > 0) {
             // 如果只有一个订单，直接跳转到支付页面
-            if (response.data.length === 1) {
-              this.goToPayment(response.data[0]._id)
+            if (allOrders.length === 1) {
+              this.goToPayment(allOrders[0]._id)
             } else {
               // 多个订单，跳转到订单列表
               wx.redirectTo({
@@ -349,8 +390,9 @@ Page({
           }
         }, 1500)
       } else {
+        const failedResults = results.filter((result: any) => !result || result.code !== 0)
         wx.showToast({
-          title: response.message || '创建订单失败',
+          title: (failedResults[0] as any)?.message || '订单创建失败',
           icon: 'none'
         })
       }
@@ -370,7 +412,7 @@ Page({
     // 显示支付确认弹窗
     wx.showModal({
       title: '确认支付',
-      content: `支付金额：¥${this.data.totalPrice}`,
+      content: `支付金额：¥${this.data.finalTotalPrice}`,
       confirmText: '立即支付',
       success: async (res) => {
         if (res.confirm) {
@@ -507,5 +549,181 @@ Page({
         })
       }, 1500)
     }
+  },
+
+  // 优惠券代码输入变化
+  onCouponCodeChange(e: any) {
+    const merchantId = e.currentTarget.dataset.merchantId
+    const value = e.detail.value.toUpperCase()
+    
+    const merchants = this.data.merchants.map(merchant => {
+      if (merchant.merchantId === merchantId) {
+        return {
+          ...merchant,
+          couponCode: value,
+          couponError: '',
+          couponInfo: null
+        }
+      }
+      return merchant
+    })
+    
+    this.setData({ merchants })
+  },
+
+  // 应用优惠券
+  async applyCoupon(e: any) {
+    const merchantId = e.currentTarget.dataset.merchantId
+    const merchant = this.data.merchants.find(m => m.merchantId === merchantId)
+    
+    if (!merchant || !merchant.couponCode?.trim()) {
+      wx.showToast({
+        title: '请输入优惠券代码',
+        icon: 'none'
+      })
+      return
+    }
+
+    // 设置验证状态
+    const merchants = this.data.merchants.map(m => {
+      if (m.merchantId === merchantId) {
+        return {
+          ...m,
+          validatingCoupon: true,
+          couponError: ''
+        }
+      }
+      return m
+    })
+    this.setData({ merchants })
+
+    try {
+      const result = await wx.cloud.callFunction({
+        name: 'coupons',
+        data: {
+          action: 'validateCoupon',
+          data: {
+            code: merchant.couponCode.trim(),
+            merchantId: merchantId
+          }
+        }
+      })
+
+      if (result.result && (result.result as any).success) {
+        // 优惠券验证成功
+        const couponInfo = (result.result as any).data
+        const updatedMerchants = this.data.merchants.map(m => {
+          if (m.merchantId === merchantId) {
+            const originalPrice = parseFloat(m.totalPrice)
+            const finalPrice = originalPrice * couponInfo.discount
+            const discountText = this.formatDiscount(couponInfo.discount)
+            
+            return {
+              ...m,
+              validatingCoupon: false,
+              couponInfo: couponInfo,
+              couponError: '',
+              discountText: discountText,
+              originalPrice: originalPrice,
+              finalPrice: finalPrice
+            }
+          }
+          return m
+        })
+        
+        this.setData({ merchants: updatedMerchants })
+        this.calculateTotalPrice()
+        
+        wx.showToast({
+          title: '优惠券应用成功',
+          icon: 'success'
+        })
+        
+        // 注意：不清除优惠券信息，保持可重复使用状态
+      } else {
+        // 优惠券验证失败
+        const updatedMerchants = this.data.merchants.map(m => {
+          if (m.merchantId === merchantId) {
+            return {
+              ...m,
+              validatingCoupon: false,
+              couponError: (result.result as any).message
+            }
+          }
+          return m
+        })
+        
+        this.setData({ merchants: updatedMerchants })
+      }
+    } catch (error) {
+      console.error('优惠券验证失败:', error)
+      
+      const updatedMerchants = this.data.merchants.map(m => {
+        if (m.merchantId === merchantId) {
+          return {
+            ...m,
+            validatingCoupon: false,
+            couponError: '网络错误，请重试'
+          }
+        }
+        return m
+      })
+      
+      this.setData({ merchants: updatedMerchants })
+    }
+  },
+
+  // 移除优惠券
+  removeCoupon(e: any) {
+    const merchantId = e.currentTarget.dataset.merchantId
+    
+    const merchants = this.data.merchants.map(merchant => {
+      if (merchant.merchantId === merchantId) {
+        return {
+          ...merchant,
+          couponCode: '',
+          couponInfo: null,
+          couponError: '',
+          discountText: '',
+          originalPrice: undefined,
+          finalPrice: undefined
+        }
+      }
+      return merchant
+    })
+    
+    this.setData({ merchants })
+    this.calculateTotalPrice()
+  },
+
+  // 格式化折扣显示
+  formatDiscount(discount: number): string {
+    const percentage = Math.round(discount * 10)
+    return `${percentage}折`
+  },
+
+  // 计算总价（包含优惠券折扣）
+  calculateTotalPrice() {
+    let originalTotal = 0
+    let finalTotal = 0
+    
+    this.data.merchants.forEach(merchant => {
+      const price = parseFloat(merchant.totalPrice)
+      originalTotal += price
+      
+      if (merchant.finalPrice !== undefined) {
+        finalTotal += merchant.finalPrice
+      } else {
+        finalTotal += price
+      }
+    })
+    
+    const totalDiscount = originalTotal - finalTotal
+    
+    this.setData({
+      originalTotalPrice: originalTotal.toFixed(2),
+      finalTotalPrice: finalTotal.toFixed(2),
+      totalDiscount: totalDiscount.toFixed(2)
+    })
   }
 }) 

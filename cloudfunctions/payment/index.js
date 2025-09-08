@@ -248,22 +248,41 @@ async function paymentNotify(event) {
 
       const order = orderResult.data[0]
       
-      // 幂等性检查：如果订单已经是已支付状态，直接返回成功，避免重复处理
-      if (order.status === 'paid') {
+      // 幂等性检查：如果订单已经是已支付、已发货、已完成状态，直接返回成功，避免重复处理
+      if (order.status !== 'pending') {
         console.log('订单已处理过，避免重复处理:', { 
           orderId: order._id, 
           orderNo: outTradeNo,
           existingTransactionId: order.transactionId || 'unknown',
           currentTransactionId: transactionId,
-          orderStatus: order.status
+          orderStatus: order.status,
+          orderPayTime: order.payTime
         })
+        
+        // 检查transactionId是否一致，如果不一致则记录警告
+        if (order.transactionId && order.transactionId !== transactionId) {
+          console.warn('支付交易ID不一致:', {
+            orderId: order._id,
+            existingTransactionId: order.transactionId,
+            newTransactionId: transactionId
+          })
+        }
+        
         return 'SUCCESS' // 直接返回SUCCESS，让微信停止重试
       }
       
-      // 验证金额
-      const orderTotalFee = Math.round(order.totalPrice * 100)
+      // 验证金额（使用实际支付金额）
+      const actualPayAmount = order.finalPrice || order.totalPrice
+      const orderTotalFee = Math.round(actualPayAmount * 100)
       if (orderTotalFee !== totalFee) {
-        console.error('金额不匹配:', { orderTotalFee, totalFee })
+        console.error('金额不匹配:', { 
+          orderTotalPrice: order.totalPrice,
+          orderFinalPrice: order.finalPrice,
+          actualPayAmount: actualPayAmount,
+          orderTotalFee: orderTotalFee, 
+          receivedTotalFee: totalFee,
+          hasCoupon: !!order.couponCode
+        })
         return 'FAIL' // 微信支付回调格式
       }
 
@@ -279,15 +298,59 @@ async function paymentNotify(event) {
       })
 
       // 扣减库存（只在首次处理时执行）
-      console.log('开始扣减库存，订单商品数量:', order.items.length)
-      for (const item of order.items) {
-        console.log(`扣减库存: bookId=${item.bookId}, quantity=${item.quantity}`)
-        await db.collection('books').doc(item.bookId).update({
+      if (!order.stockDeducted) {
+        console.log('开始扣减库存，订单商品数量:', order.items.length)
+        for (const item of order.items) {
+          console.log(`扣减库存: bookId=${item.bookId}, quantity=${item.quantity}`)
+          await db.collection('books').doc(item.bookId).update({
+            data: {
+              stock: db.command.inc(-item.quantity),
+              sales: db.command.inc(item.quantity)
+            }
+          })
+        }
+        
+        // 标记库存已扣减
+        await db.collection('orders').doc(order._id).update({
           data: {
-            stock: db.command.inc(-item.quantity),
-            sales: db.command.inc(item.quantity)
+            stockDeducted: true
           }
         })
+        
+        console.log('库存扣减完成并已标记')
+      } else {
+        console.log('库存已扣减过，跳过库存操作')
+      }
+
+      // 更新优惠券使用次数（如果使用了优惠券且尚未计算过）
+      if (order.couponCode && !order.couponUsageCounted) {
+        console.log('更新优惠券使用次数:', order.couponCode)
+        try {
+          await db.collection('coupons').where({
+            code: order.couponCode,
+            merchantId: order.merchantId,
+            status: 'active'
+          }).update({
+            data: {
+              usageCount: db.command.inc(1),
+              updateTime: new Date()
+            }
+          })
+          
+          // 标记优惠券使用次数已经计算过
+          await db.collection('orders').doc(order._id).update({
+            data: {
+              couponUsageCounted: true
+            }
+          })
+          
+          console.log('优惠券使用次数更新成功')
+        } catch (couponError) {
+          console.error('更新优惠券使用次数失败:', couponError)
+          // 不影响支付流程，只记录错误
+        }
+      } else if (order.couponCode && order.couponUsageCounted) {
+        console.log('优惠券使用次数已计算过，跳过更新:', order.couponCode)
       }
 
       console.log('订单支付成功，状态已更新:', { 

@@ -53,6 +53,11 @@
 }
 
 /* 收货地址样式 */
+.input-row {
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
 .address-card {
   padding: 24rpx;
   display: flex;
@@ -66,8 +71,27 @@
 
 .address-main {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 12rpx;
+}
+
+.address-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: #333;
+  min-width: 120rpx;
+  margin-right: 12rpx;
+}
+
+.address-detail {
+  font-size: 28rpx;
+  color: #333;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.contact-info {
+  padding-left: 132rpx;
 }
 
 .address-name {
@@ -335,4 +359,80 @@
 .picker-footer {
   padding: 24rpx;
   border-top: 1rpx solid #f0f0f0;
+}
+
+/* 优惠券样式 */
+.merchant-coupon-group {
+  margin-bottom: 24rpx;
+}
+
+.merchant-coupon-header {
+  padding: 16rpx 24rpx 8rpx;
+  background-color: #f8f9fa;
+}
+
+.merchant-name {
+  font-size: 26rpx;
+  color: #666;
+  font-weight: 500;
+}
+
+.coupon-input-card {
+  background: white;
+  padding: 24rpx;
+}
+
+.coupon-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.coupon-result {
+  margin-top: 16rpx;
+}
+
+.coupon-success {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx;
+  background-color: #f0f9f0;
+  border-radius: 8rpx;
+  border: 1rpx solid #10b981;
+}
+
+.coupon-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #10b981;
+}
+
+.coupon-discount {
+  font-size: 26rpx;
+  color: #10b981;
+  font-weight: 600;
+}
+
+.coupon-error {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 16rpx;
+  background-color: #fef2f2;
+  border-radius: 8rpx;
+  border: 1rpx solid #ef4444;
+  margin-top: 16rpx;
+}
+
+.error-text {
+  flex: 1;
+  font-size: 26rpx;
+  color: #ef4444;
+}
+
+/* 费用明细折扣样式 */
+.cost-value.discount {
+  color: #10b981;
+  font-weight: 600;
 }

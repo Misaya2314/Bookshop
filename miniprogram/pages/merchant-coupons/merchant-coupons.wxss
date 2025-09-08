@@ -1,0 +1,217 @@
+.container {
+  padding: 0 24rpx 24rpx;
+  background-color: #f8f9fa;
+}
+
+/* 统计概览 */
+.stats-section {
+  display: flex;
+  background: white;
+  border-radius: 12rpx;
+  margin: 8rpx 0 16rpx 0;
+  overflow: hidden;
+}
+
+.stat-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20rpx 16rpx;
+  border-right: 1rpx solid #f0f0f0;
+}
+
+.stat-item:last-child {
+  border-right: none;
+}
+
+.stat-value {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #1976d2;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 24rpx;
+  color: #666;
+  margin-top: 8rpx;
+}
+
+/* 优惠券列表 */
+.coupon-section {
+  margin-top: 8rpx;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.coupon-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.coupon-item {
+  background: white;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.06);
+}
+
+.coupon-card {
+  padding: 24rpx;
+}
+
+.coupon-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.coupon-code {
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #333;
+  font-family: "Courier New", monospace;
+  background: #f0f8ff;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+  border: 2rpx dashed #1976d2;
+}
+
+.coupon-discount {
+  font-size: 26rpx;
+  font-weight: bold;
+  color: #e53e3e;
+  background: #fee;
+  padding: 6rpx 12rpx;
+  border-radius: 6rpx;
+}
+
+.coupon-body {
+  margin-bottom: 16rpx;
+}
+
+.coupon-description {
+  font-size: 26rpx;
+  color: #666;
+  display: block;
+  margin-bottom: 12rpx;
+  line-height: 1.4;
+}
+
+.coupon-stats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usage-count {
+  font-size: 22rpx;
+  color: #1976d2;
+  background: #e3f2fd;
+  padding: 2rpx 8rpx;
+  border-radius: 10rpx;
+}
+
+.create-time {
+  font-size: 22rpx;
+  color: #999;
+}
+
+.coupon-actions {
+  display: flex;
+  gap: 12rpx;
+  justify-content: flex-end;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60rpx 40rpx;
+  background: white;
+  border-radius: 12rpx;
+}
+
+.empty-text {
+  display: block;
+  font-size: 30rpx;
+  color: #333;
+  margin: 16rpx 0 8rpx;
+}
+
+.empty-desc {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.4;
+}
+
+/* 模态框样式 */
+.modal-container {
+  background: white;
+  border-radius: 24rpx 24rpx 0 0;
+  max-height: 90vh;
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx;
+  border-bottom: 1rpx solid #f0f0f0;
+}
+
+.modal-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.modal-body {
+  padding: 24rpx 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  display: flex;
+  padding: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
+  background: #fafafa;
+}
+
+/* 导航栏右侧操作 */
+.nav-actions {
+  display: flex;
+  align-items: center;
+  padding-right: 16rpx;
+}
+
+/* TDesign cell 组件覆盖样式 */
+.t-cell {
+  padding: 24rpx 32rpx !important;
+}
+
+.t-cell__title {
+  font-size: 28rpx !important;
+  color: #333 !important;
+}
+
+.t-cell__note {
+  font-size: 24rpx !important;
+  color: #999 !important;
+}

@@ -1,3 +1,5 @@
+import { formatFullTime } from '../../utils/util'
+
 Page({
   data: {
     currentTab: 'all',
@@ -186,6 +188,7 @@ Page({
           const formattedOrder = {
             ...order,
             id: order._id, // 兼容现有模板
+            createTime: formatFullTime(order.createTime), // 格式化创建时间
             products: order.items.map((item: any) => ({
               id: item.bookId,
               title: item.title,

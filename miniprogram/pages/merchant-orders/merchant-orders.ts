@@ -1,3 +1,5 @@
+import { formatFullTime } from '../../utils/util'
+
 Page({
   data: {
     currentTab: 'all',
@@ -58,7 +60,7 @@ Page({
       if (response.code === 0) {
         const orders = response.data.map((order: any) => ({
           ...order,
-          createTime: this.formatTime(order.createTime),
+          createTime: formatFullTime(order.createTime), // 使用新的时间格式化函数
           statusText: this.getStatusText(order.status),
           statusClass: `status-${order.status}`
         }))

@@ -95,7 +95,7 @@ exports.main = async (event, context) => {
 
 // 创建订单
 async function createOrder(event, openid) {
-  const { items, totalPrice, deliveryAddress, orderType = 'cart' } = event
+  const { items, totalPrice, deliveryAddress, recipientName, orderType = 'cart', couponCode, couponDiscount } = event
   
   if (!items || items.length === 0) {
     return { code: -1, message: '订单商品不能为空' }
@@ -103,6 +103,10 @@ async function createOrder(event, openid) {
   
   if (!deliveryAddress) {
     return { code: -1, message: '收货地址不能为空' }
+  }
+  
+  if (!recipientName || !recipientName.trim()) {
+    return { code: -1, message: '收货人姓名不能为空' }
   }
 
   // 获取用户信息
@@ -192,12 +196,21 @@ async function createOrder(event, openid) {
       totalPrice: group.totalPrice,
       totalQuantity: group.items.reduce((sum, item) => sum + item.quantity, 0),
       deliveryAddress: deliveryAddress,
+      recipientName: recipientName.trim(), // 收货人姓名
       status: 'pending', // pending-待支付, paid-已支付待发货, shipping-待收货, completed-已完成, cancelled-已取消
       statusText: '待支付',
       orderType: orderType, // cart-购物车下单, direct-立即购买
       createTime: now,
       expireTime: expireTime,
       updateTime: now
+    }
+    
+    // 添加优惠券信息（如果有）
+    if (couponCode && couponDiscount) {
+      orderData.couponCode = couponCode
+      orderData.couponDiscount = couponDiscount
+      orderData.originalPrice = group.totalPrice // 保存原价
+      orderData.finalPrice = group.totalPrice * couponDiscount // 保存折扣后价格
     }
     
     // 插入订单
@@ -438,13 +451,19 @@ async function payOrder(event, openid) {
       return { code: -1, message: '订单状态错误' }
     }
     
+    // 计算实际支付金额（优惠券折扣后的价格）
+    const actualPayAmount = order.finalPrice || order.totalPrice
+    
     // 调用支付云函数进行统一下单
     console.log('准备调用支付云函数:', {
       orderId: orderId,
       orderUserId: order.userId,
       currentOpenid: openid,
-      totalFee: order.totalPrice,
-      orderNo: order.orderNo
+      originalPrice: order.totalPrice,
+      finalPrice: order.finalPrice,
+      actualPayAmount: actualPayAmount,
+      orderNo: order.orderNo,
+      hasCoupon: !!order.couponCode
     })
     
     const paymentResult = await cloud.callFunction({
@@ -452,7 +471,7 @@ async function payOrder(event, openid) {
       data: {
         action: 'unifiedOrder',
         orderId: orderId,
-        totalFee: order.totalPrice,
+        totalFee: actualPayAmount,
         description: `学长二手书-订单${order.orderNo}`,
         openid: openid  // 传递当前用户的 openid
       }

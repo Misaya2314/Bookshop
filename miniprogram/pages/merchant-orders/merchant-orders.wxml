@@ -84,7 +84,15 @@
       <view class="order-info">
         <view class="order-detail">
           <text class="order-time">{{item.createTime}}</text>
-          <text class="order-address">{{item.deliveryAddress}}</text>
+          <view class="buyer-contact">
+            <text class="contact-label">收货人：</text>
+            <text class="contact-value">{{item.recipientName || '未填写'}}</text>
+            <text class="contact-phone">{{item.userPhone || '未设置电话'}}</text>
+          </view>
+          <view class="delivery-info">
+            <text class="delivery-label">收货地址：</text>
+            <text class="delivery-address">{{item.deliveryAddress}}</text>
+          </view>
         </view>
         <text class="order-total">共{{item.totalQuantity}}件商品 合计: ¥{{item.totalPrice}}</text>
       </view>
