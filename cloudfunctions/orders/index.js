@@ -172,8 +172,31 @@ async function createOrder(event, openid) {
   }
   
   // 验证总价
-  if (Math.abs(calculatedTotal - totalPrice) > 0.01) {
-    return { code: -1, message: '订单总价不匹配，请重新下单' }
+  // 如果有优惠券，验证折扣后的价格；否则验证原价
+  let expectedTotal = calculatedTotal
+  if (couponDiscount && couponDiscount > 0 && couponDiscount < 1) {
+    expectedTotal = calculatedTotal * couponDiscount
+  }
+  
+  console.log('价格验证:', {
+    calculatedTotal: calculatedTotal,
+    receivedTotalPrice: totalPrice,
+    couponDiscount: couponDiscount,
+    expectedTotal: expectedTotal,
+    priceDiff: Math.abs(expectedTotal - totalPrice)
+  })
+  
+  if (Math.abs(expectedTotal - totalPrice) > 0.01) {
+    return { 
+      code: -1, 
+      message: '订单总价不匹配，请重新下单',
+      debug: {
+        calculatedTotal: calculatedTotal,
+        receivedTotalPrice: totalPrice,
+        couponDiscount: couponDiscount,
+        expectedTotal: expectedTotal
+      }
+    }
   }
 
   const now = new Date()

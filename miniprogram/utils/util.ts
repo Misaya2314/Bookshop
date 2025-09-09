@@ -16,7 +16,15 @@ export const formatTime = (date: Date) => {
 // 格式化相对时间显示（今天、昨天等）
 export const formatRelativeTime = (time: string | Date): string => {
   try {
-    const date = new Date(time)
+    let date: Date
+    
+    if (time instanceof Date) {
+      date = time
+    } else {
+      // 标准化时间字符串格式
+      const normalizedTime = normalizeTimeString(time)
+      date = new Date(normalizedTime)
+    }
     
     // 检查日期是否有效
     if (isNaN(date.getTime())) {
@@ -53,11 +61,41 @@ export const formatRelativeTime = (time: string | Date): string => {
   }
 }
 
+// 标准化日期字符串格式，兼容iOS
+const normalizeTimeString = (time: string): string => {
+  if (typeof time !== 'string') {
+    return time
+  }
+  
+  // 将 "YYYY-MM-DD HH:mm" 格式转换为 ISO 格式 "YYYY-MM-DDTHH:mm:ss"
+  // 这样可以确保在所有平台上都能正确解析
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/.test(time)) {
+    return time.replace(' ', 'T') + ':00'
+  }
+  
+  // 将 "YYYY-MM-DD HH:mm:ss" 格式转换为 ISO 格式
+  if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(time)) {
+    return time.replace(' ', 'T')
+  }
+  
+  return time
+}
+
 // 格式化完整时间显示
 export const formatFullTime = (time: string | Date): string => {
   try {
-    const date = new Date(time)
+    let date: Date
+    
+    if (time instanceof Date) {
+      date = time
+    } else {
+      // 标准化时间字符串格式
+      const normalizedTime = normalizeTimeString(time)
+      date = new Date(normalizedTime)
+    }
+    
     if (isNaN(date.getTime())) {
+      console.error('无效的时间格式:', time)
       return '无效时间'
     }
     
